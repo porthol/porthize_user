@@ -1,0 +1,13 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "target": "es2017",
+        "moduleResolution": "node",
+        "module": "commonjs",
+        "baseUrl": "./",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "skipLibCheck": true
+    }
+}

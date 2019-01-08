@@ -1,0 +1,21 @@
+{
+    "extends": "./tsconfig",
+    "compilerOptions": {
+        "target": "es2017",
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "allowSyntheticDefaultImports": true,
+        "types": ["node"],
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "typeRoots": ["node_modules/@types", "src/types"],
+        "declaration": true,
+        "pretty": true
+    },
+    "exclude": ["node_modules", "dist", "__tests__", "src/front/**"],
+    "include": [
+        "src"
+    ]
+}
