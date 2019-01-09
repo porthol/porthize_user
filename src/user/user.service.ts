@@ -15,4 +15,9 @@ export class UserService {
         return await UserModel.find(criteria);
     }
 
+    async create(userData: any) {
+        const user = new UserModel(userData);
+        return await user.save();
+    }
+
 }

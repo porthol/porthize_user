@@ -26,3 +26,5 @@ router
      */
     // todo add control of authorization and authentication
     .get(controller.getAll);
+
+export default router;
