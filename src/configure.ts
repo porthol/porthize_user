@@ -1,4 +1,5 @@
 import * as express from 'express';
+import UserRoutes from './user/user.routes';
 
 /**
  * Function used to configure application
@@ -19,7 +20,7 @@ export function configure(configuration?: object): express.Router[] {
      */
 
     // Load all child routers that call your API.
-    // router.use('/api', UserRoutes);
+    router.use('/api', UserRoutes);
 
     /**
      * Place here all middlewares that will be called AFTER your API.
