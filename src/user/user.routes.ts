@@ -3,6 +3,9 @@ import { UserController } from './user.controller';
 
 const router: express.Router = express.Router();
 const controller = new UserController();
+import { Validator } from 'express-json-validator-middleware';
+const validator = new Validator({ allErrors: true, removeAdditional: true });
+import { UserCreateSchema } from './user.schema';
 
 // todo add control of authorization and authentication
 
@@ -50,7 +53,9 @@ router
      *       "roles":[]
      *     }
      */
-    .post(controller.register);
+    .post(
+        validator.validate({body: UserCreateSchema}),
+        controller.register);
 
 
 router.route('/users/:id')
