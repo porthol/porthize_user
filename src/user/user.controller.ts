@@ -30,5 +30,16 @@ export class UserController {
                 res.send(new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
             });
     }
+
+    register(req: Request, res: Response): void {
+        UserService.get().create(req.body)
+            .then(user => {
+                res.status(HttpStatus.CREATED);
+                res.send(user);
+            })
+            .catch(err => {
+                res.status(HttpStatus.BAD_REQUEST);
+                res.send(new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR, 'BAD_REQUEST', err));
+            });
     }
 }
