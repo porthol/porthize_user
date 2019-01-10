@@ -1,3 +1,5 @@
+import * as httpStatus from 'http-status';
+
 export enum CustomErrorCode {
 
     ERRNOTFOUND,ERRBADREQUEST,ERRINTERNALSERVER
