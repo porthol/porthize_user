@@ -1,6 +1,6 @@
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils/logger';
 import { getConfiguration } from './utils/configurationHelper';
-import { Mongoose } from 'mongoose';
+import * as mongoose from 'mongoose';
 import { getPackageName } from './utils/packageHelper';
 import { App } from './app';
 import { createServer } from 'http';
@@ -16,10 +16,12 @@ const server = async (appName: string) => {
 
         if (config[appName] && config[appName].database) {
             // Create database connection
-            const mongoose = new Mongoose();
-            mongoose.connect(
-              `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
-              `/${config[appName].database.databaseName}`);
+            mongoose.connect(`mongodb://${config[appName].database.host}:${config[appName].database.port}` +
+                `/${config[appName].database.databaseName}`);
+            // const databaseConnection = await mongoose.createConnection(`mongodb://${config[appName].database.host}:${config[appName].database.port}` +
+            //     `/${config[appName].database.databaseName}`,
+            //     { useNewUrlParser: true });
+            // getLogger('default').log('info','Connection on database ready state : ' + databaseConnection.readyState);
         }
 
         const app: App = new App({

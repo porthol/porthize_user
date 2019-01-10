@@ -4,10 +4,9 @@ import * as HttpStatus from 'http-status';
 import { BaseResponse } from '../utils/BaseResponse';
 
 export class UserController {
-    protected UserService: UserService = UserService.get();
 
     getAll(req: Request, res: Response): void {
-        this.UserService.getAll(req.body)
+        UserService.get().getAll(req.body)
         .then(users => {
             res.status(HttpStatus.OK);
             res.send(users);

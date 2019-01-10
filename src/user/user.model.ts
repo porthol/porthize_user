@@ -4,20 +4,30 @@ import { isEmail } from 'validator';
 import ObjectId = mongoose.Schema.Types.ObjectId;
 
 
-const userSchema = new Schema({
-    _id: ObjectId,
-    username: String,
+export const UserSchema = new Schema({
+    username: {
+        type: String,
+        required: true
+    },
     email: {
         type : String,
-        validate: [isEmail, 'invalid email']
+        validate: [isEmail, 'invalid email'],
+        required: true
     },
-    password: String,
+    password: {
+        type: String,
+        required: true
+    },
     date: { type: Date, default: Date.now },
     enabled: {
         type: Boolean,
         default : true
     },
-    roles: [ObjectId]
+    roles: [ObjectId],
+    workspace: {
+        type: String,
+        required: true
+    }
 });
 
-export const UserModel = mongoose.model('User', userSchema);
+export const UserModel = mongoose.model('User', UserSchema, 'users');
