@@ -16,12 +16,11 @@ const server = async (appName: string) => {
 
         if (config[appName] && config[appName].database) {
             // Create database connection
-            mongoose.connect(`mongodb://${config[appName].database.host}:${config[appName].database.port}` +
-                `/${config[appName].database.databaseName}`);
-            // const databaseConnection = await mongoose.createConnection(`mongodb://${config[appName].database.host}:${config[appName].database.port}` +
-            //     `/${config[appName].database.databaseName}`,
-            //     { useNewUrlParser: true });
-            // getLogger('default').log('info','Connection on database ready state : ' + databaseConnection.readyState);
+            const databaseConnection = mongoose.connect(
+                `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
+                `/${config[appName].database.databaseName}`,
+                { useNewUrlParser: true });
+            getLogger('default').log('info','Connection on database ready state : ' + databaseConnection.readyState);
         }
 
         const app: App = new App({
