@@ -16,11 +16,12 @@ const server = async (appName: string) => {
 
         if (config[appName] && config[appName].database) {
             // Create database connection
-            const databaseConnection = mongoose.connect(
+            const mongooseObj: any = await mongoose.connect(
                 `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
                 `/${config[appName].database.databaseName}`,
                 { useNewUrlParser: true });
-            getLogger('default').log('info','Connection on database ready state : ' + databaseConnection.readyState);
+            const databaseConnection = mongooseObj.connections[0]; // default conn
+            getLogger('default').log('info','Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
         }
 
         const app: App = new App({
