@@ -1,5 +1,7 @@
 import { UserModel } from './user.model';
 import { hashPassword } from '../utils/hashPassword';
+import * as mongoose from 'mongoose';
+import ObjectId = mongoose.Types.ObjectId;
 
 export class UserService {
     private static instance: UserService;

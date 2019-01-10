@@ -21,12 +21,38 @@ router
      *      "id":"4f5e5a1d236c67b874b4b5e5d",
      *      "username":"FooBar",
      *      "email":"toto@me.com",
-     *      "password": "$2b$10$nxptcBjkxqPGyK3yWtIsCupTiyajMZJMKs9Oeby3Z6lS126irwv2q",
      *      "password": "cBjkxqPGyK3yWtIsCupTiyaj",
      *      "roles": []
      *  }]
      */
-    .get(controller.getAll);
+    .get(controller.getAll)
+    /**
+     * @api {post} /users Create user
+     *
+     * @apiGroup User
+     *
+     * @apiParam {String} username Must be unique
+     * @apiParam {String} email Must be unique
+     * @apiParam {String} password Plain-text password
+     *
+     * @apiSuccess {String} username
+     * @apiSuccess {String} email
+     * @apiSuccess {String} password Hashed password
+     * @apiSuccess {String} id ObjectID
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 201 Created
+     *     {
+     *       "username": "foo",
+     *       "email": "foo@bar.baz",
+     *       "password": "xqPGyK3yWtIsCupTiyajMZJMKs9Oeby3",
+     *       "id": "5b179f629fea4000ffcf2fbc",
+     *       "roles":[]
+     *     }
+     */
+    .post(controller.register);
+
+
 router.route('/users/:id')
     /**
      * @api {get} /users/:id Get one user
