@@ -18,11 +18,13 @@ export class UserService {
         return await UserModel.find(criteria || {}).exec();
     }
 
+    async get(id: ObjectId, criteria: any) {
+        return await UserModel.findOne(criteria || {}).exec();
+    }
+
     async create(userData: any) {
+        userData.password = await hashPassword(userData.password);
         const user = new UserModel(userData);
-        user.set({
-            password: hashPassword(userData.password)
-        });
         return await user.save();
     }
 
