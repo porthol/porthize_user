@@ -5,7 +5,7 @@ const router: express.Router = express.Router();
 const controller = new UserController();
 import { Validator } from 'express-json-validator-middleware';
 const validator = new Validator({ allErrors: true, removeAdditional: true });
-import { UserCreateSchema } from './user.schema';
+import { UserCreateSchema, UserUpdateSchema } from './user.schema';
 
 // todo add control of authorization and authentication
 
@@ -76,6 +76,53 @@ router.route('/users/:id')
      *       "roles":[]
      *     }
      */
-    .get(controller.get);
+    .get(controller.get)
+    /**
+     * @api {put} /user/:id Update user
+     *
+     * @apiGroup User
+     *
+     * @apiParam {String} id ObjectID
+     *
+     * @apiParam {String} [username] Must be unique
+     * @apiParam {String} [email] Must be unique
+     *
+     * @apiSuccess {String} username
+     * @apiSuccess {String} email
+     * @apiSuccess {String} password Hashed password
+     * @apiSuccess {String} id ObjectID
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 200 OK
+     *     {
+     *        "id": "5b179f629fea4000ffcf2fbc",
+     *        "username": "foo",
+     *        "email": "foo@bar.baz",
+     *        "password": "xqPGyK3yWtIsCupTiyajMZJMKs9Oeby3",
+     *        "roles": []
+     *    }
+     *
+     */
+    .put(
+        validator.validate({body: UserUpdateSchema}),
+        controller.update)
+    /**
+     * @api {delete} /user/:id Delete user
+     *
+     * @apiGroup User
+     *
+     * @apiParam {String} id ObjectID
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 204 No Content
+     *
+     * @apiErrorExample {json} Error user not found
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "code": "ERRNOTFOUND",
+     *       "message": "Not found"
+     *     }
+     */
+    .delete(controller.delete);
 
 export default router;

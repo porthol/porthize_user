@@ -2,8 +2,6 @@ import { UserService } from './user.service';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { BaseResponse } from '../utils/BaseResponse';
-import * as mongoose from 'mongoose';
-import ObjectId = mongoose.Types.ObjectId;
 
 export class UserController {
 
@@ -20,7 +18,7 @@ export class UserController {
     }
 
     get(req: Request, res: Response): void {
-        UserService.get().get(new ObjectId(req.params.id) , req.query)
+        UserService.get().get(req.params.id , req.query)
             .then(user => {
                 if(!user){
                     res.status(httpStatus.NOT_FOUND)
@@ -44,7 +42,42 @@ export class UserController {
             })
             .catch(err => {
                 res.status(httpStatus.BAD_REQUEST)
-                    .send(new BaseResponse(httpStatus.INTERNAL_SERVER_ERROR, 'BAD_REQUEST', err));
+                    .send(new BaseResponse(httpStatus.INTERNAL_SERVER_ERROR, 'Bad request', err));
+            });
+    }
+
+    update(req: Request, res: Response): void {
+        UserService.get().update(req.params.id,req.body)
+            .then(result => {
+                if(result.nModified === 0){
+                    res.status(httpStatus.NOT_FOUND)
+                        .send(new BaseResponse(404, 'User not found', null));
+                }else{
+                    // todo we should send back the user modified
+                    res.status(httpStatus.OK)
+                        .send(req.body);
+                }
+            })
+            .catch(err => {
+                res.status(httpStatus.BAD_REQUEST)
+                    .send(new BaseResponse(httpStatus.BAD_REQUEST, 'Bad request', err));
+            });
+    }
+
+    delete(req: Request, res: Response): void{
+        UserService.get().delete(req.params.id)
+            .then(result => {
+                if(result.n === 0){
+                    res.status(httpStatus.NOT_FOUND)
+                        .send(new BaseResponse(404, 'User not found', null));
+                }else{
+                    res.status(httpStatus.NO_CONTENT)
+                        .send(result);
+                }
+            })
+            .catch(err => {
+                res.status(httpStatus.BAD_REQUEST)
+                    .send(new BaseResponse(httpStatus.BAD_REQUEST, 'Bad request', err));
             });
     }
 }

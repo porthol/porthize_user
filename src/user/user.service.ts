@@ -17,17 +17,26 @@ export class UserService {
     }
 
     async getAll(criteria: any) {
-        return await UserModel.find(criteria || {}).exec();
+        return await UserModel.find(criteria || {});
     }
 
     async get(id: ObjectId, criteria: any) {
-        return await UserModel.findOne(criteria || {}).exec();
+        criteria._id = new ObjectId(id);
+        return await UserModel.findOne(criteria || {});
     }
 
     async create(userData: any) {
         userData.password = await hashPassword(userData.password);
         const user = new UserModel(userData);
         return await user.save();
+    }
+
+    async update(id: ObjectId, userData: any){
+        return await UserModel.updateOne({_id:id},userData);
+    }
+
+    async delete(id: ObjectId){
+        return await UserModel.deleteOne({_id:id});
     }
 
 }

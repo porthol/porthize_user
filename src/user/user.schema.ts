@@ -18,3 +18,19 @@ export const UserCreateSchema = {
         }
     }
 };
+
+export const UserUpdateSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        username: {
+            type: 'string'
+        },
+        email: {
+            type: 'string'
+        },
+        enabled: {
+            type: 'boolean'
+        }
+    }
+};
