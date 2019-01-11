@@ -4,6 +4,7 @@ import * as httpStatus from 'http-status';
 import { BaseResponse } from '../utils/BaseResponse';
 import * as mongoose from 'mongoose';
 import ObjectId = mongoose.Types.ObjectId;
+import { CustomError, CustomErrorCodeToHttpStatus } from '../utils/CustomError';
 
 export class UserController {
 
@@ -48,10 +49,26 @@ export class UserController {
             });
     }
 
+    login(req: Request, res: Response): void {
+        UserService.get().login(req.body)
+            .then(user => {
+                if(!user){
+                    res.status(httpStatus.NOT_FOUND)
+                        .send(new BaseResponse(404, 'User not found', null));
+                }else{
+                    // todo should send token
+                    res.status(httpStatus.OK)
+                        .send(user);
+                }
             })
             .catch(err => {
-                res.status(HttpStatus.BAD_REQUEST);
-                res.send(new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR, 'BAD_REQUEST', err));
+                if((typeof err).toString() === CustomError.toString()) {
+                    res.status(CustomErrorCodeToHttpStatus(err.code))
+                        .send(err);
+                }else{
+                    res.status(httpStatus.BAD_REQUEST)
+                        .send(new BaseResponse(httpStatus.INTERNAL_SERVER_ERROR, 'BAD_REQUEST', err));
+                }
             });
     }
 }

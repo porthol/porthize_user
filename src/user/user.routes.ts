@@ -5,7 +5,7 @@ const router: express.Router = express.Router();
 const controller = new UserController();
 import { Validator } from 'express-json-validator-middleware';
 const validator = new Validator({ allErrors: true, removeAdditional: true });
-import { UserCreateSchema } from './user.schema';
+import { UserCreateSchema, UserLoginSchema } from './user.schema';
 
 // todo add control of authorization and authentication
 
@@ -77,5 +77,40 @@ router.route('/users/:id')
      *     }
      */
     .get(controller.get);
+
+
+router
+    .route('/users/login')
+    /**
+     * @api {get} /users/login Login user
+     *
+     * @apiGroup User
+     *
+     * @apiParam {String} [username] Optional only if email is provided
+     * @apiParam {String} [email] Optional only if username is provided
+     * @apiParam {String} password Plain-text password
+     *
+     * @apiSuccess {String} username
+     * @apiSuccess {String} email
+     * @apiSuccess {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "username": "foo",
+     *       "email": "foo@bar.baz",
+     *       "id": "5b179f629fea4000ffcf2fbc"
+     *     }
+     *
+     * @apiErrorExample {json} Error user not found
+     *     HTTP/1.1 404 Not found
+     *     {
+     *       "error": {
+     *         "name": "Error",
+     *         "message": "User not found"
+     *       }
+     *     }
+     */
+    .post(validator.validate({ body: UserLoginSchema }), controller.login);
 
 export default router;

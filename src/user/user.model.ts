@@ -6,18 +6,21 @@ import ObjectId = mongoose.Schema.Types.ObjectId;
 
 export const UserSchema = new Schema({
     username: {
-        type: String
+        type: String,
+        unique: true
     },
     email: {
         type : String,
         validate: [isEmail, 'invalid email'],
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
         required: true
     },
-    date: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
     enabled: {
         type: Boolean,
         default : true
