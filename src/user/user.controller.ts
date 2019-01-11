@@ -47,11 +47,4 @@ export class UserController {
                     .send(new BaseResponse(httpStatus.INTERNAL_SERVER_ERROR, 'BAD_REQUEST', err));
             });
     }
-
-            })
-            .catch(err => {
-                res.status(HttpStatus.BAD_REQUEST);
-                res.send(new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR, 'BAD_REQUEST', err));
-            });
-    }
 }
