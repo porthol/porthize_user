@@ -15,11 +15,16 @@ const server = async (appName: string) => {
         const config: any = getConfiguration();
 
         if (config[appName] && config[appName].database) {
-            if (config[appName].database.databaseName) {
+            const host = process.env.DBHOST || config[appName].database.host;
+            const port = process.env.DBPORT || config[appName].database.port;
+            const databaseName = process.env.DBNAME || config[appName].database.databaseName;
+
+
+            if (databaseName) {
                 // Create database connection
                 const mongooseObj: any = await mongoose.connect(
-                    `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
-                    `/${config[appName].database.databaseName}`,
+                    `mongodb://${host}:${port}` +
+                    `/${databaseName}`,
                     { useNewUrlParser: true });
                 const databaseConnection = mongooseObj.connections[0]; // default conn
                 getLogger('default').log('info',
