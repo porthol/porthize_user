@@ -1,5 +1,6 @@
 import { join, extname } from 'path';
 import { path } from 'app-root-path';
+import { CustomError, CustomErrorCode } from './CustomError';
 
 const CONFIGURATION: Map<string, object> = new Map();
 
@@ -22,13 +23,12 @@ export function getConfiguration(configPath?: string): object {
       return JSON.parse(JSON.stringify(CONFIGURATION.get(configPath)));
     }
   } catch (err) {
-    throw {
-      code: 'ENOCONF',
-      message:
+    throw new CustomError(
+      CustomErrorCode.ERRNOCONF,
         `Unable to get JSON config file application. \r\n` +
         `Please verify that the path is correct. \r\n` +
-        `If you don't have define one, verify that the file /config/config.json exists.`,
-      cause: err
-    };
+        `If you don't have define one, verify that the file ${configPath} exists.`,
+      err
+    );
   }
 }

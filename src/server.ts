@@ -15,15 +15,15 @@ const server = async (appName: string) => {
         const config: any = getConfiguration();
 
         if (config[appName] && config[appName].database) {
-            if (config[appName].database.appName) {
+            if (config[appName].database.databaseName) {
                 // Create database connection
                 const mongooseObj: any = await mongoose.connect(
-                  `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
-                  `/${config[appName].database.databaseName}`,
-                  { useNewUrlParser: true });
+                    `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
+                    `/${config[appName].database.databaseName}`,
+                    { useNewUrlParser: true });
                 const databaseConnection = mongooseObj.connections[0]; // default conn
                 getLogger('default').log('info',
-                  'Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
+                    'Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
             } else {
                 getLogger('default').error('The database name is not configured, you should update config.json');
             }
@@ -69,8 +69,8 @@ const server = async (appName: string) => {
             }
         });
 
-    }catch (err) {
-        getLogger('default').log('error', err);
+    } catch (err) {
+        getLogger('default').log('error', err.cause.message || err.message || err);
         process.exit(1);
     }
 };
