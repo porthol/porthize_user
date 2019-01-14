@@ -1,6 +1,6 @@
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils/logger';
 import { getConfiguration } from './utils/configurationHelper';
-import { Mongoose } from 'mongoose';
+import * as mongoose from 'mongoose';
 import { getPackageName } from './utils/packageHelper';
 import { App } from './app';
 import { createServer } from 'http';
@@ -15,11 +15,19 @@ const server = async (appName: string) => {
         const config: any = getConfiguration();
 
         if (config[appName] && config[appName].database) {
-            // Create database connection
-            const mongoose = new Mongoose();
-            mongoose.connect(
-              `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
-              `/${config[appName].database.databaseName}`);
+            if (config[appName].database.appName) {
+                // Create database connection
+                const mongooseObj: any = await mongoose.connect(
+                    `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
+                    `/${config[appName].database.databaseName}`,
+                    { useNewUrlParser: true });
+                const databaseConnection = mongooseObj.connections[0]; // default conn
+                getLogger('default').log('info',
+                    'Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
+
+            } else {
+                getLogger('default').error('The database name is not configured, you should update config.json');
+            }
         }
 
         const app: App = new App({
@@ -62,7 +70,7 @@ const server = async (appName: string) => {
             }
         });
 
-    }catch (err) {
+    } catch (err) {
         getLogger('default').log('error', err);
         process.exit(1);
     }
