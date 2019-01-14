@@ -1,6 +1,6 @@
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils/logger';
 import { getConfiguration } from './utils/configurationHelper';
-import { Mongoose } from 'mongoose';
+import * as mongoose from 'mongoose';
 import { getPackageName } from './utils/packageHelper';
 import { App } from './app';
 import { createServer } from 'http';
@@ -17,11 +17,13 @@ const server = async (appName: string) => {
         if (config[appName] && config[appName].database) {
             if (config[appName].database.appName) {
                 // Create database connection
-                const mongoose = new Mongoose();
-                mongoose.connect(
+                const mongooseObj: any = await mongoose.connect(
                   `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
                   `/${config[appName].database.databaseName}`,
                   { useNewUrlParser: true });
+                const databaseConnection = mongooseObj.connections[0]; // default conn
+                getLogger('default').log('info',
+                  'Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
             } else {
                 getLogger('default').error('The database name is not configured, you should update config.json');
             }
