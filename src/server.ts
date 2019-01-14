@@ -15,11 +15,16 @@ const server = async (appName: string) => {
         const config: any = getConfiguration();
 
         if (config[appName] && config[appName].database) {
-            // Create database connection
-            const mongoose = new Mongoose();
-            mongoose.connect(
-              `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
-              `/${config[appName].database.databaseName}`);
+            if (config[appName].database.appName) {
+                // Create database connection
+                const mongoose = new Mongoose();
+                mongoose.connect(
+                  `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
+                  `/${config[appName].database.databaseName}`,
+                  { useNewUrlParser: true });
+            } else {
+                getLogger('default').error('The database name is not configured, you should update config.json');
+            }
         }
 
         const app: App = new App({
