@@ -25,7 +25,7 @@ export function getConfiguration(configPath?: string): object {
   } catch (err) {
     throw new CustomError(
       CustomErrorCode.ERRNOCONF,
-        `Unable to get JSON config file application. \r\n` +
+        err.message || `Unable to get JSON config file application. \r\n` +
         `Please verify that the path is correct. \r\n` +
         `If you don't have define one, verify that the file ${configPath} exists.`,
       err
