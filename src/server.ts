@@ -4,7 +4,6 @@ import * as mongoose from 'mongoose';
 import { getPackageName } from './utils/packageHelper';
 import { App } from './app';
 import { createServer } from 'http';
-import { CustomError, CustomErrorCode } from './utils/CustomError';
 
 const appName = getPackageName();
 
@@ -71,10 +70,7 @@ const server = async (appName: string) => {
         });
 
     } catch (err) {
-        if(!err) {
-            err = new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal Server Error : no cause found.', null);
-        }
-        getLogger('default').log('error', err.cause.message || err.message || err);
+        getLogger('default').log('error', err.message || err);
         process.exit(1);
     }
 };
