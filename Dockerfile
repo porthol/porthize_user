@@ -1,11 +1,16 @@
 FROM node:8.9.0-stretch
 
-# Copy data to docker image
-RUN mkdir -p /home/node/app
-COPY . /home/node/app
+# Create work dir
+RUN mkdir -p /opt/app
 
 # Fix workspace
-WORKDIR "/home/node/app"
+WORKDIR "/opt/app"
+
+# Copy data to docker image
+COPY dist /opt/app/
+COPY node_modules /opt/app/
+COPY package.json /opt/app/
+COPY config /opt/app/
 
 # Expose default port
 EXPOSE 3000
