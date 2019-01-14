@@ -4,6 +4,7 @@ import * as mongoose from 'mongoose';
 import { getPackageName } from './utils/packageHelper';
 import { App } from './app';
 import { createServer } from 'http';
+import { CustomError, CustomErrorCode } from './utils/CustomError';
 
 const appName = getPackageName();
 
@@ -70,11 +71,7 @@ const server = async (appName: string) => {
         });
 
     } catch (err) {
-<<<<<<< HEAD
-        getLogger('default').log('error', err);
-=======
         getLogger('default').log('error', err.cause.message || err.message || err);
->>>>>>> 47644b9513cb348f708a7f4e12663529354ea38c
         process.exit(1);
     }
 };
