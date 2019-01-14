@@ -15,7 +15,7 @@ const server = async (appName: string) => {
         const config: any = getConfiguration();
 
         if (config[appName] && config[appName].database) {
-            if (config[appName].database.appName) {
+            if (config[appName].database.databaseName) {
                 // Create database connection
                 const mongooseObj: any = await mongoose.connect(
                     `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
@@ -24,7 +24,6 @@ const server = async (appName: string) => {
                 const databaseConnection = mongooseObj.connections[0]; // default conn
                 getLogger('default').log('info',
                     'Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
-
             } else {
                 getLogger('default').error('The database name is not configured, you should update config.json');
             }
@@ -71,7 +70,11 @@ const server = async (appName: string) => {
         });
 
     } catch (err) {
+<<<<<<< HEAD
         getLogger('default').log('error', err);
+=======
+        getLogger('default').log('error', err.cause.message || err.message || err);
+>>>>>>> 47644b9513cb348f708a7f4e12663529354ea38c
         process.exit(1);
     }
 };
