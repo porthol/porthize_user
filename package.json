@@ -9,6 +9,7 @@
         "build": "tsc -p tsconfig.back.json",
         "start": "node ./dist/server.js",
         "watch": "npm run build && (tsc -p tsconfig.back.json -watch | nodemon ./dist/server.js)"
+
     },
     "author": "Thomas BRUNET",
     "license": "ISC",
