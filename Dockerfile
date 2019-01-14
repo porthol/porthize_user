@@ -1,14 +1,18 @@
-FROM node:8.9.0-stretch
-
-# Copy data to docker image
-RUN mkdir -p /home/node/app
-COPY . /home/node/app
-
-# Fix workspace
-WORKDIR "/home/node/app"
+FROM node:8
 
 # Expose default port
 EXPOSE 3000
 
+# Fixe workspace
+WORKDIR "/opt/app"
+
+# Copy data to docker image
+COPY dist ./dist
+COPY config ./config
+COPY package.json ./
+
+
+RUN npm install --save-prod
+
 # Execute default startup command
-CMD [ "/usr/local/bin/npm", "run", "start" ]
+CMD [ "npm", "run", "start" ]
