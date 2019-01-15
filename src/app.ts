@@ -18,7 +18,7 @@ export class App {
         this.appName = params.appName;
 
         if (params.configuration) {
-            this._configuration = params.configuration;
+            this.configuration = params.configuration;
         }
 
         this._app.set('_port', params.port || process.env.PORT || 3000);

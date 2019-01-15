@@ -1,0 +1,19 @@
+{
+  "templateexpress": {
+    "databases": [
+      {
+        "host": "mongo1",
+        "port": 27017,
+        "databaseName": null
+      },{
+        "host": "mongo2",
+        "port": 27017,
+        "databaseName": null
+      },{
+        "host": "mongo3",
+        "port": 27017,
+        "databaseName": null
+      }
+    ]
+  }
+}

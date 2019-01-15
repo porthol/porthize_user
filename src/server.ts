@@ -4,6 +4,7 @@ import * as mongoose from 'mongoose';
 import { getPackageName } from './utils/packageHelper';
 import { App } from './app';
 import { createServer } from 'http';
+import { getDatabaseConnectionUrl } from './utils/connectionHelper';
 
 const appName = getPackageName();
 
@@ -12,25 +13,24 @@ const server = async (appName: string) => {
     try {
         configureLogger('default', defaultWinstonLoggerOptions);
 
-        const config: any = getConfiguration();
+        const env = process.env.NODE_ENV || 'development';
 
-        if (config[appName] && config[appName].database) {
-            const host = process.env.DBHOST || config[appName].database.host;
-            const port = process.env.DBPORT || config[appName].database.port;
-            const databaseName = process.env.DBNAME || config[appName].database.databaseName;
+        const config: any = getConfiguration(null, env);
 
+        if (config[appName] && config[appName].databases) {
+            const databaseUrl = getDatabaseConnectionUrl();
+            if (databaseUrl) {
 
-            if (databaseName) {
+                console.log(databaseUrl);
                 // Create database connection
                 const mongooseObj: any = await mongoose.connect(
-                    `mongodb://${host}:${port}` +
-                    `/${databaseName}`,
+                    databaseUrl,
                     { useNewUrlParser: true });
                 const databaseConnection = mongooseObj.connections[0]; // default conn
                 getLogger('default').log('info',
                     'Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
             } else {
-                getLogger('default').error('The database name is not configured, you should update config.json');
+                getLogger('default').error('The database url can not be configured, you should check config.json');
             }
         }
 
