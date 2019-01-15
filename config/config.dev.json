@@ -1,0 +1,11 @@
+{
+  "templateexpress": {
+    "databases": [
+      {
+        "host": "localhost",
+        "port": 27017,
+        "databaseName": null
+      }
+    ]
+  }
+}
