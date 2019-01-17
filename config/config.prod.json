@@ -3,17 +3,15 @@
     "databases": [
       {
         "host": "mongo1",
-        "port": 27017,
-        "databaseName": null
+        "port": 27017
       },{
         "host": "mongo2",
-        "port": 27017,
-        "databaseName": null
+        "port": 27017
       },{
         "host": "mongo3",
-        "port": 27017,
-        "databaseName": null
+        "port": 27017
       }
-    ]
+    ],
+    "databaseName": null
   }
 }

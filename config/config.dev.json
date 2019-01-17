@@ -3,9 +3,15 @@
     "databases": [
       {
         "host": "localhost",
-        "port": 27017,
-        "databaseName": null
+        "port": 27017
+      },{
+        "host": "localhost",
+        "port": 27018
+      },{
+        "host": "localhost",
+        "port": 27019
       }
-    ]
+    ],
+    "databaseName": null
   }
 }
