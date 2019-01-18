@@ -1,9 +1,5 @@
 {
     "user": {
-        "database": {
-            "host": "localhost",
-            "port": 27017,
-            "databaseName": 'user'
-        }
+        "defaultValue": "foo"
     }
 }
