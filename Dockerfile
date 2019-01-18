@@ -1,5 +1,12 @@
-FROM node:8
+FROM node:8 as builder
 
+WORKDIR "/opt/app"
+
+COPY . ./
+RUN npm install
+RUN npm run build
+
+FROM node:8 as runner
 # Expose default port
 EXPOSE 3000
 
@@ -7,10 +14,9 @@ EXPOSE 3000
 WORKDIR "/opt/app"
 
 # Copy data to docker image
-COPY dist ./dist
-COPY config ./config
-COPY package.json ./
-
+COPY --from=builder /opt/app/dist ./dist
+COPY --from=builder /opt/app/config ./config
+COPY --from=builder /opt/app/package.json ./
 
 RUN npm install --save-prod
 
