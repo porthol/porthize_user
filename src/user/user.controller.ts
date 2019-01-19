@@ -22,7 +22,7 @@ export class UserController {
             .then(user => {
                 if(!user){
                     res.status(httpStatus.NOT_FOUND)
-                        .send(new BaseResponse(404, 'User not found', null));
+                        .send(new BaseResponse(404, 'User not found'));
                 }else{
                     res.status(httpStatus.OK)
                         .send(user);
@@ -51,7 +51,7 @@ export class UserController {
             .then(result => {
                 if(result.nModified === 0){
                     res.status(httpStatus.NOT_FOUND)
-                        .send(new BaseResponse(404, 'User not found', null));
+                        .send(new BaseResponse(404, 'User not found'));
                 }else{
                     // todo we should send back the user modified
                     res.status(httpStatus.OK)
@@ -69,7 +69,7 @@ export class UserController {
             .then(result => {
                 if(result.n === 0){
                     res.status(httpStatus.NOT_FOUND)
-                        .send(new BaseResponse(404, 'User not found', null));
+                        .send(new BaseResponse(404, 'User not found'));
                 }else{
                     res.status(httpStatus.NO_CONTENT)
                         .send(result);
@@ -79,5 +79,15 @@ export class UserController {
                 res.status(httpStatus.BAD_REQUEST)
                     .send(new BaseResponse(httpStatus.BAD_REQUEST, 'Bad request', err));
             });
+    }
+
+    addRole(req: Request, res: Response): void{
+        res.status(httpStatus.NOT_IMPLEMENTED)
+            .send(new BaseResponse(httpStatus.NOT_IMPLEMENTED,'Not implemented'));
+    }
+
+    removeRole(req: Request, res: Response): void{
+        res.status(httpStatus.NOT_IMPLEMENTED)
+            .send(new BaseResponse(httpStatus.NOT_IMPLEMENTED,'Not implemented'));
     }
 }

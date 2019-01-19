@@ -5,7 +5,13 @@ const router: express.Router = express.Router();
 const controller = new UserController();
 import { Validator } from 'express-json-validator-middleware';
 const validator = new Validator({ allErrors: true, removeAdditional: true });
-import { UserCreateSchema, UserUpdateSchema } from './user.schema';
+import {
+    UserCreateSchema,
+    UserQuerySchema,
+    UserRoleQuerySchema,
+    UserRoleSchema,
+    UserUpdateSchema
+} from './user.schema';
 
 // todo add control of authorization and authentication
 
@@ -78,7 +84,7 @@ router.route('/users/:id')
      */
     .get(controller.get)
     /**
-     * @api {put} /user/:id Update user
+     * @api {put} /users/:id Update user
      *
      * @apiGroup User
      *
@@ -107,7 +113,7 @@ router.route('/users/:id')
         validator.validate({body: UserUpdateSchema}),
         controller.update)
     /**
-     * @api {delete} /user/:id Delete user
+     * @api {delete} /users/:id Delete user
      *
      * @apiGroup User
      *
@@ -124,5 +130,47 @@ router.route('/users/:id')
      *     }
      */
     .delete(controller.delete);
+
+router
+    .route('/users/:id/roles')
+    /**
+     * @api {post} /user/:id/roles Add role to user
+     *
+     * @apiGroup User
+     *
+     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     *
+     * @apiParam {String} roleId ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 202 Accepted
+     */
+    .post(
+        validator.validate({
+            params: UserQuerySchema,
+            body: UserRoleSchema
+        }),
+        controller.addRole.bind(controller)
+    );
+
+router
+    .route('/users/:id/roles/:roleId')
+    /**
+     * @api {delete} /user/:id/roles/:roleId Remove role to user
+     *
+     * @apiGroup User
+     *
+     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} roleId ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 202 Accepted
+     */
+    .delete(
+        validator.validate({
+            params: UserRoleQuerySchema
+        }),
+        controller.removeRole.bind(controller)
+    );
 
 export default router;
