@@ -82,7 +82,11 @@ router.route('/users/:id')
      *       "roles":[]
      *     }
      */
-    .get(controller.get)
+    .get(
+        validator.validate({
+            params: UserQuerySchema
+        }),
+        controller.get)
     /**
      * @api {put} /users/:id Update user
      *
@@ -110,7 +114,7 @@ router.route('/users/:id')
      *
      */
     .put(
-        validator.validate({body: UserUpdateSchema}),
+        validator.validate({params: UserQuerySchema, body: UserUpdateSchema}),
         controller.update)
     /**
      * @api {delete} /users/:id Delete user
@@ -129,7 +133,7 @@ router.route('/users/:id')
      *       "message": "Not found"
      *     }
      */
-    .delete(controller.delete);
+    .delete( validator.validate({params: UserQuerySchema}),controller.delete);
 
 router
     .route('/users/:id/roles')
