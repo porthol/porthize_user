@@ -19,12 +19,16 @@ const server = async (appName: string) => {
 
     if (config[appName] && config[appName].databases) {
       const databaseUrl = getDatabaseConnectionUrl();
+      const mongooseOptions: any = { useMongoClient: true};
+      if(config[appName].databases.length > 1) {
+        mongooseOptions.replicaSet= 'rs0';
+      }
       if (databaseUrl) {
 
         // todo Check database connection https://github.com/Automattic/mongoose/pull/6652 commit 727eda48bcecfb8f4462162863e7beb7bca18fdb
         const mongooseObj: any = await mongoose.connect(
           databaseUrl,
-          { useMongoClient: true, replicaSet: 'rs0' });
+          mongooseOptions);
         const databaseConnection = mongooseObj.connections[0]; // default conn
         getLogger('default').log('info',
           'Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
