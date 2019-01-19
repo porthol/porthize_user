@@ -16,6 +16,7 @@
     },
     "exclude": ["node_modules", "dist", "__tests__", "src/front/**"],
     "include": [
-        "src"
+        "src",
+        "types"
     ]
 }
