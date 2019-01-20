@@ -29,7 +29,7 @@ export class CustomError {
     message: string;
     cause: any;
 
-    constructor(code: CustomErrorCode, message: string, cause: any) {
+    constructor(code: CustomErrorCode, message: string, cause?: any) {
         this.code = code;
         this.message = message;
         this.cause = cause;
