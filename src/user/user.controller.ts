@@ -1,7 +1,7 @@
 import { UserService } from './user.service';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status';
-import { BaseResponse } from '../utils/BaseResponse';
+import { CustomError } from '../utils/CustomError';
 
 export class UserController {
 
@@ -13,7 +13,7 @@ export class UserController {
             })
             .catch(err => {
                 res.status(httpStatus.INTERNAL_SERVER_ERROR)
-                    .send(new BaseResponse(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
+                    .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
             });
     }
 
@@ -22,7 +22,7 @@ export class UserController {
             .then(user => {
                 if(!user){
                     res.status(httpStatus.NOT_FOUND)
-                        .send(new BaseResponse(404, 'User not found'));
+                        .send(new CustomError(404, 'User not found'));
                 }else{
                     res.status(httpStatus.OK)
                         .send(user);
@@ -30,7 +30,7 @@ export class UserController {
             })
             .catch(err => {
                 res.status(httpStatus.INTERNAL_SERVER_ERROR)
-                    .send(new BaseResponse(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
+                    .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
             });
     }
 
@@ -42,7 +42,7 @@ export class UserController {
             })
             .catch(err => {
                 res.status(httpStatus.BAD_REQUEST)
-                    .send(new BaseResponse(httpStatus.INTERNAL_SERVER_ERROR, 'Bad request', err));
+                    .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Bad request', err));
             });
     }
 
@@ -51,7 +51,7 @@ export class UserController {
             .then(result => {
                 if(result.nModified === 0){
                     res.status(httpStatus.NOT_FOUND)
-                        .send(new BaseResponse(404, 'User not found'));
+                        .send(new CustomError(404, 'User not found'));
                 }else{
                     // todo we should send back the user modified
                     res.status(httpStatus.OK)
@@ -60,7 +60,7 @@ export class UserController {
             })
             .catch(err => {
                 res.status(httpStatus.BAD_REQUEST)
-                    .send(new BaseResponse(httpStatus.BAD_REQUEST, 'Bad request', err));
+                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
             });
     }
 
@@ -69,7 +69,7 @@ export class UserController {
             .then(result => {
                 if(result.n === 0){
                     res.status(httpStatus.NOT_FOUND)
-                        .send(new BaseResponse(404, 'User not found'));
+                        .send(new CustomError(404, 'User not found'));
                 }else{
                     res.status(httpStatus.NO_CONTENT)
                         .send(result);
@@ -77,7 +77,7 @@ export class UserController {
             })
             .catch(err => {
                 res.status(httpStatus.BAD_REQUEST)
-                    .send(new BaseResponse(httpStatus.BAD_REQUEST, 'Bad request', err));
+                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
             });
     }
 

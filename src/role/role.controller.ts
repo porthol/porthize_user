@@ -1,7 +1,7 @@
 import { RoleService } from './role.service';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status';
-import { BaseResponse } from '../utils/BaseResponse';
+import { CustomError } from '../utils/CustomError';
 
 export class RoleController {
 
@@ -13,7 +13,7 @@ export class RoleController {
             })
             .catch(err => {
                 res.status(httpStatus.INTERNAL_SERVER_ERROR)
-                    .send(new BaseResponse(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
+                    .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
             });
     }
 
@@ -22,7 +22,7 @@ export class RoleController {
             .then(role => {
                 if (!role) {
                     res.status(httpStatus.NOT_FOUND)
-                        .send(new BaseResponse(404, 'Role not found'));
+                        .send(new CustomError(404, 'Role not found'));
                 } else {
                     res.status(httpStatus.OK)
                         .send(role);
@@ -30,7 +30,7 @@ export class RoleController {
             })
             .catch(err => {
                 res.status(httpStatus.INTERNAL_SERVER_ERROR)
-                    .send(new BaseResponse(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
+                    .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
             });
     }
 
@@ -42,7 +42,7 @@ export class RoleController {
             })
             .catch(err => {
                 res.status(httpStatus.BAD_REQUEST)
-                    .send(new BaseResponse(httpStatus.INTERNAL_SERVER_ERROR, 'Bad request', err));
+                    .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Bad request', err));
             });
     }
 
@@ -51,7 +51,7 @@ export class RoleController {
             .then(result => {
                 if (result.nModified === 0) {
                     res.status(httpStatus.NOT_FOUND)
-                        .send(new BaseResponse(404, 'Role not found'));
+                        .send(new CustomError(404, 'Role not found'));
                 } else {
                     // todo we should send back the role modified
                     res.status(httpStatus.OK)
@@ -60,7 +60,7 @@ export class RoleController {
             })
             .catch(err => {
                 res.status(httpStatus.BAD_REQUEST)
-                    .send(new BaseResponse(httpStatus.BAD_REQUEST, 'Bad request', err));
+                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
             });
     }
 
@@ -69,7 +69,7 @@ export class RoleController {
             .then(result => {
                 if (result.n === 0) {
                     res.status(httpStatus.NOT_FOUND)
-                        .send(new BaseResponse(404, 'Role not found'));
+                        .send(new CustomError(404, 'Role not found'));
                 } else {
                     res.status(httpStatus.NO_CONTENT)
                         .send(result);
@@ -77,7 +77,7 @@ export class RoleController {
             })
             .catch(err => {
                 res.status(httpStatus.BAD_REQUEST)
-                    .send(new BaseResponse(httpStatus.BAD_REQUEST, 'Bad request', err));
+                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
             });
     }
 }
