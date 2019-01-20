@@ -48,15 +48,9 @@ export class UserController {
 
     update(req: Request, res: Response): void {
         UserService.get().update(req.params.id,req.body)
-            .then(result => {
-                if(result.nModified === 0){
-                    res.status(httpStatus.NOT_FOUND)
-                        .send(new CustomError(404, 'User not found'));
-                }else{
-                    // todo we should send back the user modified
-                    res.status(httpStatus.OK)
-                        .send(req.body);
-                }
+            .then(user => {
+                res.status(httpStatus.OK)
+                    .send(user);
             })
             .catch(err => {
                 res.status(httpStatus.BAD_REQUEST)
@@ -64,8 +58,8 @@ export class UserController {
             });
     }
 
-    delete(req: Request, res: Response): void{
-        UserService.get().delete(req.params.id)
+    remove(req: Request, res: Response): void{
+        UserService.get().remove(req.params.id)
             .then(result => {
                 if(result.n === 0){
                     res.status(httpStatus.NOT_FOUND)
@@ -82,12 +76,26 @@ export class UserController {
     }
 
     addRole(req: Request, res: Response): void{
+        UserService.get().addRole(req.params.id, req.body.roleId)
+            .then(user => {
+                res.status(httpStatus.OK)
+                    .send(user);
+            })
+            .catch(err => {
                 res.status(httpStatus.BAD_REQUEST)
                     .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
+            });
     }
 
     removeRole(req: Request, res: Response): void{
+        UserService.get().removeRole(req.params.id, req.params.roleId)
+            .then(user => {
+                res.status(httpStatus.OK)
+                    .send(user);
+            })
+            .catch(err => {
                 res.status(httpStatus.BAD_REQUEST)
                     .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
+            });
     }
 }

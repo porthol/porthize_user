@@ -5,7 +5,7 @@ import { RoleCreateSchema, RoleQuerySchema, RoleUpdateSchema } from './role.sche
 
 const router: express.Router = express.Router();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
-const controller = new RoleController();
+const roleController = new RoleController();
 
 /**
  * @apiDefine Role Role
@@ -28,7 +28,7 @@ router
      *        "name": "admin"
      *    }]
      */
-    .get(controller.getAll)
+    .get(roleController.getAll)
     /**
      * @api {post} /role Create role
      *
@@ -48,7 +48,7 @@ router
      */
     .post(
         validator.validate({ body: RoleCreateSchema }),
-        controller.create
+        roleController.create
     );
 
 router
@@ -82,7 +82,7 @@ router
      */
     .get(
         validator.validate({ params: RoleQuerySchema }),
-        controller.get
+        roleController.get
     )
     /**
      * @api {put} /role/:id Update role
@@ -115,7 +115,7 @@ router
      */
     .put(
         validator.validate({ body: RoleUpdateSchema, params: RoleQuerySchema }),
-        controller.update
+        roleController.update
     )
     /**
      * @api {delete} /role/:id Delete role
@@ -139,7 +139,7 @@ router
      */
     .delete(
         validator.validate({ params: RoleQuerySchema }),
-        controller.remove
+        roleController.remove
     );
 
 export default router;

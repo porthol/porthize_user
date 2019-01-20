@@ -2,7 +2,7 @@ import * as express from 'express';
 import { UserController } from './user.controller';
 
 const router: express.Router = express.Router();
-const controller = new UserController();
+const userController = new UserController();
 import { Validator } from 'express-json-validator-middleware';
 const validator = new Validator({ allErrors: true, removeAdditional: true });
 import {
@@ -34,7 +34,7 @@ router
      *      "roles": []
      *  }]
      */
-    .get(controller.getAll)
+    .get(userController.getAll)
     /**
      * @api {post} /users Create user
      *
@@ -61,7 +61,7 @@ router
      */
     .post(
         validator.validate({body: UserCreateSchema}),
-        controller.register);
+        userController.register);
 
 
 router.route('/users/:id')
@@ -86,7 +86,7 @@ router.route('/users/:id')
         validator.validate({
             params: UserQuerySchema
         }),
-        controller.get)
+        userController.get)
     /**
      * @api {put} /users/:id Update user
      *
@@ -115,7 +115,7 @@ router.route('/users/:id')
      */
     .put(
         validator.validate({params: UserQuerySchema, body: UserUpdateSchema}),
-        controller.update)
+        userController.update)
     /**
      * @api {delete} /users/:id Delete user
      *
@@ -133,7 +133,7 @@ router.route('/users/:id')
      *       "message": "Not found"
      *     }
      */
-    .delete( validator.validate({params: UserQuerySchema}),controller.delete);
+    .delete( validator.validate({params: UserQuerySchema}),userController.remove);
 
 router
     .route('/users/:id/roles')
@@ -154,7 +154,7 @@ router
             params: UserQuerySchema,
             body: UserRoleSchema
         }),
-        controller.addRole.bind(controller)
+        userController.addRole
     );
 
 router
@@ -174,7 +174,7 @@ router
         validator.validate({
             params: UserRoleQuerySchema
         }),
-        controller.removeRole.bind(controller)
+        userController.removeRole
     );
 
 export default router;

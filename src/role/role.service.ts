@@ -20,7 +20,7 @@ export class RoleService {
     }
 
     async get(id: ObjectId, criteria: any) {
-        criteria._id = new ObjectId(id);
+        criteria._id = id;
         return await RoleModel.findOne(criteria || {});
     }
 

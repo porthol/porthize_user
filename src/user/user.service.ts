@@ -1,7 +1,10 @@
 import { UserModel } from './user.model';
 import { hashPassword } from '../utils/hashPassword';
 import * as mongoose from 'mongoose';
+import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import { RoleModel } from '../role';
 import ObjectId = mongoose.Types.ObjectId;
+import * as _ from 'lodash';
 
 export class UserService {
     private static instance: UserService;
@@ -21,7 +24,7 @@ export class UserService {
     }
 
     async get(id: ObjectId, criteria: any) {
-        criteria._id = new ObjectId(id);
+        criteria._id = id;
         return await UserModel.findOne(criteria || {});
     }
 
@@ -31,12 +34,61 @@ export class UserService {
         return await user.save();
     }
 
-    async update(id: ObjectId, userData: any){
-        return await UserModel.updateOne({_id:id},userData);
+    async update(id: ObjectId, userData: any) {
+        const user = await UserModel.findById(id);
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+
+        user.set(userData);
+
+        return await user.save();
     }
 
-    async delete(id: ObjectId){
-        return await UserModel.deleteOne({_id:id});
+    async remove(id: ObjectId) {
+        return await UserModel.deleteOne({ _id: id });
+    }
+
+    async addRole(userId: string, roleId: string) {
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+
+        const role = await RoleModel.findById(roleId);
+        if (!role) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found');
+        }
+
+        const index = user.roles.indexOf(new ObjectId(roleId));
+
+        if(index >= 0){
+            throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Role already added');
+        }
+
+        (user.roles || []).push(new ObjectId(roleId));
+
+        return await user.save();
+    }
+
+    async removeRole(userId: string, roleId: string) {
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+
+        const role = await RoleModel.findById(roleId);
+        if (!role) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found');
+        }
+
+        const index = user.roles.indexOf(new ObjectId(roleId));
+
+        if (index || index === -1) {
+            throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'This user does not have this role');
+        }
+        user.roles.splice(index, 1);
+        return await user.save();
     }
 
 }

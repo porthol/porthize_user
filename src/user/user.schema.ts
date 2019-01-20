@@ -12,9 +12,6 @@ export const UserCreateSchema = {
         },
         password: {
             type: 'string'
-        },
-        workspace: {
-            type: 'string'
         }
     }
 };
