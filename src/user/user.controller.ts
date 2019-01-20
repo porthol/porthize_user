@@ -82,12 +82,12 @@ export class UserController {
     }
 
     addRole(req: Request, res: Response): void{
-        res.status(httpStatus.NOT_IMPLEMENTED)
-            .send(new BaseResponse(httpStatus.NOT_IMPLEMENTED,'Not implemented'));
+                res.status(httpStatus.BAD_REQUEST)
+                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
     }
 
     removeRole(req: Request, res: Response): void{
-        res.status(httpStatus.NOT_IMPLEMENTED)
-            .send(new BaseResponse(httpStatus.NOT_IMPLEMENTED,'Not implemented'));
+                res.status(httpStatus.BAD_REQUEST)
+                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
     }
 }
