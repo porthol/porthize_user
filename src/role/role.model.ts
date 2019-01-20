@@ -1,5 +1,5 @@
-import { Schema } from 'mongoose';
-import * as mongoose from 'mongoose';
+import { model, Schema } from 'mongoose';
+import { IRole } from './role.document';
 
 
 export const RoleSchema = new Schema({
@@ -13,4 +13,4 @@ export const RoleSchema = new Schema({
     }
 });
 
-export const RoleModel = mongoose.model('Role', RoleSchema, 'roles');
+export const RoleModel = model<IRole>('Role', RoleSchema, 'roles');
