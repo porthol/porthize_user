@@ -2,7 +2,7 @@ import * as httpStatus from 'http-status';
 
 export enum CustomErrorCode {
 
-    ERRNOTFOUND,ERRBADREQUEST,ERRINTERNALSERVER
+    'ERRNOTFOUND','ERRBADREQUEST','ERRINTERNALSERVER', 'ERRNOCONF'
 }
 
 export function CustomErrorCodeToHttpStatus(code: CustomErrorCode) {
@@ -29,7 +29,7 @@ export class CustomError {
     message: string;
     cause: any;
 
-    constructor(code: CustomErrorCode, message: string, cause: any) {
+    constructor(code: CustomErrorCode, message: string, cause?: any) {
         this.code = code;
         this.message = message;
         this.cause = cause;

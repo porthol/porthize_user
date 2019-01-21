@@ -1,14 +1,24 @@
-FROM node:8.9.0-stretch
+FROM node:8 as builder
 
-# Copy data to docker image
-RUN mkdir -p /home/node/app
-COPY . /home/node/app
+WORKDIR "/opt/app"
 
-# Fix workspace
-WORKDIR "/home/node/app"
+COPY . ./
+RUN npm install
+RUN npm run build
 
+FROM node:8 as runner
 # Expose default port
 EXPOSE 3000
 
+# Fixe workspace
+WORKDIR "/opt/app"
+
+# Copy data to docker image
+COPY --from=builder /opt/app/dist ./dist
+COPY --from=builder /opt/app/config ./config
+COPY --from=builder /opt/app/package.json ./
+
+RUN npm install --save-prod
+
 # Execute default startup command
-CMD [ "/usr/local/bin/npm", "run", "start" ]
+CMD [ "npm", "run", "start" ]

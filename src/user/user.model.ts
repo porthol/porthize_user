@@ -1,7 +1,8 @@
-import { Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { isEmail } from 'validator';
 import ObjectId = mongoose.Schema.Types.ObjectId;
+import { IUser } from './user.document';
 
 
 export const UserSchema = new Schema({
@@ -25,11 +26,7 @@ export const UserSchema = new Schema({
         type: Boolean,
         default : true
     },
-    roles: [ObjectId],
-    workspace: {
-        type: String,
-        required: true
-    }
+    roles: [ObjectId]
 });
 
-export const UserModel = mongoose.model('User', UserSchema, 'users');
+export const UserModel = model<IUser>('user', UserSchema, 'users');

@@ -4,70 +4,83 @@ import * as mongoose from 'mongoose';
 import { getPackageName } from './utils/packageHelper';
 import { App } from './app';
 import { createServer } from 'http';
+import { getDatabaseConnectionUrl } from './utils/connectionHelper';
 
 const appName = getPackageName();
 
 
 const server = async (appName: string) => {
-    try {
-        configureLogger('default', defaultWinstonLoggerOptions);
+  try {
+    configureLogger('default', defaultWinstonLoggerOptions);
 
-        const config: any = getConfiguration();
+    const env = process.env.NODE_ENV || 'development';
 
-        if (config[appName] && config[appName].database) {
-            // Create database connection
-            const mongooseObj: any = await mongoose.connect(
-                `mongodb://${config[appName].database.host}:${config[appName].database.port}` +
-                `/${config[appName].database.databaseName}`,
-                { useNewUrlParser: true });
-            const databaseConnection = mongooseObj.connections[0]; // default conn
-            getLogger('default').log('info','Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
-        }
+    const config: any = getConfiguration(null, env);
 
-        const app: App = new App({
-            appName,
-            configuration: config
-        });
-        const expressApp = await app.bootstrap();
+    if (config[appName] && config[appName].databases) {
+      const databaseUrl = getDatabaseConnectionUrl();
+      const mongooseOptions: any = { useMongoClient: true};
+      if(config[appName].databases.length > 1) {
+        mongooseOptions.replicaSet= 'rs0';
+      }
+      if (databaseUrl) {
 
-        const port = expressApp.get('port') || 3000;
-        const server = createServer(expressApp);
-
-        server.listen(port);
-
-        // Other http server related stuff...
-        server.on('error', (error: NodeJS.ErrnoException) => {
-            if (error.syscall !== 'listen') {
-                throw error;
-            }
-            const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
-            switch (error.code) {
-                case 'EACCES':
-                    getLogger('default').log('error', `${bind} requires elevated privileges`);
-                    process.exit(1);
-                    break;
-                case 'EADDRINUSE':
-                    getLogger('default').log('error', `${bind} is already in use`);
-                    process.exit(1);
-                    break;
-                default:
-                    throw error;
-            }
-        });
-
-        server.on('listening', () => {
-            const addr = server.address();
-            const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-            getLogger('default').log('info', '  Listening on %s in %s mode', bind, expressApp.get('env'));
-            if (expressApp.get('env') === 'development') {
-                getLogger('default').log('info', '  Press CTRL-C to stop\n');
-            }
-        });
-
-    }catch (err) {
-        getLogger('default').log('error', err);
-        process.exit(1);
+        // todo Check database connection https://github.com/Automattic/mongoose/pull/6652 commit 727eda48bcecfb8f4462162863e7beb7bca18fdb
+        const mongooseObj: any = await mongoose.connect(
+          databaseUrl,
+          mongooseOptions);
+        const databaseConnection = mongooseObj.connections[0]; // default conn
+        getLogger('default').log('info',
+          'Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
+      } else {
+        getLogger('default').error('The database url can not be configured, you should check config.json');
+      }
     }
+
+    const app: App = new App({
+      appName,
+      configuration: config
+    });
+    const expressApp = await app.bootstrap();
+
+    const port = expressApp.get('port') || 3000;
+    const server = createServer(expressApp);
+
+    server.listen(port);
+
+    // Other http server related stuff...
+    server.on('error', (error: NodeJS.ErrnoException) => {
+      if (error.syscall !== 'listen') {
+        throw error;
+      }
+      const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+      switch (error.code) {
+        case 'EACCES':
+          getLogger('default').log('error', `${bind} requires elevated privileges`);
+          process.exit(1);
+          break;
+        case 'EADDRINUSE':
+          getLogger('default').log('error', `${bind} is already in use`);
+          process.exit(1);
+          break;
+        default:
+          throw error;
+      }
+    });
+
+    server.on('listening', () => {
+      const addr = server.address();
+      const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
+      getLogger('default').log('info', '  Listening on %s in %s mode', bind, expressApp.get('env'));
+      if (expressApp.get('env') === 'development') {
+        getLogger('default').log('info', '  Press CTRL-C to stop\n');
+      }
+    });
+
+  } catch (err) {
+    getLogger('default').log('error', err.message || err);
+    process.exit(1);
+  }
 };
 
 export default server(appName);
