@@ -1,6 +1,7 @@
 import { RoleModel } from './role.model';
 import * as mongoose from 'mongoose';
 import ObjectId = mongoose.Types.ObjectId;
+import { CustomError, CustomErrorCode } from '../utils/CustomError';
 
 export class RoleService {
     private static instance: RoleService;
@@ -30,7 +31,14 @@ export class RoleService {
     }
 
     async update(id: ObjectId, roleData: any){
-        return await RoleModel.updateOne({_id:id},roleData);
+        const role = await RoleModel.findById(id);
+        if (!role) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found');
+        }
+
+        role.set(roleData);
+
+        return await role.save();
     }
 
     async delete(id: ObjectId){

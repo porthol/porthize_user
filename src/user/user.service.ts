@@ -4,7 +4,6 @@ import * as mongoose from 'mongoose';
 import { CustomError, CustomErrorCode } from '../utils/CustomError';
 import { RoleModel } from '../role';
 import ObjectId = mongoose.Types.ObjectId;
-import * as _ from 'lodash';
 import { comparePassword } from '../utils/comparePassword';
 
 interface LoginRequest {

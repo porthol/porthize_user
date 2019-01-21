@@ -1,7 +1,8 @@
 import { UserService } from './user.service';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status';
-import { CustomError, CustomErrorCodeToHttpStatus } from '../utils/CustomError';
+import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import { handleError } from '../utils/handleErrorHelper';
 
 export class UserController {
 
@@ -12,8 +13,7 @@ export class UserController {
                     .send(users);
             })
             .catch(err => {
-                res.status(httpStatus.INTERNAL_SERVER_ERROR)
-                    .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
+                handleError(err, res);
             });
     }
 
@@ -21,16 +21,14 @@ export class UserController {
         UserService.get().get(req.params.id , req.query)
             .then(user => {
                 if(!user){
-                    res.status(httpStatus.NOT_FOUND)
-                        .send(new CustomError(404, 'User not found'));
+                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
                 }else{
                     res.status(httpStatus.OK)
                         .send(user);
                 }
             })
             .catch(err => {
-                res.status(httpStatus.INTERNAL_SERVER_ERROR)
-                    .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
+                handleError(err, res);
             });
     }
 
@@ -41,8 +39,7 @@ export class UserController {
                     .send(user);
             })
             .catch(err => {
-                res.status(httpStatus.BAD_REQUEST)
-                    .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Bad request', err));
+                handleError(err, res);
             });
     }
 
@@ -53,8 +50,7 @@ export class UserController {
                     .send(user);
             })
             .catch(err => {
-                res.status(httpStatus.BAD_REQUEST)
-                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
+                handleError(err, res);
             });
     }
 
@@ -62,16 +58,14 @@ export class UserController {
         UserService.get().remove(req.params.id)
             .then(result => {
                 if(result.n === 0){
-                    res.status(httpStatus.NOT_FOUND)
-                        .send(new CustomError(404, 'User not found'));
+                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
                 }else{
                     res.status(httpStatus.NO_CONTENT)
                         .send(result);
                 }
             })
             .catch(err => {
-                res.status(httpStatus.BAD_REQUEST)
-                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
+                handleError(err, res);
             });
     }
 
@@ -82,8 +76,7 @@ export class UserController {
                     .send(user);
             })
             .catch(err => {
-                res.status(httpStatus.BAD_REQUEST)
-                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
+                handleError(err, res);
             });
     }
 
@@ -94,8 +87,7 @@ export class UserController {
                     .send(user);
             })
             .catch(err => {
-                res.status(httpStatus.BAD_REQUEST)
-                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
+                handleError(err, res);
             });
     }
 
@@ -103,8 +95,7 @@ export class UserController {
         UserService.get().login(req.body)
             .then(user => {
                 if(!user){
-                    res.status(httpStatus.NOT_FOUND)
-                        .send(new CustomError(404, 'User not found'));
+                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
                 }else{
                     // todo should send token
                     res.status(httpStatus.OK)
@@ -112,13 +103,7 @@ export class UserController {
                 }
             })
             .catch(err => {
-                if((typeof err).toString() === CustomError.toString()) {
-                    res.status(CustomErrorCodeToHttpStatus(err.code))
-                        .send(err);
-                }else{
-                    res.status(httpStatus.BAD_REQUEST)
-                        .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'BAD_REQUEST', err));
-                }
+                handleError(err, res);
             });
     }
 }
