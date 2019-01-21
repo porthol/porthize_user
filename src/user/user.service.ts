@@ -3,8 +3,14 @@ import { hashPassword } from '../utils/hashPassword';
 import * as mongoose from 'mongoose';
 import { CustomError, CustomErrorCode } from '../utils/CustomError';
 import { RoleModel } from '../role';
-import ObjectId = mongoose.Types.ObjectId;
 import { comparePassword } from '../utils/comparePassword';
+import * as jwt from 'jsonwebtoken';
+import { getConfiguration } from '../utils/configurationHelper';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from '../utils/logger';
+import ObjectId = mongoose.Types.ObjectId;
+
+const config = getConfiguration().user;
+configureLogger('UserService', defaultWinstonLoggerOptions);
 
 interface LoginRequest {
     username?: string;
@@ -68,7 +74,7 @@ export class UserService {
 
         const index = user.roles.indexOf(new ObjectId(roleId));
 
-        if(index >= 0){
+        if (index >= 0) {
             throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Role already added');
         }
 
@@ -98,21 +104,36 @@ export class UserService {
     }
 
     async login(loginRequest: LoginRequest) {
-        let criteria: any = {};
-        if(loginRequest.email) {
-            criteria = {email : loginRequest.email};
-        }else if(loginRequest.username){
-            criteria = {username : loginRequest.username};
-        }else {
-            throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'BAD REQUEST', null);
+        if(!config.jwt) {
+            throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal server error : no token config');
         }
 
-        // criteria.password = await hashPassword(loginRequest.password);
-        const user = await UserModel.findOne(criteria).exec();
-        if(comparePassword(loginRequest.password,'toto')){
-            return user;
+        let criteria: any = {};
+        if (loginRequest.email) {
+            criteria = { email: loginRequest.email };
+        } else if (loginRequest.username) {
+            criteria = { username: loginRequest.username };
+        } else {
+            throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad request', null);
         }
-        return null;
-    }
+
+        const user = await UserModel.findOne(criteria);
+
+        if(!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'No match for user and password');
+        }
+
+        if (comparePassword(loginRequest.password, user.password)) {
+            const iat = Math.floor(Date.now() / 1000);
+            const payload: any = {
+                userid: user._id,
+                iat
+            };
+
+            const token = await jwt.sign(payload, config.jwt.secret, config.jwt.options);
+            getLogger('UserService').log('info', 'User %s connected at %d',loginRequest.username, iat);
+            return { token, iat};
+        }
+        return null;}
 
 }

@@ -18,11 +18,11 @@ export class UserController {
     }
 
     get(req: Request, res: Response): void {
-        UserService.get().get(req.params.id , req.query)
+        UserService.get().get(req.params.id, req.query)
             .then(user => {
-                if(!user){
+                if (!user) {
                     throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
-                }else{
+                } else {
                     res.status(httpStatus.OK)
                         .send(user);
                 }
@@ -44,7 +44,7 @@ export class UserController {
     }
 
     update(req: Request, res: Response): void {
-        UserService.get().update(req.params.id,req.body)
+        UserService.get().update(req.params.id, req.body)
             .then(user => {
                 res.status(httpStatus.OK)
                     .send(user);
@@ -54,12 +54,12 @@ export class UserController {
             });
     }
 
-    remove(req: Request, res: Response): void{
+    remove(req: Request, res: Response): void {
         UserService.get().remove(req.params.id)
             .then(result => {
-                if(result.n === 0){
+                if (result.n === 0) {
                     throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
-                }else{
+                } else {
                     res.status(httpStatus.NO_CONTENT)
                         .send(result);
                 }
@@ -69,7 +69,7 @@ export class UserController {
             });
     }
 
-    addRole(req: Request, res: Response): void{
+    addRole(req: Request, res: Response): void {
         UserService.get().addRole(req.params.id, req.body.roleId)
             .then(user => {
                 res.status(httpStatus.OK)
@@ -80,7 +80,7 @@ export class UserController {
             });
     }
 
-    removeRole(req: Request, res: Response): void{
+    removeRole(req: Request, res: Response): void {
         UserService.get().removeRole(req.params.id, req.params.roleId)
             .then(user => {
                 res.status(httpStatus.OK)
@@ -93,14 +93,9 @@ export class UserController {
 
     login(req: Request, res: Response): void {
         UserService.get().login(req.body)
-            .then(user => {
-                if(!user){
-                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
-                }else{
-                    // todo should send token
-                    res.status(httpStatus.OK)
-                        .send(user);
-                }
+            .then(token => {
+                res.status(httpStatus.CREATED)
+                    .send(token);
             })
             .catch(err => {
                 handleError(err, res);
