@@ -13,9 +13,7 @@ const server = async (appName: string) => {
   try {
     configureLogger('default', defaultWinstonLoggerOptions);
 
-    const env = process.env.NODE_ENV || 'development';
-
-    const config: any = getConfiguration(null, env);
+    const config: any = getConfiguration();
 
     if (config[appName] && config[appName].databases) {
       const databaseUrl = getDatabaseConnectionUrl();
