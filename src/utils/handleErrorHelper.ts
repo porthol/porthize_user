@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import * as httpStatus from 'http-status';
-import { CustomError, CustomErrorCodeToHttpStatus } from './CustomError';
+import { CustomError, CustomErrorCode, CustomErrorCodeToHttpStatus } from './CustomError';
 
 export function handleError(err : any, res: Response) {
   if(err.constructor.name === CustomError.name) {
@@ -8,6 +8,6 @@ export function handleError(err : any, res: Response) {
       .send(err);
   }else{
     res.status(httpStatus.INTERNAL_SERVER_ERROR)
-      .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error', err));
+      .send(new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal Server Error', err));
   }
 }

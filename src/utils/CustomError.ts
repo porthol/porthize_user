@@ -1,8 +1,10 @@
 import * as httpStatus from 'http-status';
 
 export enum CustomErrorCode {
-
-    'ERRNOTFOUND','ERRBADREQUEST','ERRINTERNALSERVER', 'ERRNOCONF'
+    ERRNOTFOUND='ERRNOTFOUND',
+    ERRBADREQUEST='ERRBADREQUEST',
+    ERRINTERNALSERVER='ERRINTERNALSERVER',
+    ERRNOCONF='ERRNOCONF'
 }
 
 export function CustomErrorCodeToHttpStatus(code: CustomErrorCode) {
