@@ -211,6 +211,6 @@ router
      *       }
      *     }
      */
-    .post(validator.validate({ body: UserLoginSchema }), controller.login);
+    .post(validator.validate({ body: UserLoginSchema }), userController.login);
 
 export default router;

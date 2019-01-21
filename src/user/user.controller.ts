@@ -1,11 +1,7 @@
 import { UserService } from './user.service';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status';
-import { BaseResponse } from '../utils/BaseResponse';
-import * as mongoose from 'mongoose';
-import ObjectId = mongoose.Types.ObjectId;
 import { CustomError, CustomErrorCodeToHttpStatus } from '../utils/CustomError';
-import { CustomError } from '../utils/CustomError';
 
 export class UserController {
 
@@ -108,7 +104,7 @@ export class UserController {
             .then(user => {
                 if(!user){
                     res.status(httpStatus.NOT_FOUND)
-                        .send(new BaseResponse(404, 'User not found', null));
+                        .send(new CustomError(404, 'User not found'));
                 }else{
                     // todo should send token
                     res.status(httpStatus.OK)
@@ -121,7 +117,7 @@ export class UserController {
                         .send(err);
                 }else{
                     res.status(httpStatus.BAD_REQUEST)
-                        .send(new BaseResponse(httpStatus.INTERNAL_SERVER_ERROR, 'BAD_REQUEST', err));
+                        .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'BAD_REQUEST', err));
                 }
             });
     }
