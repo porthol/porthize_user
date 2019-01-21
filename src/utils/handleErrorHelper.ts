@@ -3,7 +3,7 @@ import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCodeToHttpStatus } from './CustomError';
 
 export function handleError(err : any, res: Response) {
-  if((typeof err).toString() === CustomError.toString()) {
+  if(err.constructor.name === CustomError.name) {
     res.status(CustomErrorCodeToHttpStatus(err.code))
       .send(err);
   }else{
