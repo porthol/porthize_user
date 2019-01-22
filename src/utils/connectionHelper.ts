@@ -16,5 +16,5 @@ export function getDatabaseConnectionUrl() {
     url += `${database.host}:${database.port},`;
   }
 
-  return url.substr(0, url.length - 1) + `/${config[appName].databaseName},`;
+  return url.substr(0, url.length - 1) + `/${config[appName].databaseName}`;
 }
