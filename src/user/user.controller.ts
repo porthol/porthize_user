@@ -103,14 +103,27 @@ export class UserController {
             });
     }
 
-    current(req: Request, res: Response): void{
+    current(req: Request, res: Response): void {
         UserService.get().getCurrentUser(req.headers.authorization)
             .then(user => {
                 res.status(httpStatus.OK)
                     .send(user);
             })
             .catch(err => {
-                if(err instanceof JsonWebTokenError) {
+                if (err instanceof JsonWebTokenError) {
+                    err = new CustomError(CustomErrorCode.ERRBADREQUEST, 'Json Web Token Error', err);
+                }
+                handleError(err, res);
+            });
+    }
+
+    isTokenValid(req: Request, res: Response): void {
+        UserService.get().isTokenValid(req.headers.authorization)
+            .then(user => {
+                res.status(httpStatus.NO_CONTENT).send();
+            })
+            .catch(err => {
+                if (err instanceof JsonWebTokenError) {
                     err = new CustomError(CustomErrorCode.ERRBADREQUEST, 'Json Web Token Error', err);
                 }
                 handleError(err, res);

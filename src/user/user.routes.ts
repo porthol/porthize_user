@@ -97,6 +97,20 @@ router
     .post(validator.validate({ body: UserLoginSchema }), userController.login);
 
 router
+    .route('/token')
+    /**
+     * @api {get} /token Verify the token sent
+     *
+     * @apiGroup User
+     *
+     * @apiHeader {String} Authorization Bearer Schema
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 204 No Content
+     */
+    .get(userController.isTokenValid);
+
+router
     .route('/users/current')
     /**
      * @api {get} /users/me Retrieve current user

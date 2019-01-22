@@ -143,7 +143,7 @@ export class UserService {
         }
         const now = Math.floor(Date.now() / 1000);
 
-        const decodedPayload = await this.isTokenValid(tokenFromHeader);
+        const decodedPayload: any = await this.isTokenValid(tokenFromHeader);
 
         if (now >= decodedPayload.exp) {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Token expired');
@@ -164,14 +164,12 @@ export class UserService {
         return cleanedUser;
     }
 
-    async isTokenValid(tokenFromHeader: string): Promise<any> {
+    async isTokenValid(tokenFromHeader: string) {
         if (!config.jwt) {
             throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal server error : no token config');
         }
         const token = getCleanToken(tokenFromHeader);
         const result = await jwt.verify(token, config.jwt.secret, config.jwt.options);
-
-        // should do something bro
 
         return result;
     }
