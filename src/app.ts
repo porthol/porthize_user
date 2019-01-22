@@ -21,7 +21,7 @@ export class App {
             this.configuration = params.configuration;
         }
 
-        this._app.set('_port', params.port || process.env.PORT || 3000);
+        this._app.set('port', params.port || process.env.PORT || 3000);
         this._app.set('env', params.env || process.env.NODE_ENV || 'development');
     }
 
