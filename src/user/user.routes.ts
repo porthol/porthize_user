@@ -64,6 +64,65 @@ router
         validator.validate({body: UserCreateSchema}),
         userController.register);
 
+router
+    .route('/users/login')
+    /**
+     * @api {get} /users/login Login user
+     *
+     * @apiGroup User
+     *
+     * @apiParam {String} [username] Optional only if email is provided
+     * @apiParam {String} [email] Optional only if username is provided
+     * @apiParam {String} password Plain-text password
+     *
+     * @apiSuccess {String} token A jwt token
+     * @apiSuccess {number} iat Timestamp in secs
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 200 OK
+     *     {
+     *          "token": "a.jwt.token",
+     *          "iat": 1548088387
+     *     }
+     *
+     * @apiErrorExample {json} Error user not found
+     *     HTTP/1.1 404 Not found
+     *     {
+     *       "error": {
+     *         "name": "ERRNOTFOUND",
+     *         "message": "User not found"
+     *       }
+     *     }
+     */
+    .post(validator.validate({ body: UserLoginSchema }), userController.login);
+
+router
+    .route('/users/current')
+    /**
+     * @api {get} /users/me Retrieve current user
+     *
+     * @apiGroup User
+     *
+     * @apiSuccess {String} username
+     * @apiSuccess {String} id ObjectID
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 200 OK
+     *     {
+     *          "username": "John",
+     *          "iat": 1548088387
+     *     }
+     *
+     * @apiErrorExample {json} Error user not found
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": {
+     *         "name": "ERRBADREQUEST",
+     *         "message": "No token found"
+     *       }
+     *     }
+     */
+    .get(userController.current);
 
 router.route('/users/:id')
     /**
@@ -143,9 +202,9 @@ router
      *
      * @apiGroup User
      *
-     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} id ObjectID
      *
-     * @apiParam {String} roleId ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} roleId ObjectID
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 202 Accepted
@@ -165,8 +224,8 @@ router
      *
      * @apiGroup User
      *
-     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
-     * @apiParam {String} roleId ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} id ObjectID
+     * @apiParam {String} roleId ObjectID
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 202 Accepted
@@ -177,40 +236,5 @@ router
         }),
         userController.removeRole
     );
-
-
-router
-    .route('/users/login')
-    /**
-     * @api {get} /users/login Login user
-     *
-     * @apiGroup User
-     *
-     * @apiParam {String} [username] Optional only if email is provided
-     * @apiParam {String} [email] Optional only if username is provided
-     * @apiParam {String} password Plain-text password
-     *
-     * @apiSuccess {String} username
-     * @apiSuccess {String} email
-     * @apiSuccess {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
-     *
-     * @apiSuccessExample {json} Success response
-     *     HTTP/1.1 200 OK
-     *     {
-     *       "username": "foo",
-     *       "email": "foo@bar.baz",
-     *       "id": "5b179f629fea4000ffcf2fbc"
-     *     }
-     *
-     * @apiErrorExample {json} Error user not found
-     *     HTTP/1.1 404 Not found
-     *     {
-     *       "error": {
-     *         "name": "Error",
-     *         "message": "User not found"
-     *       }
-     *     }
-     */
-    .post(validator.validate({ body: UserLoginSchema }), userController.login);
 
 export default router;

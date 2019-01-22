@@ -104,7 +104,7 @@ export class UserService {
     }
 
     async login(loginRequest: LoginRequest) {
-        if(!config.jwt) {
+        if (!config.jwt) {
             throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal server error : no token config');
         }
 
@@ -119,7 +119,7 @@ export class UserService {
 
         const user = await UserModel.findOne(criteria);
 
-        if(!user) {
+        if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'No match for user and password');
         }
 
@@ -131,9 +131,52 @@ export class UserService {
             };
 
             const token = await jwt.sign(payload, config.jwt.secret, config.jwt.options);
-            getLogger('UserService').log('info', 'User %s connected at %d',loginRequest.username, iat);
-            return { token, iat};
+            getLogger('UserService').log('info', 'User %s connected at %d', user._id.toString(), iat);
+            return { token, iat };
         }
-        return null;}
+        return null;
+    }
 
+    async getCurrentUser(tokenFromHeader: string) {
+        if (!config.jwt) {
+            throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal server error : no token config');
+        }
+        const now = Math.floor(Date.now() / 1000);
+
+        const decodedPayload = await this.isTokenValid(tokenFromHeader);
+
+        if (now >= decodedPayload.exp) {
+            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Token expired');
+        }
+
+        const user = await UserModel.findById(decodedPayload.userid);
+
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+
+        const cleanedUser = JSON.parse(JSON.stringify(user));
+
+        delete cleanedUser.password;
+        delete cleanedUser.roles;
+        delete cleanedUser.__v;
+
+        return cleanedUser;
+    }
+
+    async isTokenValid(tokenFromHeader: string): Promise<any> {
+        if (!config.jwt) {
+            throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal server error : no token config');
+        }
+        const token = getCleanToken(tokenFromHeader);
+        const result = await jwt.verify(token, config.jwt.secret, config.jwt.options);
+
+        // should do something bro
+
+        return result;
+    }
+}
+
+function getCleanToken(tokenFromHeader: string) {
+    return tokenFromHeader.substr(7);
 }
