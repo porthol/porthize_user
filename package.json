@@ -28,6 +28,8 @@
         "lodash": "^4.17.11",
         "mongodb": "^3.1.10",
         "mongoose": "^5.4.4",
+        "request": "^2.88.0",
+        "request-promise": "^4.2.2",
         "winston": "^3.1.0"
     },
     "devDependencies": {
@@ -41,6 +43,8 @@
         "@types/http-status": "^0.2.30",
         "@types/mongodb": "^3.1.18",
         "@types/mongoose": "^5.3.7",
+        "@types/request": "^2.48.1",
+        "@types/request-promise": "^4.1.42",
         "@types/validator": "^10.9.0",
         "nodemon": "^1.18.9",
         "prettier": "^1.15.3",
