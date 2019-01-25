@@ -1,5 +1,6 @@
 import * as express from 'express';
 import UserRoutes from './user/user.routes';
+import PrivilegeRoutes from './privilege/privilege.routes';
 import RoleRoutes from './role/role.routes';
 
 /**
@@ -23,6 +24,7 @@ export function configure(configuration?: object): express.Router[] {
     // Load all child routers that call your API.
     router.use('/api', UserRoutes);
     router.use('/api', RoleRoutes);
+    router.use('/api', PrivilegeRoutes);
 
     /**
      * Place here all middlewares that will be called AFTER your API.

@@ -13,7 +13,6 @@
       }
     ],
     "databaseName": "user",
-    "databaseName": null,
     "traefik": {
       "gatewayAddress": "gateway",
       "gatewayPort": 80

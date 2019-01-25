@@ -1,16 +1,16 @@
-import { RoleService } from './role.service';
+import { PrivilegeService } from './privilege.service';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCode } from '../utils/CustomError';
 import { handleError } from '../utils/handleErrorHelper';
 
-export class RoleController {
+export class PrivilegeController {
 
     getAll(req: Request, res: Response): void {
-        RoleService.get().getAll(req.query)
-            .then(roles => {
+        PrivilegeService.get().getAll(req.query)
+            .then(privileges => {
                 res.status(httpStatus.OK)
-                    .send(roles);
+                    .send(privileges);
             })
             .catch(err => {
                 handleError(err, res);
@@ -18,13 +18,13 @@ export class RoleController {
     }
 
     get(req: Request, res: Response): void {
-        RoleService.get().get(req.params.id, req.query)
-            .then(role => {
-                if (!role) {
-                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found');
+        PrivilegeService.get().get(req.params.id, req.query)
+            .then(privilege => {
+                if (!privilege) {
+                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
                 } else {
                     res.status(httpStatus.OK)
-                        .send(role);
+                        .send(privilege);
                 }
             })
             .catch(err => {
@@ -33,10 +33,10 @@ export class RoleController {
     }
 
     create(req: Request, res: Response): void {
-        RoleService.get().create(req.body)
-            .then(role => {
+        PrivilegeService.get().create(req.body)
+            .then(privilege => {
                 res.status(httpStatus.CREATED)
-                    .send(role);
+                    .send(privilege);
             })
             .catch(err => {
                 handleError(err, res);
@@ -44,10 +44,10 @@ export class RoleController {
     }
 
     update(req: Request, res: Response): void {
-        RoleService.get().update(req.params.id, req.body)
-            .then(role => {
+        PrivilegeService.get().update(req.params.id, req.body)
+            .then(privilege => {
                 res.status(httpStatus.OK)
-                    .send(role);
+                    .send(privilege);
             })
             .catch(err => {
                 handleError(err, res);
@@ -55,10 +55,10 @@ export class RoleController {
     }
 
     remove(req: Request, res: Response): void {
-        RoleService.get().delete(req.params.id)
+        PrivilegeService.get().delete(req.params.id)
             .then(result => {
                 if (result.n === 0) {
-                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found');
+                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
                 } else {
                     res.status(httpStatus.NO_CONTENT)
                         .send(result);
