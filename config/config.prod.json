@@ -12,6 +12,11 @@
         "port": 27017
       }
     ],
-    "databaseName": "user"
+    "databaseName": "user",
+    "databaseName": null,
+    "traefik": {
+      "gatewayAddress": "gateway",
+      "gatewayPort": 80
+    }
   }
 }

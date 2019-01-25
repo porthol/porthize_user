@@ -29,6 +29,8 @@
         "mongodb": "^3.1.10",
         "mongoose": "^5.4.4",
         "validator": "^10.10.0",
+        "request": "^2.88.0",
+        "request-promise": "^4.2.2",
         "winston": "^3.1.0"
     },
     "devDependencies": {
@@ -43,6 +45,8 @@
         "@types/jsonwebtoken": "^8.3.0",
         "@types/mongodb": "^3.1.18",
         "@types/mongoose": "^5.3.7",
+        "@types/request": "^2.48.1",
+        "@types/request-promise": "^4.1.42",
         "@types/validator": "^10.9.0",
         "nodemon": "^1.18.9",
         "prettier": "^1.15.3",

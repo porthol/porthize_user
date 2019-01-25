@@ -5,24 +5,26 @@ import { getPackageName } from './utils/packageHelper';
 import { App } from './app';
 import { createServer } from 'http';
 import { getDatabaseConnectionUrl } from './utils/connectionHelper';
+import { CommunicationHelper } from './utils/CommunicationHelper';
 
 const appName = getPackageName();
 
+const config: any = getConfiguration();
+
+export const communicationHelper = new CommunicationHelper(config[appName].traefik);
 
 const server = async (appName: string) => {
   try {
     configureLogger('default', defaultWinstonLoggerOptions);
 
-    const config: any = getConfiguration();
 
     if (config[appName] && config[appName].databases) {
       const databaseUrl = getDatabaseConnectionUrl();
-      const mongooseOptions: any = { useMongoClient: true};
-      if(config[appName].databases.length > 1) {
-        mongooseOptions.replicaSet= 'rs0';
+      const mongooseOptions: any = { useMongoClient: true };
+      if (config[appName].databases.length > 1) {
+        mongooseOptions.replicaSet = 'rs0';
       }
       if (databaseUrl) {
-
         // todo Check database connection https://github.com/Automattic/mongoose/pull/6652 commit 727eda48bcecfb8f4462162863e7beb7bca18fdb
         const mongooseObj: any = await mongoose.connect(
           databaseUrl,
