@@ -5,6 +5,9 @@ const appName = getPackageName();
 
 export function getDatabaseConnectionUrl() {
   const config: any = getConfiguration();
+  if (!config[appName].databaseName) {
+    return null;
+  }
 
   let url = 'mongodb://';
 
