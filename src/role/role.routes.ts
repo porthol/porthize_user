@@ -1,7 +1,13 @@
 import * as express from 'express';
 import { RoleController } from './role.controller';
 import { Validator } from 'express-json-validator-middleware';
-import { RoleCreateSchema, RoleQuerySchema, RoleUpdateSchema } from './role.schemas';
+import {
+    RoleCreateSchema,
+    RolePrivilegeQuerySchema,
+    RolePrivilegeSchema,
+    RoleQuerySchema,
+    RoleUpdateSchema
+} from './role.schemas';
 
 const router: express.Router = express.Router();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
@@ -15,7 +21,7 @@ const roleController = new RoleController();
 router
     .route('/roles')
     /**
-     * @api {get} /role Get role list
+     * @api {get} /roles Get role list
      *
      * @apiGroup Role
      *
@@ -25,12 +31,13 @@ router
      *     HTTP/1.1 200 OK
      *     [{
      *        "id": "5b179f629fea4000ffcf2fbc",
-     *        "name": "admin"
+     *        "name": "admin",
+     *        "privileges":[]
      *    }]
      */
     .get(roleController.getAll)
     /**
-     * @api {post} /role Create role
+     * @api {post} /roles Create role
      *
      * @apiGroup Role
      *
@@ -42,9 +49,10 @@ router
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 201 Created
      *     {
-     *       "name": "admin",
-     *       "id": "5b179f629fea4000ffcf2fbc"
-     *     }
+     *        "id": "5b179f629fea4000ffcf2fbc",
+     *        "name": "admin",
+     *        "privileges":[]
+     *    }
      */
     .post(
         validator.validate({ body: RoleCreateSchema }),
@@ -54,28 +62,28 @@ router
 router
     .route('/roles/:id')
     /**
-     * @api {get} /role/:id Get role
+     * @api {get} /roles/:id Get role
      *
      * @apiGroup Role
      *
-     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} id ObjectID
      *
      * @apiSuccess {String} name
-     * @apiSuccess {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiSuccess {String} id ObjectID
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 200 OK
      *     {
      *        "id": "5b179f629fea4000ffcf2fbc",
-     *        "name": "admin"
+     *        "name": "admin",
+     *        "privileges":[]
      *    }
      *
      * @apiErrorExample {json} Error role not found
      *     HTTP/1.1 404 Not Found
      *     {
      *       "error": {
-     *         "name": "Error",
-     *          "code": "ENOENT",
+     *          "code": "ERRNOTFOUND",
      *          "message": "Not found"
      *       }
      *     }
@@ -85,30 +93,30 @@ router
         roleController.get
     )
     /**
-     * @api {put} /role/:id Update role
+     * @api {put} /roles/:id Update role
      *
      * @apiGroup Role
      *
-     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} id ObjectID
      *
      * @apiParam {String} name
      *
      * @apiSuccess {String} name
-     * @apiSuccess {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiSuccess {String} id ObjectID
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 200 OK
      *     {
      *        "id": "5b179f629fea4000ffcf2fbc",
-     *        "name": "admin"
+     *        "name": "admin",
+     *        "privileges":[]
      *    }
      *
-     * @apiErrorExample {json} Error user not found
+     * @apiErrorExample {json} Error role not found
      *     HTTP/1.1 404 Not Found
      *     {
      *       "error": {
-     *         "name": "Error",
-     *          "code": "ENOENT",
+     *          "code": "ERRNOTFOUND",
      *          "message": "Not found"
      *       }
      *     }
@@ -118,21 +126,20 @@ router
         roleController.update
     )
     /**
-     * @api {delete} /role/:id Delete role
+     * @api {delete} /roles/:id Delete role
      *
      * @apiGroup Role
      *
-     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} id ObjectID
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 204 No Content
      *
-     * @apiErrorExample {json} Error user not found
+     * @apiErrorExample {json} Error role not found
      *     HTTP/1.1 404 Not Found
      *     {
      *       "error": {
-     *         "name": "Error",
-     *          "code": "ENOENT",
+     *          "code": "ERRNOTFOUND",
      *          "message": "Not found"
      *       }
      *     }
@@ -140,6 +147,56 @@ router
     .delete(
         validator.validate({ params: RoleQuerySchema }),
         roleController.remove
+    );
+
+router
+    .route('/roles/:id/privileges')
+    /**
+     * @api {post} /roles/:id/privileges Add privilege to role
+     *
+     * @apiGroup Role
+     *
+     * @apiParam {String} id ObjectId
+     *
+     * @apiSuccessExample {json} Success response
+     *      HTTP/1.1 200 OK
+     *      {
+     *        "id": "5b179f629fea4000ffcf2fbc",
+     *        "name": "admin",
+     *        "privileges":[{
+     *          "_id": "5b179f629fea4000ffcf2fbc",
+     *          "resource": "user",
+     *          "action":["find"]
+     *          }]
+     *      }
+     *
+     */
+    .post(
+        validator.validate({
+            params: RoleQuerySchema,
+            body: RolePrivilegeSchema
+        }),
+        roleController.addPrivilege
+    );
+
+router
+    .route('/roles/:id/privileges/:privilegeId')
+    /**
+     * @api {delete} /roles/:id/privileges/:privilegeId Remove privilege to role
+     *
+     * @apiGroup Role
+     *
+     * @apiParam {String} id ObjectID
+     * @apiParam {String} privilegeId ObjectID
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 202 Accepted
+     */
+    .delete(
+        validator.validate({
+            params: RolePrivilegeQuerySchema
+        }),
+        roleController.removePrivilege
     );
 
 export default router;

@@ -1,4 +1,3 @@
-
 export const UserCreateSchema = {
     type: 'object',
     required: ['email', 'password'],

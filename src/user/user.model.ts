@@ -1,8 +1,9 @@
-import { model, Schema } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { model, Schema } from 'mongoose';
 import { isEmail } from 'validator';
-import ObjectId = mongoose.Schema.Types.ObjectId;
 import { IUser } from './user.document';
+import ObjectId = mongoose.Schema.Types.ObjectId;
+import * as UniqueValidator from 'mongoose-unique-validator';
 
 
 export const UserSchema = new Schema({
@@ -11,7 +12,7 @@ export const UserSchema = new Schema({
         unique: true
     },
     email: {
-        type : String,
+        type: String,
         validate: [isEmail, 'invalid email'],
         required: true,
         unique: true
@@ -24,9 +25,11 @@ export const UserSchema = new Schema({
     updatedAt: { type: Date, default: Date.now },
     enabled: {
         type: Boolean,
-        default : true
+        default: true
     },
     roles: [ObjectId]
 });
+
+UserSchema.plugin(UniqueValidator);
 
 export const UserModel = model<IUser>('user', UserSchema, 'users');

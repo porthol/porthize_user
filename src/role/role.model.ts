@@ -1,5 +1,6 @@
 import { model, Schema } from 'mongoose';
 import { IRole } from './role.document';
+import { PrivilegeSchema } from '../privilege';
 
 
 export const RoleSchema = new Schema({
@@ -10,6 +11,9 @@ export const RoleSchema = new Schema({
     name: {
         type: String,
         required: true
+    },
+    privileges: {
+        type: [PrivilegeSchema]
     }
 });
 

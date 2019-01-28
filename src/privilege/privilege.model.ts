@@ -7,8 +7,7 @@ export const PrivilegeSchema = new Schema({
         required: true
     },
     actions: {
-        type: [String],
-        default: []
+        type: [String]
     }
 });
 

@@ -1,18 +1,19 @@
 import * as express from 'express';
 import { UserController } from './user.controller';
-
-const router: express.Router = express.Router();
-const userController = new UserController();
 import { Validator } from 'express-json-validator-middleware';
-const validator = new Validator({ allErrors: true, removeAdditional: true });
 import {
     UserCreateSchema,
+    UserLoginSchema,
     UserQuerySchema,
     UserRoleQuerySchema,
     UserRoleSchema,
-    UserUpdateSchema,
-    UserLoginSchema
+    UserUpdateSchema
 } from './user.schema';
+
+const router: express.Router = express.Router();
+const userController = new UserController();
+
+const validator = new Validator({ allErrors: true, removeAdditional: true });
 
 // todo add control of authorization and authentication
 
@@ -61,7 +62,7 @@ router
      *     }
      */
     .post(
-        validator.validate({body: UserCreateSchema}),
+        validator.validate({ body: UserCreateSchema }),
         userController.register);
 
 router
@@ -139,23 +140,23 @@ router
     .get(userController.current);
 
 router.route('/users/:id')
-    /**
-     * @api {get} /users/:id Get one user
-     *
-     * @apiGroup User
-     *
-     * @apiSuccess {array} users
-     *
-     * @apiSuccessExample {json} Success response
-     *  HTTP/1.1 200 Created
-     *  {
-     *       "username": "foo",
-     *       "email": "foo@bar.baz",
-     *       "password": "xqPGyK3yWtIsCupTiyajMZJMKs9Oeby3",
-     *       "id": "5b179f629fea4000ffcf2fbc",
-     *       "roles":[]
-     *     }
-     */
+/**
+ * @api {get} /users/:id Get one user
+ *
+ * @apiGroup User
+ *
+ * @apiSuccess {array} users
+ *
+ * @apiSuccessExample {json} Success response
+ *  HTTP/1.1 200 Created
+ *  {
+ *       "username": "foo",
+ *       "email": "foo@bar.baz",
+ *       "password": "xqPGyK3yWtIsCupTiyajMZJMKs9Oeby3",
+ *       "id": "5b179f629fea4000ffcf2fbc",
+ *       "roles":[]
+ *     }
+ */
     .get(
         validator.validate({
             params: UserQuerySchema
@@ -188,7 +189,10 @@ router.route('/users/:id')
      *
      */
     .put(
-        validator.validate({params: UserQuerySchema, body: UserUpdateSchema}),
+        validator.validate({
+            params: UserQuerySchema,
+            body: UserUpdateSchema
+        }),
         userController.update)
     /**
      * @api {delete} /users/:id Delete user
@@ -207,12 +211,16 @@ router.route('/users/:id')
      *       "message": "Not found"
      *     }
      */
-    .delete( validator.validate({params: UserQuerySchema}),userController.remove);
+    .delete(
+        validator.validate({
+            params: UserQuerySchema
+        }),
+        userController.remove);
 
 router
     .route('/users/:id/roles')
     /**
-     * @api {post} /user/:id/roles Add role to user
+     * @api {post} /users/:id/roles Add role to user
      *
      * @apiGroup User
      *
@@ -234,7 +242,7 @@ router
 router
     .route('/users/:id/roles/:roleId')
     /**
-     * @api {delete} /user/:id/roles/:roleId Remove role to user
+     * @api {delete} /users/:id/roles/:roleId Remove role to user
      *
      * @apiGroup User
      *

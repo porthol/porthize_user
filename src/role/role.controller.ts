@@ -68,4 +68,26 @@ export class RoleController {
                 handleError(err, res);
             });
     }
+
+    addPrivilege(req: Request, res: Response): void {
+        RoleService.get().addPrivilege(req.params.id, req.body.privilegeId)
+            .then(role => {
+                res.status(httpStatus.OK)
+                    .send(role);
+            })
+            .catch(err => {
+                handleError(err, res);
+            });
+    }
+
+    removePrivilege(req: Request, res: Response): void {
+        RoleService.get().removePrivilege(req.params.id, req.params.privilegeId)
+            .then(role => {
+                res.status(httpStatus.OK)
+                    .send(role);
+            })
+            .catch(err => {
+                handleError(err, res);
+            });
+    }
 }
