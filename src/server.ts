@@ -1,11 +1,11 @@
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils/logger';
-import { getConfiguration } from './utils/configurationHelper';
+import { getConfiguration } from './utils/configuration.helper';
 import * as mongoose from 'mongoose';
-import { getPackageName } from './utils/packageHelper';
+import { getPackageName } from './utils/package.helper';
 import { App } from './app';
 import { createServer } from 'http';
-import { getDatabaseConnectionUrl } from './utils/connectionHelper';
-import { CommunicationHelper } from './utils/CommunicationHelper';
+import { getDatabaseConnectionUrl } from './utils/connection.helper';
+import { CommunicationHelper } from './utils/communication.helper';
 
 const appName = getPackageName();
 
