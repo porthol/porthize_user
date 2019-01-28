@@ -32,4 +32,10 @@ export const UserSchema = new Schema({
 
 UserSchema.plugin(UniqueValidator);
 
+UserSchema.pre('save', next => {
+    this.updatedAt = Date.now();
+
+    next();
+});
+
 export const UserModel = model<IUser>('user', UserSchema, 'users');
