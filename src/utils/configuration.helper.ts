@@ -1,4 +1,4 @@
-import { join, extname } from 'path';
+import { extname, join } from 'path';
 import { path } from 'app-root-path';
 import { CustomError, CustomErrorCode } from './CustomError';
 import * as _ from 'lodash';

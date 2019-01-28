@@ -1,5 +1,5 @@
-import { getConfiguration } from './configurationHelper';
-import { getPackageName } from './packageHelper';
+import { getConfiguration } from './configuration.helper';
+import { getPackageName } from './package.helper';
 
 const appName = getPackageName();
 
