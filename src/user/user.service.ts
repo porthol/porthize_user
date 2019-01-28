@@ -5,7 +5,7 @@ import { CustomError, CustomErrorCode } from '../utils/CustomError';
 import { RoleModel } from '../role';
 import { comparePassword } from '../utils/comparePassword';
 import * as jwt from 'jsonwebtoken';
-import { getConfiguration } from '../utils/configurationHelper';
+import { getConfiguration } from '../utils/configuration.helper';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from '../utils/logger';
 import ObjectId = mongoose.Types.ObjectId;
 

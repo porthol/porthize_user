@@ -2,7 +2,7 @@ import { UserService } from './user.service';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCode } from '../utils/CustomError';
-import { handleError } from '../utils/handleErrorHelper';
+import { handleError } from '../utils/handleError.helper';
 import { JsonWebTokenError } from 'jsonwebtoken';
 
 export class UserController {
