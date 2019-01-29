@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
-import { configure } from './configure';
+import { configureRouter } from './configure';
 
 
 export class App {
@@ -63,7 +63,7 @@ export class App {
         if (this.appName in this.configuration) {
             configuration = this.configuration[this.appName];
         }
-        const appRouters: express.Router[] = configure(configuration);
+        const appRouters: express.Router[] = configureRouter(configuration);
         // Mount public router to /
         this.app.use('/', appRouters[0]);
 

@@ -11,12 +11,12 @@ export class ModelManager{
 
 
   registerModel <T extends Document> (model: Model<T>){
-    this.modelByName[model.name] = model;
+    this.modelByName[model.modelName] = model;
   }
 
   getModel (name: string) {
-    const model = !this.modelByName[name];
-    if (model) {
+    const model = this.modelByName[name];
+    if (!model) {
       throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Model not found');
     }
     return model;
