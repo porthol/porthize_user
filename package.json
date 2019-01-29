@@ -17,6 +17,7 @@
         "node": ">=8.9.0"
     },
     "dependencies": {
+        "ajv": "^6.7.0",
         "app-root-path": "^2.1.0",
         "bcrypt": "^3.0.3",
         "body-parser": "^1.18.3",
@@ -33,6 +34,7 @@
         "winston": "^3.1.0"
     },
     "devDependencies": {
+        "@types/ajv": "^1.0.0",
         "@types/app-root-path": "^1.2.4",
         "@types/bcrypt": "^3.0.0",
         "@types/body-parser": "^1.17.0",
