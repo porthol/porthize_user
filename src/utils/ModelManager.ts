@@ -1,4 +1,5 @@
 import { Document, Model } from 'mongoose';
+import { CustomError, CustomErrorCode } from './CustomError';
 
 export class ModelManager{
   private modelByName : {[attr:string]: Model<any>};
@@ -14,7 +15,11 @@ export class ModelManager{
   }
 
   getModel (name: string) {
-    return this.modelByName[name];
+    const model = !this.modelByName[name];
+    if (model) {
+      throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Model not found');
+    }
+    return model;
   }
 }
 
