@@ -9,7 +9,7 @@ interface Headers {
 interface IConfigCommunicationHelper {
   gatewayAddress: string;
   gatewayPort: number;
-
+  nameRules: string;
 }
 
 export class CommunicationHelper {
@@ -42,7 +42,7 @@ export class CommunicationHelper {
       headers = {};
     }
 
-    headers.Host = serviceName + '.service';
+    headers.Host = this.config.nameRules.replace('{serviceName}',serviceName);
 
     const options: UriOptions & RequestPromiseOptions = {
       headers,
@@ -54,7 +54,6 @@ export class CommunicationHelper {
       options.body = body;
       options.json = true;
     }
-
     console.log(options);
 
     return options;

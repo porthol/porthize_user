@@ -3,7 +3,6 @@ import { model, Schema } from 'mongoose';
 import { isEmail } from 'validator';
 import { IUser } from './user.document';
 import * as UniqueValidator from 'mongoose-unique-validator';
-import { modelManager } from '../utils/ModelManager';
 import ObjectId = mongoose.Schema.Types.ObjectId;
 
 
@@ -40,5 +39,3 @@ UserSchema.pre('save', next => {
 });
 
 export const UserModel = model<IUser>('user', UserSchema, 'users');
-
-modelManager.registerModel(UserModel);

@@ -1,7 +1,6 @@
 import { model, Schema } from 'mongoose';
 import { IRole } from './role.document';
 import { PrivilegeSchema } from '../privilege';
-import { modelManager } from '../utils/ModelManager';
 
 
 export const RoleSchema = new Schema({
@@ -19,5 +18,3 @@ export const RoleSchema = new Schema({
 });
 
 export const RoleModel = model<IRole>('Role', RoleSchema, 'roles');
-
-modelManager.registerModel(RoleModel);

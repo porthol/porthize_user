@@ -2,6 +2,10 @@ import * as express from 'express';
 import UserRoutes from './user/user.routes';
 import PrivilegeRoutes from './privilege/privilege.routes';
 import RoleRoutes from './role/role.routes';
+import { UserModel } from './user';
+import { PrivilegeModel } from './privilege';
+import { RoleModel } from './role';
+import { modelManager } from './utils/ModelManager';
 
 /**
  * Function used to configure application
@@ -11,6 +15,13 @@ import RoleRoutes from './role/role.routes';
  * @returns {Promise<express.Router[]>}
  */
 export function configure(configuration?: object): express.Router[] {
+
+  // Insert here all your model
+  // Register models created
+  modelManager.registerModel(UserModel);
+  modelManager.registerModel(PrivilegeModel);
+  modelManager.registerModel(RoleModel);
+
   // Create a new router that will be exported and used by top-level app
   const router = express.Router();
 
