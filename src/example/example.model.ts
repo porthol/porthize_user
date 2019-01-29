@@ -1,6 +1,5 @@
 import { model, Schema } from 'mongoose';
 import { IExample } from './example.document';
-import { modelManager } from '../utils/ModelManager';
 
 const PositionSchema = new Schema({
   latitude: {
