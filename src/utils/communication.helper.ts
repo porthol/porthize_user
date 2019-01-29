@@ -54,7 +54,6 @@ export class CommunicationHelper {
       options.body = body;
       options.json = true;
     }
-    console.log(options);
 
     return options;
   }
