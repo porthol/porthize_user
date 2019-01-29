@@ -1,5 +1,6 @@
 import { model, Schema } from 'mongoose';
 import { IExample } from './example.document';
+import { modelManager } from '../utils/ModelManager';
 
 const PositionSchema = new Schema({
   latitude: {
@@ -29,4 +30,6 @@ export const ExampleSchema = new Schema({
   // potentially need a listener to refer on listener service which receive data from sigfox
 });
 
-export const ExampleModel = model<IExample>('Example', ExampleSchema, 'examples');
+export const ExampleModel = model<IExample>('example', ExampleSchema, 'examples');
+
+modelManager.registerModel(ExampleModel);
