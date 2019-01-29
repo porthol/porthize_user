@@ -11,4 +11,4 @@ export const PrivilegeSchema = new Schema({
     }
 });
 
-export const PrivilegeModel = model<IPrivilege>('Privilege', PrivilegeSchema, 'privileges');
+export const PrivilegeModel = model<IPrivilege>('privilege', PrivilegeSchema, 'privileges');
