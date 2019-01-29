@@ -126,7 +126,7 @@ export class UserService {
         if (comparePassword(loginRequest.password, user.password)) {
             const iat = Math.floor(Date.now() / 1000);
             const payload: any = {
-                userid: user._id,
+                userId: user._id,
                 iat
             };
 
@@ -168,7 +168,11 @@ export class UserService {
         if (!config.jwt) {
             throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal server error : no token config');
         }
+        if(!tokenFromHeader) {
+            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'There is no token present');
+        }
         const token = getCleanToken(tokenFromHeader);
+
         const result = await jwt.verify(token, config.jwt.secret, config.jwt.options);
 
         return result;

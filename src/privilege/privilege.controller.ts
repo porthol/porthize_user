@@ -1,23 +1,20 @@
 import { PrivilegeService } from './privilege.service';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCode } from '../utils/CustomError';
-import { handleError } from '../utils/handleError.helper';
 
 export class PrivilegeController {
 
-    getAll(req: Request, res: Response): void {
+    getAll(req: Request, res: Response, next: NextFunction): void {
         PrivilegeService.get().getAll(req.query)
             .then(privileges => {
                 res.status(httpStatus.OK)
                     .send(privileges);
             })
-            .catch(err => {
-                handleError(err, res);
-            });
+            .catch(next);
     }
 
-    get(req: Request, res: Response): void {
+    get(req: Request, res: Response, next: NextFunction): void {
         PrivilegeService.get().get(req.params.id, req.query)
             .then(privilege => {
                 if (!privilege) {
@@ -27,34 +24,28 @@ export class PrivilegeController {
                         .send(privilege);
                 }
             })
-            .catch(err => {
-                handleError(err, res);
-            });
+            .catch(next);
     }
 
-    create(req: Request, res: Response): void {
+    create(req: Request, res: Response, next: NextFunction): void {
         PrivilegeService.get().create(req.body)
             .then(privilege => {
                 res.status(httpStatus.CREATED)
                     .send(privilege);
             })
-            .catch(err => {
-                handleError(err, res);
-            });
+            .catch(next);
     }
 
-    update(req: Request, res: Response): void {
+    update(req: Request, res: Response, next: NextFunction): void {
         PrivilegeService.get().update(req.params.id, req.body)
             .then(privilege => {
                 res.status(httpStatus.OK)
                     .send(privilege);
             })
-            .catch(err => {
-                handleError(err, res);
-            });
+            .catch(next);
     }
 
-    remove(req: Request, res: Response): void {
+    remove(req: Request, res: Response, next: NextFunction): void {
         PrivilegeService.get().delete(req.params.id)
             .then(result => {
                 if (result.n === 0) {
@@ -64,8 +55,6 @@ export class PrivilegeController {
                         .send(result);
                 }
             })
-            .catch(err => {
-                handleError(err, res);
-            });
+            .catch(next);
     }
 }

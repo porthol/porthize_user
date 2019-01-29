@@ -1,23 +1,20 @@
 import { RoleService } from './role.service';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCode } from '../utils/CustomError';
-import { handleError } from '../utils/handleError.helper';
 
 export class RoleController {
 
-    getAll(req: Request, res: Response): void {
+    getAll(req: Request, res: Response, next: NextFunction): void {
         RoleService.get().getAll(req.query)
             .then(roles => {
                 res.status(httpStatus.OK)
                     .send(roles);
             })
-            .catch(err => {
-                handleError(err, res);
-            });
+            .catch(next);
     }
 
-    get(req: Request, res: Response): void {
+    get(req: Request, res: Response, next: NextFunction): void {
         RoleService.get().get(req.params.id, req.query)
             .then(role => {
                 if (!role) {
@@ -27,34 +24,28 @@ export class RoleController {
                         .send(role);
                 }
             })
-            .catch(err => {
-                handleError(err, res);
-            });
+            .catch(next);
     }
 
-    create(req: Request, res: Response): void {
+    create(req: Request, res: Response, next: NextFunction): void {
         RoleService.get().create(req.body)
             .then(role => {
                 res.status(httpStatus.CREATED)
                     .send(role);
             })
-            .catch(err => {
-                handleError(err, res);
-            });
+            .catch(next);
     }
 
-    update(req: Request, res: Response): void {
+    update(req: Request, res: Response, next: NextFunction): void {
         RoleService.get().update(req.params.id, req.body)
             .then(role => {
                 res.status(httpStatus.OK)
                     .send(role);
             })
-            .catch(err => {
-                handleError(err, res);
-            });
+            .catch(next);
     }
 
-    remove(req: Request, res: Response): void {
+    remove(req: Request, res: Response, next: NextFunction): void {
         RoleService.get().delete(req.params.id)
             .then(result => {
                 if (result.n === 0) {
@@ -64,30 +55,24 @@ export class RoleController {
                         .send(result);
                 }
             })
-            .catch(err => {
-                handleError(err, res);
-            });
+            .catch(next);
     }
 
-    addPrivilege(req: Request, res: Response): void {
+    addPrivilege(req: Request, res: Response, next: NextFunction): void {
         RoleService.get().addPrivilege(req.params.id, req.body.privilegeId)
             .then(role => {
                 res.status(httpStatus.OK)
                     .send(role);
             })
-            .catch(err => {
-                handleError(err, res);
-            });
+            .catch(next);
     }
 
-    removePrivilege(req: Request, res: Response): void {
+    removePrivilege(req: Request, res: Response, next: NextFunction): void {
         RoleService.get().removePrivilege(req.params.id, req.params.privilegeId)
             .then(role => {
                 res.status(httpStatus.OK)
                     .send(role);
             })
-            .catch(err => {
-                handleError(err, res);
-            });
+            .catch(next);
     }
 }
