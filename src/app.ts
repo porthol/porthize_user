@@ -3,7 +3,7 @@ import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
 import { configureRouter } from './configure';
-import { expressMetricsMiddleware } from './utils/expressMetrics.middleware';
+import { addStartTime, expressMetricsMiddleware } from './utils/expressMetrics.middleware';
 
 
 export class App {
@@ -75,6 +75,7 @@ export class App {
     }
 
     applyExpressMiddlewaresRouter(): void {
+        this.app.use(addStartTime);
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(helmet());
