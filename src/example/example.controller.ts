@@ -1,23 +1,20 @@
 import { ExampleService } from './example.service';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCode } from '../utils/CustomError';
-import { handleError } from '../utils/handleError.helper';
 
 export class ExampleController {
 
-  getAll(req: Request, res: Response): void {
+  getAll(req: Request, res: Response, next: NextFunction): void {
     ExampleService.get().getAll(req.query)
       .then(examples => {
         res.status(httpStatus.OK)
           .send(examples);
       })
-      .catch(err => {
-        handleError(err, res);
-      });
+      .catch(next);
   }
 
-  get(req: Request, res: Response): void {
+  get(req: Request, res: Response, next: NextFunction): void {
     ExampleService.get().get(req.params.id, req.query)
       .then(example => {
         if (!example) {
@@ -27,23 +24,19 @@ export class ExampleController {
             .send(example);
         }
       })
-      .catch(err => {
-        handleError(err, res);
-      });
+      .catch(next);
   }
 
-  register(req: Request, res: Response): void {
+  register(req: Request, res: Response, next: NextFunction): void {
     ExampleService.get().create(req.body)
       .then(example => {
         res.status(httpStatus.CREATED)
           .send(example);
       })
-      .catch(err => {
-        handleError(err, res);
-      });
+      .catch(next);
   }
 
-  update(req: Request, res: Response): void {
+  update(req: Request, res: Response, next: NextFunction): void {
     ExampleService.get().update(req.params.id, req.body)
       .then(result => {
         if (result.nModified === 0) {
@@ -54,12 +47,10 @@ export class ExampleController {
             .send(req.body);
         }
       })
-      .catch(err => {
-        handleError(err, res);
-      });
+      .catch(next);
   }
 
-  delete(req: Request, res: Response): void {
+  delete(req: Request, res: Response, next: NextFunction): void {
     ExampleService.get().delete(req.params.id)
       .then(result => {
         if (result.n === 0) {
@@ -69,8 +60,6 @@ export class ExampleController {
             .send(result);
         }
       })
-      .catch(err => {
-        handleError(err, res);
-      });
+      .catch(next);
   }
 }

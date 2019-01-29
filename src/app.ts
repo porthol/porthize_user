@@ -4,6 +4,7 @@ import * as helmet from 'helmet';
 import * as cors from 'cors';
 import { configureRouter } from './configure';
 import { addStartTime, expressMetricsMiddleware } from './utils/expressMetrics.middleware';
+import { handleErrorMiddleware } from './utils/handleError.middleware';
 
 
 export class App {
@@ -86,7 +87,7 @@ export class App {
     async bootstrap(): Promise<express.Application> {
         this.applyExpressMiddlewaresRouter();
         await this.registerAppRouters();
-
+        this.app.use(handleErrorMiddleware); // error handler middleware should be put after router
         return this.app;
     }
 }
