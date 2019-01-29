@@ -10,12 +10,7 @@ import { ExampleModel } from './example';
  * @param {object} [configuration]
  * @returns {Promise<express.Router[]>}
  */
-export function configure(configuration?: object): express.Router[] {
-
-  // Insert here all your model
-  // Register models created
-  modelManager.registerModel(ExampleModel);
-
+export function configureRouter(configuration?: object): express.Router[] {
   // Create a new router that will be exported and used by top-level app
   const router = express.Router();
 
@@ -41,4 +36,10 @@ export function configure(configuration?: object): express.Router[] {
 
   // Your app-router is now configured, let's export it !
   return [router, privateRouter];
+}
+
+export function configureModels() {
+  // Insert here all your model
+  // Register models created
+  modelManager.registerModel(ExampleModel);
 }

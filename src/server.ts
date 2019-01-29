@@ -6,6 +6,7 @@ import { App } from './app';
 import { createServer } from 'http';
 import { getDatabaseConnectionUrl } from './utils/connection.helper';
 import { CommunicationHelper } from './utils/communication.helper';
+import { configureModels } from './configure';
 
 const appName = getPackageName();
 
@@ -36,6 +37,10 @@ const server = async (appName: string) => {
         getLogger('default').error('The database url can not be configured, you should check config.json');
       }
     }
+
+    // I should have a var with the database state available every where
+    // Model initialisation
+    configureModels();
 
     const app: App = new App({
       appName,
