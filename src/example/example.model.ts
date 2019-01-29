@@ -31,5 +31,3 @@ export const ExampleSchema = new Schema({
 });
 
 export const ExampleModel = model<IExample>('example', ExampleSchema, 'examples');
-
-modelManager.registerModel(ExampleModel);

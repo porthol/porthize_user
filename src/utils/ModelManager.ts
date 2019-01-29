@@ -1,5 +1,6 @@
 import { Model, Document } from 'mongoose';
 import { CustomError, CustomErrorCode } from './CustomError';
+import { ExampleModel } from '../example';
 
 export class ModelManager{
   private modelByName : {[attr:string]: Model<any>};

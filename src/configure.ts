@@ -1,5 +1,7 @@
 import * as express from 'express';
 import ExampleRoutes from './example/example.routes';
+import { modelManager } from './utils/ModelManager';
+import { ExampleModel } from './example';
 
 /**
  * Function used to configure application
@@ -9,6 +11,11 @@ import ExampleRoutes from './example/example.routes';
  * @returns {Promise<express.Router[]>}
  */
 export function configure(configuration?: object): express.Router[] {
+
+  // Insert here all your model
+  // Register models created
+  modelManager.registerModel(ExampleModel);
+
   // Create a new router that will be exported and used by top-level app
   const router = express.Router();
 
