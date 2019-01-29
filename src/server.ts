@@ -8,6 +8,7 @@ import { getDatabaseConnectionUrl } from './utils/connection.helper';
 import { CommunicationHelper } from './utils/communication.helper';
 import { configureModels } from './configure';
 import { initData } from './utils/InitData.helper';
+import { CustomError, CustomErrorCode } from './utils/CustomError';
 
 const appName = getPackageName();
 
@@ -35,7 +36,7 @@ const server = async (appName: string) => {
         getLogger('default').log('info',
           'Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
       } else {
-        getLogger('default').error('The database url can not be configured, you should check config.json');
+        throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'The database url can not be configured, you should check config.json');
       }
     }
 

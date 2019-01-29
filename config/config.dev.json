@@ -4,15 +4,9 @@
       {
         "host": "localhost",
         "port": 27017
-      },{
-        "host": "localhost",
-        "port": 27018
-      },{
-        "host": "localhost",
-        "port": 27019
       }
     ],
-    "databaseName": null,
+    "databaseName": "examples",
     "traefik": {
       "gatewayAddress": "127.0.0.1",
       "gatewayPort": 80,

@@ -3,6 +3,7 @@ import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
 import { configureRouter } from './configure';
+import { expressMetricsMiddleware } from './utils/expressMetrics.middleware';
 
 
 export class App {
@@ -78,6 +79,7 @@ export class App {
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(helmet());
         this.app.use(cors());
+        this.app.use(expressMetricsMiddleware);
     }
 
     async bootstrap(): Promise<express.Application> {

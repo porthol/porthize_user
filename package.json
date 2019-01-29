@@ -8,8 +8,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc -p tsconfig.back.json",
         "start": "node ./dist/server.js",
-        "watch": "npm run build && (tsc -p tsconfig.back.json -watch | nodemon ./dist/server.js)",
-        "debug": "node --require source-map-support/register ./dist/server.js"
+        "watch": "npm run build && (tsc -p tsconfig.back.json -watch | nodemon ./dist/server.js)"
     },
     "author": "Thomas BRUNET",
     "license": "ISC",
