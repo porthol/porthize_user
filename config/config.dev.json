@@ -15,7 +15,8 @@
     "databaseName": null,
     "traefik": {
       "gatewayAddress": "127.0.0.1",
-      "gatewayPort": 80
+      "gatewayPort": 80,
+      "nameRules": "{serviceName}.service"
     }
   }
 }
