@@ -2,7 +2,6 @@ import * as mongoose from 'mongoose';
 import { model, Schema } from 'mongoose';
 import { isEmail } from 'validator';
 import { IUser } from './user.document';
-import * as UniqueValidator from 'mongoose-unique-validator';
 import ObjectId = mongoose.Schema.Types.ObjectId;
 
 
@@ -29,8 +28,6 @@ export const UserSchema = new Schema({
     },
     roles: [ObjectId]
 });
-
-UserSchema.plugin(UniqueValidator);
 
 UserSchema.pre('save', next => {
     this.updatedAt = Date.now();

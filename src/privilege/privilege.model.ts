@@ -4,10 +4,13 @@ import { IPrivilege } from './privilege.document';
 export const PrivilegeSchema = new Schema({
     resource: {
         type: String,
-        required: true
+        required: true,
+        unique : true
     },
-    actions: {
-        type: [String]
+    actionsAvailable: {
+        type: Object,
+        default: {},
+        required: true
     }
 });
 

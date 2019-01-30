@@ -1,7 +1,7 @@
 import { PrivilegeModel } from './privilege.model';
 import * as mongoose from 'mongoose';
-import ObjectId = mongoose.Types.ObjectId;
 import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import ObjectId = mongoose.Types.ObjectId;
 
 export class PrivilegeService {
     private static instance: PrivilegeService;
@@ -30,7 +30,7 @@ export class PrivilegeService {
         return await privilege.save();
     }
 
-    async update(id: ObjectId, privilegeData: any){
+    async update(id: ObjectId, privilegeData: any) {
         const privilege = await PrivilegeModel.findById(id);
         if (!privilege) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
@@ -41,8 +41,31 @@ export class PrivilegeService {
         return await privilege.save();
     }
 
-    async delete(id: ObjectId){
-        return await PrivilegeModel.deleteOne({_id:id});
+    async delete(id: ObjectId) {
+        return await PrivilegeModel.deleteOne({ _id: id });
+    }
+
+    async addRoutes(privilegeId: string, action: string, routes: string[]) {
+        const privilege = await PrivilegeModel.findById(privilegeId);
+        if (!privilege) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
+        }
+
+        if (!privilege.actionsAvailable) {
+            privilege.actionsAvailable = {};
+        }
+
+        if (!privilege.actionsAvailable[action]) {
+            privilege.actionsAvailable[action] = [];
+        }
+
+        for(const route of routes){
+            if (privilege.actionsAvailable[action].indexOf(route) === -1) {
+                privilege.actionsAvailable[action].push(route);
+            }
+        }
+
+        return await privilege.save();
     }
 
 }

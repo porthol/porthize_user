@@ -2,11 +2,11 @@ import { model, Schema } from 'mongoose';
 import { IRole } from './role.document';
 import { PrivilegeSchema } from '../privilege';
 
-
 export const RoleSchema = new Schema({
     key: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     name: {
         type: String,

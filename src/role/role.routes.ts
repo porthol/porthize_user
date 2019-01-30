@@ -44,7 +44,7 @@ router
      * @apiParam {String} name
      *
      * @apiSuccess {String} name
-     * @apiSuccess {String} id ObjectID
+     * @apiSuccess {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 201 Created
@@ -66,10 +66,10 @@ router
      *
      * @apiGroup Role
      *
-     * @apiParam {String} id ObjectID
+     * @apiParam {String} id ObjectId
      *
      * @apiSuccess {String} name
-     * @apiSuccess {String} id ObjectID
+     * @apiSuccess {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 200 OK
@@ -97,12 +97,12 @@ router
      *
      * @apiGroup Role
      *
-     * @apiParam {String} id ObjectID
+     * @apiParam {String} id ObjectId
      *
      * @apiParam {String} name
      *
      * @apiSuccess {String} name
-     * @apiSuccess {String} id ObjectID
+     * @apiSuccess {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 200 OK
@@ -130,7 +130,7 @@ router
      *
      * @apiGroup Role
      *
-     * @apiParam {String} id ObjectID
+     * @apiParam {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 204 No Content
@@ -186,8 +186,8 @@ router
      *
      * @apiGroup Role
      *
-     * @apiParam {String} id ObjectID
-     * @apiParam {String} privilegeId ObjectID
+     * @apiParam {String} id ObjectId
+     * @apiParam {String} privilegeId ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 202 Accepted

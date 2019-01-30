@@ -9,6 +9,8 @@ import {
     UserRoleSchema,
     UserUpdateSchema
 } from './user.schema';
+import { internalAuthenticationMiddleware } from '../utils/internalAuthentication.middleware';
+import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
 
 const router: express.Router = express.Router();
 const userController = new UserController();
@@ -49,7 +51,7 @@ router
      * @apiSuccess {String} username
      * @apiSuccess {String} email
      * @apiSuccess {String} password Hashed password
-     * @apiSuccess {String} id ObjectID
+     * @apiSuccess {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 201 Created
@@ -119,7 +121,7 @@ router
      * @apiGroup User
      *
      * @apiSuccess {String} username
-     * @apiSuccess {String} id ObjectID
+     * @apiSuccess {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 200 OK
@@ -167,7 +169,7 @@ router.route('/users/:id')
      *
      * @apiGroup User
      *
-     * @apiParam {String} id ObjectID
+     * @apiParam {String} id ObjectId
      *
      * @apiParam {String} [username] Must be unique
      * @apiParam {String} [email] Must be unique
@@ -175,7 +177,7 @@ router.route('/users/:id')
      * @apiSuccess {String} username
      * @apiSuccess {String} email
      * @apiSuccess {String} password Hashed password
-     * @apiSuccess {String} id ObjectID
+     * @apiSuccess {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 200 OK
@@ -193,13 +195,15 @@ router.route('/users/:id')
             params: UserQuerySchema,
             body: UserUpdateSchema
         }),
+        internalAuthenticationMiddleware,
+        internalAuthorizationMiddleware,
         userController.update)
     /**
      * @api {delete} /users/:id Delete user
      *
      * @apiGroup User
      *
-     * @apiParam {String} id ObjectID
+     * @apiParam {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 204 No Content
@@ -215,6 +219,7 @@ router.route('/users/:id')
         validator.validate({
             params: UserQuerySchema
         }),
+        internalAuthenticationMiddleware,
         userController.remove);
 
 router
@@ -224,9 +229,9 @@ router
      *
      * @apiGroup User
      *
-     * @apiParam {String} id ObjectID
+     * @apiParam {String} id ObjectId
      *
-     * @apiParam {String} roleId ObjectID
+     * @apiParam {String} roleId ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 202 Accepted
@@ -246,8 +251,8 @@ router
      *
      * @apiGroup User
      *
-     * @apiParam {String} id ObjectID
-     * @apiParam {String} roleId ObjectID
+     * @apiParam {String} id ObjectId
+     * @apiParam {String} roleId ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 202 Accepted
@@ -258,5 +263,8 @@ router
         }),
         userController.removeRole
     );
+
+    console.log(router.stack.entries());
+    console.log(JSON.stringify(router.stack.entries().next().value[1].route, null, ' '));
 
 export default router;

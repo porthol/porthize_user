@@ -57,4 +57,16 @@ export class PrivilegeController {
             })
             .catch(next);
     }
+
+    addRoutes(req: Request, res: Response, next: NextFunction): void {
+        PrivilegeService.get().addRoutes(
+            req.params.id,
+            req.body.action,
+            req.body.routes)
+            .then( privilege => {
+                res.status(httpStatus.OK)
+                    .send(privilege);
+            })
+            .catch(next);
+    }
 }

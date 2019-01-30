@@ -17,7 +17,18 @@ export const PrivilegeCreateSchema = {
         resource: {
             type: 'string'
         },
-        actions: {
+        actionsAvailable: {
+            type: 'object'
+        }
+    }
+};
+
+export const PrivilegeUpdateSchema = {
+    type: 'object',
+    required: ['actionsAvailable'],
+    additionalProperties: false,
+    properties: {
+        actionsAvailable: {
             type: 'array',
             items: {
                 type: 'string'
@@ -26,16 +37,19 @@ export const PrivilegeCreateSchema = {
     }
 };
 
-export const PrivilegeUpdateSchema = {
+export const PrivilegeAddRouteSchema = {
     type: 'object',
-    required: ['actions'],
+    required: ['action', 'routes'],
     additionalProperties: false,
     properties: {
-        actions: {
+        action: {
+            type: 'string'
+        },
+        routes: {
             type: 'array',
             items: {
                 type: 'string'
             }
         }
     }
-};
+}

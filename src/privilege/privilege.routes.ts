@@ -1,7 +1,12 @@
 import * as express from 'express';
 import { PrivilegeController } from './privilege.controller';
 import { Validator } from 'express-json-validator-middleware';
-import { PrivilegeCreateSchema, PrivilegeQuerySchema, PrivilegeUpdateSchema } from './privilege.schemas';
+import {
+    PrivilegeAddRouteSchema,
+    PrivilegeCreateSchema,
+    PrivilegeQuerySchema,
+    PrivilegeUpdateSchema
+} from './privilege.schemas';
 
 const router: express.Router = express.Router();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
@@ -36,11 +41,11 @@ router
      * @apiGroup Privilege
      *
      * @apiParam {String} resource,
-     * @apiParam {String} actions
+     * @apiParam {String} actionsAvailable
      *
      * @apiSuccess {String} resource
-     * @apiSuccess {String} id ObjectID
-     * @apiSuccess {String[]} actions
+     * @apiSuccess {String} id ObjectId
+     * @apiSuccess {String[]} actionsAvailable
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 201 Created
@@ -51,7 +56,9 @@ router
      *    }
      */
     .post(
-        validator.validate({ body: PrivilegeCreateSchema }),
+        validator.validate({
+            body: PrivilegeCreateSchema
+        }),
         privilegeController.create
     );
 
@@ -62,10 +69,10 @@ router
      *
      * @apiGroup Privilege
      *
-     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} id ObjectId
      *
      * @apiSuccess {String} name
-     * @apiSuccess {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiSuccess {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 200 OK
@@ -85,20 +92,56 @@ router
      *     }
      */
     .get(
-        validator.validate({ params: PrivilegeQuerySchema }),
+        validator.validate({
+            params: PrivilegeQuerySchema
+        }),
         privilegeController.get
+    )
+    /**
+     * @api {post} /privilege/:id Add routes
+     *
+     * @apiGroup Privilege
+     *
+     * @apiParam {String} id ObjectId
+     *
+     * @apiParam {String} action name of the action binded
+     * @apiParam {String[]} routes routes list to this action
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 200 OK
+     *     {
+     *        "_id": "5b179f629fea4000ffcf2fbc",
+     *        "resource": "user",
+     *        "action":["find"]
+     *    }
+     *
+     * @apiErrorExample {json} Error privilege not found
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "error": {
+     *          "code": "ERRNOTFOUND",
+     *          "message": "Not found"
+     *       }
+     *     }
+     */
+    .post(
+        validator.validate({
+            params: PrivilegeQuerySchema,
+            body: PrivilegeAddRouteSchema
+        }),
+        privilegeController.addRoutes
     )
     /**
      * @api {put} /privilege/:id Update privilege
      *
      * @apiGroup Privilege
      *
-     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} id ObjectId
      *
      * @apiParam {String} name
      *
      * @apiSuccess {String} name
-     * @apiSuccess {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiSuccess {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 200 OK
@@ -118,7 +161,10 @@ router
      *     }
      */
     .put(
-        validator.validate({ body: PrivilegeUpdateSchema, params: PrivilegeQuerySchema }),
+        validator.validate({
+            body: PrivilegeUpdateSchema,
+            params: PrivilegeQuerySchema
+        }),
         privilegeController.update
     )
     /**
@@ -126,7 +172,7 @@ router
      *
      * @apiGroup Privilege
      *
-     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 204 No Content
@@ -141,7 +187,9 @@ router
      *     }
      */
     .delete(
-        validator.validate({ params: PrivilegeQuerySchema }),
+        validator.validate({
+            params: PrivilegeQuerySchema
+        }),
         privilegeController.remove
     );
 
