@@ -102,20 +102,26 @@ interface IConfigAuthorisationService {
 export async function exportRoutes(config: IConfigAuthorisationService) {
     getLogger('router.manager').log('info', 'Exporting routes to the authorization server...');
     for (const route of routes) {
-        const result = await communicationHelper.post(
-            config.name,
-            config.route.replace('{resource}', route.resource),
-            {},
-            {
-                action: route.action,
-                routes: [{
-                    method: route.method,
-                    url: route.url
-                }]
+        try {
+            await communicationHelper.post(
+                config.name,
+                config.route.replace('{resource}', route.resource),
+                {},
+                {
+                    action: route.action,
+                    routes: [{
+                        method: route.method,
+                        url: route.url
+                    }]
+                }
+            );
+        } catch (err) {
+            // Silent error we do not stop the service
+            if (err.statusCode >= 400) {
+                getLogger('router.manager')
+                    .log('warn', 'Can not add route ' + route.url +
+                        ' on ' + route.method + ' to the authorization service.');
             }
-        );
-        if (result.statusCode >= 400) {
-            getLogger('router.manager').log('warn', 'Can not add route ' + route + ' to the service authorisation.');
         }
     }
 }
