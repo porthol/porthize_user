@@ -179,6 +179,11 @@ export class UserService {
 
         return result;
     }
+
+    async isAuthorized(user: IUser, route: IRoute) {
+        const roles = RoleModel.find({ _id: { $in: user.roles } });
+        console.log(roles);
+    }
 }
 
 function getCleanToken(tokenFromHeader: string) {

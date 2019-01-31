@@ -17,6 +17,10 @@
       "gatewayAddress": "gateway",
       "gatewayPort": 80,
       "nameRules": "{serviceName}.service"
+    },
+    "authorizationService": {
+      "name": "user",
+      "route": "privileges/{resource}/routes"
     }
   }
 }

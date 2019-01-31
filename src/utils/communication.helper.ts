@@ -1,6 +1,7 @@
-import * as rp from 'request-promise';
+import * as request from 'request-promise';
 import { RequestPromiseOptions } from 'request-promise';
 import { UriOptions } from 'request';
+import * as os from 'os';
 
 interface Headers {
   [key: string]: string;
@@ -20,19 +21,19 @@ export class CommunicationHelper {
   }
 
   async get(serviceName: string, path: string, headers?: Headers) {
-    return await rp.get(this.generateOptions(serviceName, path, headers));
+    return await request.get(this.generateOptions(serviceName, path, headers));
   }
 
   async post(serviceName: string, path: string, headers?: Headers, body?: any) {
-    return await rp.post(this.generateOptions(serviceName, path, headers, body));
+    return await request.post(this.generateOptions(serviceName, path, headers, body));
   }
 
   async put(serviceName: string, path: string, headers?: Headers, body?: any) {
-    return await rp.put(this.generateOptions(serviceName, path, headers, body));
+    return await request.put(this.generateOptions(serviceName, path, headers, body));
   }
 
   async delete(serviceName: string, path: string, headers?: Headers) {
-    return await rp.delete(this.generateOptions(serviceName, path, headers));
+    return await request.delete(this.generateOptions(serviceName, path, headers));
   }
 
   private generateOptions(serviceName: string, path: string, headers?: Headers, body?: any): UriOptions & RequestPromiseOptions {
@@ -43,6 +44,7 @@ export class CommunicationHelper {
     }
 
     headers.Host = this.config.nameRules.replace('{serviceName}',serviceName);
+    headers['internal-request'] = os.hostname();
 
     const options: UriOptions & RequestPromiseOptions = {
       headers,
@@ -61,7 +63,7 @@ export class CommunicationHelper {
   private getBaseUrl() {
     let uri = `http://${this.config.gatewayAddress}`;
     if (this.config.gatewayPort !== 80) {
-      uri += this.config.gatewayPort;
+      uri += ':' + this.config.gatewayPort;
     }
     return uri + '/api/';
   }

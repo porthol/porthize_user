@@ -9,8 +9,12 @@
     "databaseName": "user",
     "traefik": {
       "gatewayAddress": "127.0.0.1",
-      "gatewayPort": 80,
+      "gatewayPort": 3000,
       "nameRules": "{serviceName}.service"
+    },
+    "authorizationService": {
+      "name": "user",
+      "route": "privileges/{resource}/routes"
     }
   }
 }

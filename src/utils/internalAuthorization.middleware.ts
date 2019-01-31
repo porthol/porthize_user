@@ -10,8 +10,14 @@ export function internalAuthorizationMiddleware(req: Request, res: Response, nex
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'The user has not been authenticated');
         }
 
-        next();
-    }catch (err){
+        UserService.get().isAuthorized(user, {
+            url: req.originalUrl,
+            method: req.method })
+            .then(() => {
+                next();
+            })
+            .catch(next);
+    } catch (err) {
         next(err);
     }
 }
