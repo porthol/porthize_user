@@ -9,6 +9,17 @@ export const PrivilegeQuerySchema = {
     }
 };
 
+export const PrivilegeResourceQuerySchema = {
+    type: 'object',
+    required: ['resource'],
+    additionalProperties: false,
+    properties: {
+        resource: {
+            type: 'string'
+        }
+    }
+};
+
 export const PrivilegeCreateSchema = {
     type: 'object',
     required: ['resource'],
@@ -48,8 +59,16 @@ export const PrivilegeAddRouteSchema = {
         routes: {
             type: 'array',
             items: {
-                type: 'string'
+                type: 'object',
+                properties: {
+                    method: {
+                        type: 'string'
+                    },
+                    url: {
+                        type: 'string'
+                    }
+                }
             }
         }
     }
-}
+};

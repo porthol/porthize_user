@@ -1,5 +1,8 @@
+import * as mongoose from 'mongoose';
 import { model, Schema } from 'mongoose';
 import { IPrivilege } from './privilege.document';
+import Mixed = mongoose.Schema.Types.Mixed;
+
 
 export const PrivilegeSchema = new Schema({
     resource: {
@@ -8,7 +11,7 @@ export const PrivilegeSchema = new Schema({
         unique : true
     },
     actionsAvailable: {
-        type: Object,
+        type: Mixed,
         default: {},
         required: true
     }

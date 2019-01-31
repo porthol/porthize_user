@@ -7,6 +7,8 @@ import { comparePassword } from '../utils/comparePassword';
 import * as jwt from 'jsonwebtoken';
 import { getConfiguration } from '../utils/configuration.helper';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from '../utils/logger';
+import { IUser } from './user.document';
+import { IRoute } from '../privilege';
 import ObjectId = mongoose.Types.ObjectId;
 
 const config = getConfiguration().user;
@@ -149,7 +151,7 @@ export class UserService {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Token expired');
         }
 
-        const user = await UserModel.findById(decodedPayload.userid);
+        const user = await UserModel.findById(decodedPayload.userId);
 
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
@@ -168,7 +170,7 @@ export class UserService {
         if (!config.jwt) {
             throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal server error : no token config');
         }
-        if(!tokenFromHeader) {
+        if (!tokenFromHeader) {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'There is no token present');
         }
         const token = getCleanToken(tokenFromHeader);

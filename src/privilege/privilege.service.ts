@@ -1,6 +1,8 @@
 import { PrivilegeModel } from './privilege.model';
 import * as mongoose from 'mongoose';
 import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import { IRoute } from './privilege.document';
+import * as _ from 'lodash';
 import ObjectId = mongoose.Types.ObjectId;
 
 export class PrivilegeService {
@@ -45,25 +47,25 @@ export class PrivilegeService {
         return await PrivilegeModel.deleteOne({ _id: id });
     }
 
-    async addRoutes(privilegeId: string, action: string, routes: string[]) {
-        const privilege = await PrivilegeModel.findById(privilegeId);
+    async addRoutes(resource: string, action: string, routes: IRoute[]) {
+        let privilege = await PrivilegeModel.findOne({ resource });
         if (!privilege) {
-            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
+            // if the resource doesn't exist create it
+            privilege = await this.create({ resource });
+        }
+        const actions = _.assign({},privilege.actionsAvailable);
+
+        if (!actions[action]) {
+            actions[action] = [];
         }
 
-        if (!privilege.actionsAvailable) {
-            privilege.actionsAvailable = {};
-        }
-
-        if (!privilege.actionsAvailable[action]) {
-            privilege.actionsAvailable[action] = [];
-        }
-
-        for(const route of routes){
-            if (privilege.actionsAvailable[action].indexOf(route) === -1) {
-                privilege.actionsAvailable[action].push(route);
+        for (const route of routes) {
+            if (actions[action].indexOf(route) === -1) {
+                actions[action].push(route);
             }
         }
+
+        privilege.set({ actionsAvailable: actions });
 
         return await privilege.save();
     }

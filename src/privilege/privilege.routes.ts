@@ -5,6 +5,7 @@ import {
     PrivilegeAddRouteSchema,
     PrivilegeCreateSchema,
     PrivilegeQuerySchema,
+    PrivilegeResourceQuerySchema,
     PrivilegeUpdateSchema
 } from './privilege.schemas';
 
@@ -20,7 +21,7 @@ const privilegeController = new PrivilegeController();
 router
     .route('/privileges')
     /**
-     * @api {get} /privilege Get privilege list
+     * @api {get} /privileges Get privilege list
      *
      * @apiGroup Privilege
      *
@@ -36,7 +37,7 @@ router
      */
     .get(privilegeController.getAll)
     /**
-     * @api {post} /privilege Create privilege
+     * @api {post} /privileges Create privilege
      *
      * @apiGroup Privilege
      *
@@ -65,7 +66,7 @@ router
 router
     .route('/privileges/:id')
     /**
-     * @api {get} /privilege/:id Get privilege
+     * @api {get} /privileges/:id Get privilege
      *
      * @apiGroup Privilege
      *
@@ -98,41 +99,7 @@ router
         privilegeController.get
     )
     /**
-     * @api {post} /privilege/:id Add routes
-     *
-     * @apiGroup Privilege
-     *
-     * @apiParam {String} id ObjectId
-     *
-     * @apiParam {String} action name of the action binded
-     * @apiParam {String[]} routes routes list to this action
-     *
-     * @apiSuccessExample {json} Success response
-     *     HTTP/1.1 200 OK
-     *     {
-     *        "_id": "5b179f629fea4000ffcf2fbc",
-     *        "resource": "user",
-     *        "action":["find"]
-     *    }
-     *
-     * @apiErrorExample {json} Error privilege not found
-     *     HTTP/1.1 404 Not Found
-     *     {
-     *       "error": {
-     *          "code": "ERRNOTFOUND",
-     *          "message": "Not found"
-     *       }
-     *     }
-     */
-    .post(
-        validator.validate({
-            params: PrivilegeQuerySchema,
-            body: PrivilegeAddRouteSchema
-        }),
-        privilegeController.addRoutes
-    )
-    /**
-     * @api {put} /privilege/:id Update privilege
+     * @api {put} /privileges/:id Update privilege
      *
      * @apiGroup Privilege
      *
@@ -168,7 +135,7 @@ router
         privilegeController.update
     )
     /**
-     * @api {delete} /privilege/:id Delete privilege
+     * @api {delete} /privileges/:id Delete privilege
      *
      * @apiGroup Privilege
      *
@@ -191,6 +158,43 @@ router
             params: PrivilegeQuerySchema
         }),
         privilegeController.remove
+    );
+
+router
+    .route('/privileges/:resource/routes')
+    /**
+     * @api {post} /privilege/:id Add routes
+     *
+     * @apiGroup Privilege
+     *
+     * @apiParam {String} resource resource name string
+     *
+     * @apiParam {String} action name of the action bind
+     * @apiParam {String[]} routes routes list to this action
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 200 OK
+     *     {
+     *        "_id": "5b179f629fea4000ffcf2fbc",
+     *        "resource": "user",
+     *        "action":["find"]
+     *    }
+     *
+     * @apiErrorExample {json} Error privilege not found
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "error": {
+     *          "code": "ERRNOTFOUND",
+     *          "message": "Not found"
+     *       }
+     *     }
+     */
+    .post(
+        validator.validate({
+            params: PrivilegeResourceQuerySchema,
+            body: PrivilegeAddRouteSchema
+        }),
+        privilegeController.addRoutes
     );
 
 export default router;

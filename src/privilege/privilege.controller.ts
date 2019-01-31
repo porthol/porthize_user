@@ -60,7 +60,7 @@ export class PrivilegeController {
 
     addRoutes(req: Request, res: Response, next: NextFunction): void {
         PrivilegeService.get().addRoutes(
-            req.params.id,
+            req.params.resource,
             req.body.action,
             req.body.routes)
             .then( privilege => {

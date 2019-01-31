@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { CustomError, CustomErrorCode } from './CustomError';
+import { UserService } from '../user/user.service';
 
 export function internalAuthorizationMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
@@ -7,10 +8,6 @@ export function internalAuthorizationMiddleware(req: Request, res: Response, nex
 
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'The user has not been authenticated');
-        }
-        if (req.headers['internal-request']) {
-            console.log('headers is present');
-            console.log(req.headers['internal-request']);
         }
 
         next();

@@ -10,7 +10,6 @@ import {
     UserUpdateSchema
 } from './user.schema';
 import { internalAuthenticationMiddleware } from '../utils/internalAuthentication.middleware';
-import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
 
 const router: express.Router = express.Router();
 const userController = new UserController();
@@ -195,8 +194,6 @@ router.route('/users/:id')
             params: UserQuerySchema,
             body: UserUpdateSchema
         }),
-        internalAuthenticationMiddleware,
-        internalAuthorizationMiddleware,
         userController.update)
     /**
      * @api {delete} /users/:id Delete user
@@ -263,8 +260,5 @@ router
         }),
         userController.removeRole
     );
-
-    console.log(router.stack.entries());
-    console.log(JSON.stringify(router.stack.entries().next().value[1].route, null, ' '));
 
 export default router;
