@@ -1,14 +1,15 @@
-import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils/logger';
-import { getConfiguration } from './utils/configuration.helper';
+import {configureLogger, defaultWinstonLoggerOptions, getLogger} from './utils/logger';
+import {getConfiguration} from './utils/configuration.helper';
 import * as mongoose from 'mongoose';
-import { getPackageName } from './utils/package.helper';
-import { App } from './app';
-import { createServer } from 'http';
-import { getDatabaseConnectionUrl } from './utils/connection.helper';
-import { CommunicationHelper } from './utils/communication.helper';
-import { configureModels } from './configure';
-import { initData } from './utils/InitData.helper';
-import { CustomError, CustomErrorCode } from './utils/CustomError';
+import {getPackageName} from './utils/package.helper';
+import {App} from './app';
+import {createServer} from 'http';
+import {getDatabaseConnectionUrl} from './utils/connection.helper';
+import {CommunicationHelper} from './utils/communication.helper';
+import {configureModels} from './configure';
+import {initData} from './utils/InitData.helper';
+import {CustomError, CustomErrorCode} from './utils/CustomError';
+import {exportRoutes} from './utils/router.manager';
 
 const appName = getPackageName();
 
@@ -84,6 +85,8 @@ const server = async (appName: string) => {
         getLogger('default').log('info', '  Press CTRL-C to stop\n');
       }
     });
+
+    await exportRoutes(config[appName].authorizationService);
 
   } catch (err) {
     getLogger('default').log('error', err.message || err);

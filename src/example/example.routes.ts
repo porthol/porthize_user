@@ -1,15 +1,17 @@
 import * as express from 'express';
-import { Validator } from 'express-json-validator-middleware';
-import { ExampleController } from './example.controller';
-import { ExampleCreateSchema, ExampleUpdateSchema } from './example.schema';
+import {Validator} from 'express-json-validator-middleware';
+import {ExampleController} from './example.controller';
+import {ExampleCreateSchema, ExampleUpdateSchema} from './example.schema';
+import {RouterManager} from '../utils/router.manager';
+import {denyExternalRequestMiddleware} from '../utils/denyExternalRequest.middleware';
 
 const router: express.Router = express.Router();
 const controller = new ExampleController();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
 
-// todo add control of authorization and authentication
+const routerManager = new RouterManager(router);
 
-router
+routerManager
     .route('/examples')
     /**
      * @api {get} /examples Get examples list
@@ -31,7 +33,14 @@ router
      *      }]
      *  }]
      */
-    .get(controller.getAll)
+    .get({
+        handlers: [
+            denyExternalRequestMiddleware,
+            controller.getAll
+        ],
+        action: 'get',
+        resource: 'example'
+    })
     /**
      * @api {post} /examples Create example
      *
@@ -58,12 +67,18 @@ router
      *      }]
      *  }
      */
-    .post(
-        validator.validate({body: ExampleCreateSchema}),
-        controller.register);
+    .post({
+        handlers: [
+            validator.validate({body: ExampleCreateSchema}),
+            controller.register
+        ],
+        action: 'create',
+        resource: 'example'
+    });
 
 
-router.route('/examples/:id')
+routerManager
+    .route('/examples/:id')
     /**
      * @api {get} /examples/:id Get one example
      *
@@ -84,7 +99,13 @@ router.route('/examples/:id')
      *      }]
      *  }
      */
-    .get(controller.get)
+    .get({
+        handlers: [
+            controller.get
+        ],
+        action: 'get',
+        resource: 'example'
+    })
     /**
      * @api {put} /example/:id Update example
      *
@@ -113,9 +134,14 @@ router.route('/examples/:id')
      *      }]
      *  }
      */
-    .put(
-        validator.validate({body: ExampleUpdateSchema}),
-        controller.update)
+    .put({
+        handlers: [
+            validator.validate({body: ExampleUpdateSchema}),
+            controller.update
+        ],
+        action: 'update',
+        resource: 'example'
+    })
     /**
      * @api {delete} /example/:id Delete example
      *
@@ -133,6 +159,12 @@ router.route('/examples/:id')
      *       "message": "Not found"
      *     }
      */
-    .delete(controller.delete);
+    .delete({
+        handlers: [
+            controller.delete
+        ],
+        action: 'delete',
+        resource: 'example'
+    });
 
 export default router;
