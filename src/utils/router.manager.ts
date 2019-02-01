@@ -66,7 +66,7 @@ export class RouterManager {
             route.url = this._tmpUrl;
         }
         route.method = 'PUT';
-        this._router.get(
+        this._router.put(
             route.url,
             route.handlers
         );
@@ -81,7 +81,7 @@ export class RouterManager {
             route.url = this._tmpUrl;
         }
         route.method = 'DELETE';
-        this._router.get(
+        this._router.delete(
             route.url,
             route.handlers
         );
