@@ -1,6 +1,7 @@
 import {RequestHandler, Router} from 'express-serve-static-core';
 import {communicationHelper} from '../server';
 import {configureLogger, defaultWinstonLoggerOptions, getLogger} from './logger';
+import * as pathToRegexp from 'path-to-regexp';
 
 configureLogger('router.manager', defaultWinstonLoggerOptions);
 
@@ -11,6 +12,7 @@ export interface IRoute {
     url?: string;
     resource?: string;
     action?: string;
+    regexp?: RegExp;
 }
 
 export class RouterManager {
@@ -40,9 +42,7 @@ export class RouterManager {
             route.url,
             route.handlers
         );
-        if (route.resource && route.action) {
-            routes.push(route);
-        }
+        this.postRoute(route);
         return this;
     }
 
@@ -55,9 +55,7 @@ export class RouterManager {
             route.url,
             route.handlers
         );
-        if (route.resource && route.action) {
-            routes.push(route);
-        }
+        this.postRoute(route);
         return this;
     }
 
@@ -70,9 +68,7 @@ export class RouterManager {
             route.url,
             route.handlers
         );
-        if (route.resource && route.action) {
-            routes.push(route);
-        }
+        this.postRoute(route);
         return this;
     }
 
@@ -85,10 +81,16 @@ export class RouterManager {
             route.url,
             route.handlers
         );
+        this.postRoute(route);
+        return this;
+    }
+
+    private postRoute(route: IRoute) {
+        route.regexp = pathToRegexp(route.url);
+        console.log(route);
         if (route.resource && route.action) {
             routes.push(route);
         }
-        return this;
     }
 }
 
