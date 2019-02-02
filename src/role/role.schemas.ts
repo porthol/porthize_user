@@ -39,7 +39,7 @@ export const RoleUpdateSchema = {
 
 export const RolePrivilegeSchema = {
     type: 'object',
-    required: ['privilegeId'],
+    required: ['privilegeId', 'actions'],
     additionalProperties: false,
     properties: {
         privilegeId:{

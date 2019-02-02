@@ -9,6 +9,7 @@ import { getConfiguration } from '../utils/configuration.helper';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from '../utils/logger';
 import { IUser } from './user.document';
 import { IRoute } from '../privilege';
+import { RoleService } from '../role/role.service';
 import ObjectId = mongoose.Types.ObjectId;
 
 const config = getConfiguration().user;
@@ -37,15 +38,16 @@ export class UserService {
         return await UserModel.find(criteria || {});
     }
 
-    async get(id: ObjectId, criteria: any) {
+    async get(id: ObjectId, criteria = {} as any) {
         criteria._id = id;
-        return await UserModel.findOne(criteria || {});
+        const user = await UserModel.findOne(criteria || {});
+        return user ? this.getCleanUser(user) : null; // don't clean null object
     }
 
     async create(userData: any) {
         userData.password = await hashPassword(userData.password);
         const user = new UserModel(userData);
-        return await user.save();
+        return this.getCleanUser(await user.save());
     }
 
     async update(id: ObjectId, userData: any) {
@@ -56,7 +58,7 @@ export class UserService {
 
         user.set(userData);
 
-        return await user.save();
+        return this.getCleanUser(await user.save());
     }
 
     async remove(id: ObjectId) {
@@ -157,13 +159,7 @@ export class UserService {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
         }
 
-        const cleanedUser = JSON.parse(JSON.stringify(user));
-
-        delete cleanedUser.password;
-        delete cleanedUser.roles;
-        delete cleanedUser.__v;
-
-        return cleanedUser;
+        return this.getCleanUser(user);
     }
 
     async isTokenValid(tokenFromHeader: string) {
@@ -180,9 +176,30 @@ export class UserService {
         return result;
     }
 
-    async isAuthorized(user: IUser, route: IRoute) {
-        const roles = RoleModel.find({ _id: { $in: user.roles } });
-        console.log(roles);
+    async isAuthorized(partialUser: IUser, route: IRoute) {
+        let result = false;
+        try {
+            const user = await UserModel.findById(partialUser._id);
+            for (const roleId of user.roles) {
+                result = await RoleService.get().isAuthorized(roleId, route);
+                if (result === true) {
+                    break;
+                }
+            }
+        } catch (err) {
+            getLogger('UserService').log('error', err.message);
+        }
+        return result;
+    }
+
+    private getCleanUser(user: IUser) {
+        const cleanedUser = JSON.parse(JSON.stringify(user));
+
+        delete cleanedUser.password;
+        delete cleanedUser.roles;
+        delete cleanedUser.__v;
+
+        return cleanedUser;
     }
 }
 

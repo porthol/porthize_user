@@ -8,17 +8,24 @@ import {
     PrivilegeResourceQuerySchema,
     PrivilegeUpdateSchema
 } from './privilege.schemas';
+import { RouterManager } from '../utils/router.manager';
+import { internalAuthenticationMiddleware } from '../utils/internalAuthentication.middleware';
+import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
+import { denyExternalRequestMiddleware } from '../utils/denyExternalRequest.middleware';
 
 const router: express.Router = express.Router();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
 const privilegeController = new PrivilegeController();
 
+const routerManager = new RouterManager(router);
+
+const resource = 'privileges';
 /**
  * @apiDefine Privilege Privilege
  *
  * List of endpoints for managing privileges.
  */
-router
+routerManager
     .route('/privileges')
     /**
      * @api {get} /privileges Get privilege list
@@ -35,7 +42,15 @@ router
      *        "action":["find"]
      *    }]
      */
-    .get(privilegeController.getAll)
+    .get({
+        handlers: [
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            privilegeController.getAll
+        ],
+        resource,
+        action: 'get'
+    })
     /**
      * @api {post} /privileges Create privilege
      *
@@ -56,14 +71,20 @@ router
      *        "action":["find"]
      *    }
      */
-    .post(
-        validator.validate({
-            body: PrivilegeCreateSchema
-        }),
-        privilegeController.create
-    );
+    .post({
+        handlers: [
+            validator.validate({
+                body: PrivilegeCreateSchema
+            }),
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            privilegeController.create
+        ],
+        resource,
+        action: 'create'
+    });
 
-router
+routerManager
     .route('/privileges/:id')
     /**
      * @api {get} /privileges/:id Get privilege
@@ -92,12 +113,18 @@ router
      *       }
      *     }
      */
-    .get(
-        validator.validate({
-            params: PrivilegeQuerySchema
-        }),
-        privilegeController.get
-    )
+    .get({
+        handlers: [
+            validator.validate({
+                params: PrivilegeQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            privilegeController.get
+        ],
+        resource,
+        action: 'get'
+    })
     /**
      * @api {put} /privileges/:id Update privilege
      *
@@ -127,13 +154,19 @@ router
      *       }
      *     }
      */
-    .put(
-        validator.validate({
-            body: PrivilegeUpdateSchema,
-            params: PrivilegeQuerySchema
-        }),
-        privilegeController.update
-    )
+    .put({
+        handlers: [
+            validator.validate({
+                body: PrivilegeUpdateSchema,
+                params: PrivilegeQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            privilegeController.update
+        ],
+        resource,
+        action: 'update'
+    })
     /**
      * @api {delete} /privileges/:id Delete privilege
      *
@@ -153,14 +186,20 @@ router
      *       }
      *     }
      */
-    .delete(
-        validator.validate({
-            params: PrivilegeQuerySchema
-        }),
-        privilegeController.remove
-    );
+    .delete({
+        handlers: [
+            validator.validate({
+                params: PrivilegeQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            privilegeController.remove
+        ],
+        resource,
+        action: 'delete'
+    });
 
-router
+routerManager
     .route('/privileges/:resource/routes')
     /**
      * @api {post} /privilege/:id Add routes
@@ -189,12 +228,17 @@ router
      *       }
      *     }
      */
-    .post(
-        validator.validate({
-            params: PrivilegeResourceQuerySchema,
-            body: PrivilegeAddRouteSchema
-        }),
-        privilegeController.addRoutes
-    );
+    .post({
+        handlers: [
+            denyExternalRequestMiddleware,
+            validator.validate({
+                params: PrivilegeResourceQuerySchema,
+                body: PrivilegeAddRouteSchema
+            }),
+            privilegeController.addRoutes
+        ],
+        resource,
+        action:'addRoutes'
+    });
 
 export default router;

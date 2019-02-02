@@ -59,7 +59,7 @@ export class RoleController {
     }
 
     addPrivilege(req: Request, res: Response, next: NextFunction): void {
-        RoleService.get().addPrivilege(req.params.id, req.body.privilegeId)
+        RoleService.get().addPrivilege(req.params.id, req.body)
             .then(role => {
                 res.status(httpStatus.OK)
                     .send(role);

@@ -10,15 +10,19 @@ import {
     UserUpdateSchema
 } from './user.schema';
 import { internalAuthenticationMiddleware } from '../utils/internalAuthentication.middleware';
+import { RouterManager } from '../utils/router.manager';
+import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
 
 const router: express.Router = express.Router();
 const userController = new UserController();
 
 const validator = new Validator({ allErrors: true, removeAdditional: true });
 
-// todo add control of authorization and authentication
+const routerManager = new RouterManager(router);
 
-router
+const resource = 'users';
+
+routerManager
     .route('/users')
     /**
      * @api {get} /users Get users list
@@ -37,7 +41,15 @@ router
      *      "roles": []
      *  }]
      */
-    .get(userController.getAll)
+    .get({
+        handlers: [
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            userController.getAll
+        ],
+        resource,
+        action: 'get'
+    })
     /**
      * @api {post} /users Create user
      *
@@ -49,7 +61,6 @@ router
      *
      * @apiSuccess {String} username
      * @apiSuccess {String} email
-     * @apiSuccess {String} password Hashed password
      * @apiSuccess {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
@@ -57,16 +68,36 @@ router
      *     {
      *       "username": "foo",
      *       "email": "foo@bar.baz",
-     *       "password": "xqPGyK3yWtIsCupTiyajMZJMKs9Oeby3",
      *       "id": "5b179f629fea4000ffcf2fbc",
      *       "roles":[]
      *     }
      */
-    .post(
-        validator.validate({ body: UserCreateSchema }),
-        userController.register);
+    .post({
+        handlers: [
+            validator.validate({ body: UserCreateSchema }),
+            userController.register
+        ]
+    });
 
-router
+routerManager
+    .route('/token')
+    /**
+     * @api {get} /token Verify the token sent
+     *
+     * @apiGroup User
+     *
+     * @apiHeader {String} Authorization Bearer Schema
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 204 No Content
+     */
+    .get({
+        handlers: [
+            userController.isTokenValid
+        ]
+    });
+
+routerManager
     .route('/users/login')
     /**
      * @api {get} /users/login Login user
@@ -96,23 +127,16 @@ router
      *       }
      *     }
      */
-    .post(validator.validate({ body: UserLoginSchema }), userController.login);
+    .post({
+        handlers: [
+            validator.validate({
+                body: UserLoginSchema
+            }),
+            userController.login
+        ]
+    });
 
-router
-    .route('/token')
-    /**
-     * @api {get} /token Verify the token sent
-     *
-     * @apiGroup User
-     *
-     * @apiHeader {String} Authorization Bearer Schema
-     *
-     * @apiSuccessExample {json} Success response
-     *     HTTP/1.1 204 No Content
-     */
-    .get(userController.isTokenValid);
-
-router
+routerManager
     .route('/users/current')
     /**
      * @api {get} /users/me Retrieve current user
@@ -138,31 +162,44 @@ router
      *       }
      *     }
      */
-    .get(userController.current);
+    .get({
+        handlers: [
+            internalAuthenticationMiddleware,
+            userController.current
+        ]
+    });
 
-router.route('/users/:id')
-/**
- * @api {get} /users/:id Get one user
- *
- * @apiGroup User
- *
- * @apiSuccess {array} users
- *
- * @apiSuccessExample {json} Success response
- *  HTTP/1.1 200 Created
- *  {
- *       "username": "foo",
- *       "email": "foo@bar.baz",
- *       "password": "xqPGyK3yWtIsCupTiyajMZJMKs9Oeby3",
- *       "id": "5b179f629fea4000ffcf2fbc",
- *       "roles":[]
- *     }
- */
-    .get(
-        validator.validate({
-            params: UserQuerySchema
-        }),
-        userController.get)
+routerManager
+    .route('/users/:id')
+    /**
+     * @api {get} /users/:id Get one user
+     *
+     * @apiGroup User
+     *
+     * @apiSuccess {array} users
+     *
+     * @apiSuccessExample {json} Success response
+     *  HTTP/1.1 200 Created
+     *  {
+     *       "username": "foo",
+     *       "email": "foo@bar.baz",
+     *       "password": "xqPGyK3yWtIsCupTiyajMZJMKs9Oeby3",
+     *       "id": "5b179f629fea4000ffcf2fbc",
+     *       "roles":[]
+     *     }
+     */
+    .get({
+        handlers: [
+            validator.validate({
+                params: UserQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            userController.get
+        ],
+        resource,
+        action: 'get'
+    })
     /**
      * @api {put} /users/:id Update user
      *
@@ -189,12 +226,19 @@ router.route('/users/:id')
      *    }
      *
      */
-    .put(
-        validator.validate({
-            params: UserQuerySchema,
-            body: UserUpdateSchema
-        }),
-        userController.update)
+    .put({
+        handlers: [
+            validator.validate({
+                params: UserQuerySchema,
+                body: UserUpdateSchema
+            }),
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            userController.update
+        ],
+        resource,
+        action: 'update'
+    })
     /**
      * @api {delete} /users/:id Delete user
      *
@@ -212,14 +256,20 @@ router.route('/users/:id')
      *       "message": "Not found"
      *     }
      */
-    .delete(
-        validator.validate({
-            params: UserQuerySchema
-        }),
-        internalAuthenticationMiddleware,
-        userController.remove);
+    .delete({
+        handlers: [
+            validator.validate({
+                params: UserQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            userController.remove
+        ],
+        resource,
+        action: 'delete'
+    });
 
-router
+routerManager
     .route('/users/:id/roles')
     /**
      * @api {post} /users/:id/roles Add role to user
@@ -233,15 +283,21 @@ router
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 202 Accepted
      */
-    .post(
-        validator.validate({
-            params: UserQuerySchema,
-            body: UserRoleSchema
-        }),
-        userController.addRole
-    );
+    .post({
+        handlers: [
+            validator.validate({
+                params: UserQuerySchema,
+                body: UserRoleSchema
+            }),
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            userController.addRole
+        ],
+        resource,
+        action: 'updateRole'
+    });
 
-router
+routerManager
     .route('/users/:id/roles/:roleId')
     /**
      * @api {delete} /users/:id/roles/:roleId Remove role to user
@@ -254,11 +310,17 @@ router
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 202 Accepted
      */
-    .delete(
-        validator.validate({
-            params: UserRoleQuerySchema
-        }),
-        userController.removeRole
-    );
+    .delete({
+        handlers: [
+            validator.validate({
+                params: UserRoleQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            userController.removeRole
+        ],
+        resource,
+        action: 'updateRole'
+    });
 
 export default router;

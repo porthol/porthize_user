@@ -22,9 +22,9 @@ export class PrivilegeService {
         return await PrivilegeModel.find(criteria || {});
     }
 
-    async get(id: ObjectId, criteria: any) {
+    async get(id: ObjectId, criteria = {} as any) {
         criteria._id = id;
-        return await PrivilegeModel.findOne(criteria || {});
+        return await PrivilegeModel.findOne(criteria);
     }
 
     async create(privilegeData: any) {
@@ -53,21 +53,43 @@ export class PrivilegeService {
             // if the resource doesn't exist create it
             privilege = await this.create({ resource });
         }
-        const actions = _.assign({},privilege.actionsAvailable);
+        const actions = _.assign({}, privilege.actionsAvailable);
 
         if (!actions[action]) {
             actions[action] = [];
         }
 
         for (const route of routes) {
-            if (actions[action].indexOf(route) === -1) {
+            if (actions[action].map(a => a.url).indexOf(route.url) === -1) {
+                route.regexp = new RegExp(route.regexp);
                 actions[action].push(route);
             }
         }
 
         privilege.set({ actionsAvailable: actions });
+        privilege.markModified('actionsAvailable');
 
         return await privilege.save();
+    }
+
+
+    async isAuthorized(privilege: any, route: IRoute) {
+        const privilegeFromDb = await PrivilegeModel.findOne({ resource: privilege.resource });
+        if (!privilegeFromDb) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
+        }
+
+        for (const action in privilegeFromDb.actionsAvailable) {
+            if ( privilege.actions.indexOf(action) === -1 ){ // you do not have this action available
+                continue;
+            }
+            for (const dbRoute of privilegeFromDb.actionsAvailable[action]) {
+                if (dbRoute.regexp.test(route.url) && dbRoute.method === route.method) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

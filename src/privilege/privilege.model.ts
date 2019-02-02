@@ -12,8 +12,6 @@ export const PrivilegeSchema = new Schema({
     },
     actionsAvailable: {
         type: Mixed,
-        default: {},
-        required: true
     }
 });
 

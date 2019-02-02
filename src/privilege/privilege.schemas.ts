@@ -60,11 +60,15 @@ export const PrivilegeAddRouteSchema = {
             type: 'array',
             items: {
                 type: 'object',
+                required: ['method', 'url', 'regexp'],
                 properties: {
                     method: {
                         type: 'string'
                     },
                     url: {
+                        type: 'string'
+                    },
+                    regexp: {
                         type: 'string'
                     }
                 }

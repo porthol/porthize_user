@@ -15,6 +15,11 @@
     "authorizationService": {
       "name": "user",
       "route": "privileges/{resource}/routes"
+    },
+    "jwt": {
+      "options": {
+        "expiresIn": "365d"
+      }
     }
   }
 }

@@ -44,6 +44,7 @@ export const UserUpdateSchema = {
 
 export const UserRoleSchema = {
     type: 'object',
+    required: ['roleId'],
     additionalProperties: false,
     properties: {
         roleId: {

@@ -8,17 +8,23 @@ import {
     RoleQuerySchema,
     RoleUpdateSchema
 } from './role.schemas';
+import { RouterManager } from '../utils/router.manager';
+// import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
+import { internalAuthenticationMiddleware } from '../utils/internalAuthentication.middleware';
 
 const router: express.Router = express.Router();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
 const roleController = new RoleController();
 
+const routerManager = new RouterManager(router);
+
+const resource = 'roles';
 /**
  * @apiDefine Role Role
  *
  * List of endpoints for managing roles.
  */
-router
+routerManager
     .route('/roles')
     /**
      * @api {get} /roles Get role list
@@ -35,7 +41,15 @@ router
      *        "privileges":[]
      *    }]
      */
-    .get(roleController.getAll)
+    .get({
+        handlers: [
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.getAll
+        ],
+        resource,
+        action: 'get'
+    })
     /**
      * @api {post} /roles Create role
      *
@@ -54,12 +68,20 @@ router
      *        "privileges":[]
      *    }
      */
-    .post(
-        validator.validate({ body: RoleCreateSchema }),
-        roleController.create
-    );
+    .post({
+        handlers: [
+            validator.validate({
+                body: RoleCreateSchema
+            }),
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.create
+        ],
+        resource,
+        action: 'create'
+    });
 
-router
+routerManager
     .route('/roles/:id')
     /**
      * @api {get} /roles/:id Get role
@@ -88,10 +110,18 @@ router
      *       }
      *     }
      */
-    .get(
-        validator.validate({ params: RoleQuerySchema }),
-        roleController.get
-    )
+    .get({
+        handlers: [
+            validator.validate({
+                params: RoleQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.get
+        ],
+        resource,
+        action: 'get'
+    })
     /**
      * @api {put} /roles/:id Update role
      *
@@ -121,10 +151,19 @@ router
      *       }
      *     }
      */
-    .put(
-        validator.validate({ body: RoleUpdateSchema, params: RoleQuerySchema }),
-        roleController.update
-    )
+    .put({
+        handlers: [
+            validator.validate({
+                body: RoleUpdateSchema,
+                params: RoleQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.update
+        ],
+        resource,
+        action: 'update'
+    })
     /**
      * @api {delete} /roles/:id Delete role
      *
@@ -144,12 +183,20 @@ router
      *       }
      *     }
      */
-    .delete(
-        validator.validate({ params: RoleQuerySchema }),
-        roleController.remove
-    );
+    .delete({
+        handlers: [
+            validator.validate({
+                params: RoleQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.remove
+        ],
+        resource,
+        action: 'delete'
+    });
 
-router
+routerManager
     .route('/roles/:id/privileges')
     /**
      * @api {post} /roles/:id/privileges Add privilege to role
@@ -171,15 +218,21 @@ router
      *      }
      *
      */
-    .post(
-        validator.validate({
-            params: RoleQuerySchema,
-            body: RolePrivilegeSchema
-        }),
-        roleController.addPrivilege
-    );
+    .post({
+        handlers: [
+            validator.validate({
+                params: RoleQuerySchema,
+                body: RolePrivilegeSchema
+            }),
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.addPrivilege
+        ],
+        resource,
+        action: 'updatePrivilege'
+    });
 
-router
+routerManager
     .route('/roles/:id/privileges/:privilegeId')
     /**
      * @api {delete} /roles/:id/privileges/:privilegeId Remove privilege to role
@@ -192,11 +245,17 @@ router
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 202 Accepted
      */
-    .delete(
-        validator.validate({
-            params: RolePrivilegeQuerySchema
-        }),
-        roleController.removePrivilege
-    );
+    .delete({
+        handlers: [
+            validator.validate({
+                params: RolePrivilegeQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.removePrivilege
+        ],
+        resource,
+        action: 'updatePrivilege'
+    });
 
 export default router;

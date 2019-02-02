@@ -1,6 +1,16 @@
 import { model, Schema } from 'mongoose';
 import { IRole } from './role.document';
-import { PrivilegeSchema } from '../privilege';
+
+export const PrivilegeSchemaEmbedded = new Schema({
+    resource: {
+        type: String,
+        required: true
+    },
+    actions: {
+        type: [String],
+        default: []
+    }
+});
 
 export const RoleSchema = new Schema({
     key: {
@@ -13,7 +23,7 @@ export const RoleSchema = new Schema({
         required: true
     },
     privileges: {
-        type: [PrivilegeSchema]
+        type: [PrivilegeSchemaEmbedded]
     }
 });
 

@@ -11,9 +11,12 @@ export function internalAuthorizationMiddleware(req: Request, res: Response, nex
         }
 
         UserService.get().isAuthorized(user, {
-            url: req.originalUrl,
+            url: req.originalUrl.substr(4), // remove '/api'
             method: req.method })
-            .then(() => {
+            .then(result => {
+                if(!result) {
+                    throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized to access this resource');
+                }
                 next();
             })
             .catch(next);
