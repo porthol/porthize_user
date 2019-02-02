@@ -3,7 +3,7 @@ import { communicationHelper } from '../server';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import * as pathToRegexp from 'path-to-regexp';
 
-configureLogger('router.manager', defaultWinstonLoggerOptions);
+configureLogger('routerManager', defaultWinstonLoggerOptions);
 
 export interface IRoute {
     method?: string;
@@ -101,7 +101,7 @@ interface IConfigAuthorisationService {
 }
 
 export async function exportRoutes(config: IConfigAuthorisationService) {
-    getLogger('router.manager').log('info', 'Exporting routes to the authorization server...');
+    getLogger('routerManager').log('info', 'Exporting routes to the authorization server...');
     for (const route of routes) {
         try {
             await communicationHelper.post(
@@ -112,16 +112,18 @@ export async function exportRoutes(config: IConfigAuthorisationService) {
                     action: route.action,
                     routes: [{
                         method: route.method,
-                        url: route.url
+                        url: route.url,
+                        regexp: route.regexp.source
                     }]
                 }
             );
         } catch (err) {
             // Silent error we do not stop the service
             if (err.statusCode >= 400) {
-                getLogger('router.manager')
+                getLogger('routerManager')
                     .log('warn', 'Can not add route ' + route.url +
                         ' on ' + route.method + ' to the authorization service.');
+                getLogger('routerManager').log('error', JSON.stringify(err.error, null, ' '));
             }
         }
     }
