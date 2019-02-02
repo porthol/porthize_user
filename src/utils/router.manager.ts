@@ -87,7 +87,6 @@ export class RouterManager {
 
     private postRoute(route: IRoute) {
         route.regexp = pathToRegexp(route.url);
-        console.log(route);
         if (route.resource && route.action) {
             routes.push(route);
         }
