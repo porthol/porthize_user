@@ -272,6 +272,19 @@ routerManager
 
 routerManager
     .route('/users/isAuthorized')
+    /**
+     * @api {post} /users/isAuthorized Check if current user can perfom this request
+     *
+     * @apiGroup User
+     *
+     * @apiParam {String} url url of the request
+     *
+     * @apiParam {String} method [GET,POST,PUT,DELETE] case insensitive
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 204 No Content
+     *
+     */
     .post({
        handlers: [
            validator.validate({
