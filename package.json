@@ -8,12 +8,22 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc -p tsconfig.back.json",
         "start": "node ./dist/server.js",
-        "watch": "npm run build && (tsc -p tsconfig.back.json -watch | nodemon ./dist/server.js)"
+        "watch": "npm run build && (tsc -p tsconfig.back.json -watch | nodemon ./dist/server.js)",
+        "doc:clean": "rimraf docs",
+        "doc:apidoc": "apidoc -i ./src/ -o ./docs/api/",
+        "doc": "npm run doc:clean && npm run doc:apidoc"
     },
     "author": "Thomas BRUNET",
     "license": "ISC",
     "engines": {
         "node": ">=8.9.0"
+    },
+    "apidoc": {
+        "name": "example",
+        "version": "0.1.0",
+        "description": "apiDoc basic example",
+        "title": "Custom apiDoc browser title",
+        "url": "https://localhost:3000/api/"
     },
     "dependencies": {
         "ajv": "^6.7.0",
@@ -50,8 +60,10 @@
         "@types/request": "^2.48.1",
         "@types/request-promise": "^4.1.42",
         "@types/validator": "^10.9.0",
+        "apidoc": "^0.17.7",
         "nodemon": "^1.18.9",
         "prettier": "^1.15.3",
+        "rimraf": "^2.6.3",
         "tslint": "^5.12.0",
         "tslint-config-prettier": "^1.17.0",
         "typedoc": "^0.14.0",
