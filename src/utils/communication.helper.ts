@@ -1,7 +1,6 @@
 import * as request from 'request-promise';
 import {RequestPromiseOptions} from 'request-promise';
 import {UriOptions} from 'request';
-import * as os from 'os';
 
 interface Headers {
   [key: string]: string;
@@ -44,7 +43,6 @@ export class CommunicationHelper {
     }
 
     headers.Host = this.config.nameRules.replace('{serviceName}',serviceName);
-    headers['internal-request'] = os.hostname();
 
     const options: UriOptions & RequestPromiseOptions = {
       headers,

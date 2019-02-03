@@ -2,6 +2,7 @@ import {RequestHandler, Router} from 'express-serve-static-core';
 import {communicationHelper} from '../server';
 import {configureLogger, defaultWinstonLoggerOptions, getLogger} from './logger';
 import * as pathToRegexp from 'path-to-regexp';
+import * as os from 'os';
 
 configureLogger('routerManager', defaultWinstonLoggerOptions);
 
@@ -107,7 +108,9 @@ export async function exportRoutes(config: IConfigAuthorisationService) {
             await communicationHelper.post(
                 config.name,
                 config.route.replace('{resource}', route.resource),
-                {},
+                {
+                    'internal-request': os.hostname()
+                },
                 {
                     action: route.action,
                     routes: [{
