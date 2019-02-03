@@ -84,7 +84,7 @@ export class PrivilegeService {
                 continue;
             }
             for (const dbRoute of privilegeFromDb.actionsAvailable[action]) {
-                if (dbRoute.regexp.test(route.url) && dbRoute.method === route.method) {
+                if (dbRoute.regexp.test(route.url) && dbRoute.method.toLowerCase() === route.method.toLowerCase()) {
                     return true;
                 }
             }

@@ -2,6 +2,7 @@ import * as express from 'express';
 import { UserController } from './user.controller';
 import { Validator } from 'express-json-validator-middleware';
 import {
+    UserAuthorizedSchema,
     UserCreateSchema,
     UserLoginSchema,
     UserQuerySchema,
@@ -267,6 +268,18 @@ routerManager
         ],
         resource,
         action: 'delete'
+    });
+
+routerManager
+    .route('/users/isAuthorized')
+    .post({
+       handlers: [
+           validator.validate({
+               body: UserAuthorizedSchema
+           }),
+           internalAuthenticationMiddleware,
+            userController.isAuthorized
+       ]
     });
 
 routerManager

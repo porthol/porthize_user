@@ -104,7 +104,20 @@ export class UserController {
     isTokenValid(req: Request, res: Response, next: NextFunction): void {
         UserService.get().isTokenValid(req.headers.authorization)
             .then(user => {
-                res.status(httpStatus.NO_CONTENT).send();
+                res.status(httpStatus.NO_CONTENT)
+                    .send();
+            })
+            .catch(next);
+    }
+
+    isAuthorized(req: Request, res: Response, next: NextFunction): void {
+        UserService.get().isAuthorized((req as any).user, req.body)
+            .then(result => {
+                if(!result) {
+                    throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized access to this resource');
+                }
+                res.status(httpStatus.NO_CONTENT)
+                    .send(result);
             })
             .catch(next);
     }

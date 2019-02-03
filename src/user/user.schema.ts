@@ -83,3 +83,20 @@ export const UserLoginSchema = {
         }
     }
 };
+
+export const UserAuthorizedSchema = {
+    type: 'object',
+    required: ['method', 'url'],
+    additionalProperties: false,
+    properties: {
+        method: {
+            type: 'string'
+        },
+        url: {
+            type: 'string'
+        },
+        regexp: {
+            type: 'string'
+        }
+    }
+};
