@@ -96,18 +96,20 @@ export class RouterManager {
 
 export const routes: IRoute[] = [];
 
-interface IConfigAuthorisationService {
+export interface IConfigAuthorizationService {
     name: string;
-    route: string;
+    addRoute: string;
+    authorizationRoute: string;
+    authenticationRoute: string;
 }
 
-export async function exportRoutes(config: IConfigAuthorisationService) {
+export async function exportRoutes(config: IConfigAuthorizationService) {
     getLogger('routerManager').log('info', 'Exporting routes to the authorization server...');
     for (const route of routes) {
         try {
             await communicationHelper.post(
                 config.name,
-                config.route.replace('{resource}', route.resource),
+                config.addRoute.replace('{resource}', route.resource),
                 {
                     'internal-request': os.hostname()
                 },

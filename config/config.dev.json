@@ -14,7 +14,9 @@
     },
     "authorizationService": {
       "name": "user",
-      "route": "privileges/{resource}/routes"
+      "addRoute": "privileges/{resource}/routes",
+      "authorizationRoute": "users/isAuthorized",
+      "authenticationRoute": "token"
     }
   }
 }
