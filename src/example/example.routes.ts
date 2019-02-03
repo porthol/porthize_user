@@ -3,7 +3,6 @@ import {Validator} from 'express-json-validator-middleware';
 import {ExampleController} from './example.controller';
 import {ExampleCreateSchema, ExampleUpdateSchema} from './example.schema';
 import {RouterManager} from '../utils/router.manager';
-import {denyExternalRequestMiddleware} from '../utils/denyExternalRequest.middleware';
 
 const router: express.Router = express.Router();
 const controller = new ExampleController();
@@ -15,7 +14,7 @@ routerManager
     .route('/examples')
     /**
      * @api {get} /examples Get examples list
-     *
+     * @apiSampleRequest http://localhost:3000/api/examples
      * @apiGroup Example
      *
      * @apiSuccess {array} examples
@@ -35,7 +34,6 @@ routerManager
      */
     .get({
         handlers: [
-            denyExternalRequestMiddleware,
             controller.getAll
         ],
         action: 'get',
