@@ -10,6 +10,7 @@ export function internalAuthorizationMiddleware(req: Request, res: Response, nex
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'The user has not been authenticated');
         }
 
+        // todo if a route got no control (like login or create user) authorization return false because it don't it
         UserService.get().isAuthorized(user, {
             url: req.originalUrl.substr(4), // remove '/api'
             method: req.method })
