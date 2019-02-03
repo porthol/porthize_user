@@ -114,7 +114,7 @@ export class UserController {
         UserService.get().isAuthorized((req as any).user, req.body)
             .then(result => {
                 if(!result) {
-                    throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized access to this resource');
+                    throw new CustomError(CustomErrorCode.ERRFORBIDDEN, 'Access forbidden');
                 }
                 res.status(httpStatus.NO_CONTENT)
                     .send(result);
