@@ -1,101 +1,124 @@
 import { UserService } from './user.service';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
-import { CustomError } from '../utils/CustomError';
+import { CustomError, CustomErrorCode } from '../utils/CustomError';
 
 export class UserController {
 
-    getAll(req: Request, res: Response): void {
+    getAll(req: Request, res: Response, next: NextFunction): void {
         UserService.get().getAll(req.query)
             .then(users => {
                 res.status(httpStatus.OK)
                     .send(users);
             })
-            .catch(err => {
-                res.status(httpStatus.INTERNAL_SERVER_ERROR)
-                    .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
-            });
+            .catch(next);
     }
 
-    get(req: Request, res: Response): void {
-        UserService.get().get(req.params.id , req.query)
+    get(req: Request, res: Response, next: NextFunction): void {
+        UserService.get().get(req.params.id, req.query)
             .then(user => {
-                if(!user){
-                    res.status(httpStatus.NOT_FOUND)
-                        .send(new CustomError(404, 'User not found'));
-                }else{
+                if (!user) {
+                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+                } else {
                     res.status(httpStatus.OK)
                         .send(user);
                 }
             })
-            .catch(err => {
-                res.status(httpStatus.INTERNAL_SERVER_ERROR)
-                    .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal server error', err));
-            });
+            .catch(next);
     }
 
-    register(req: Request, res: Response): void {
+    register(req: Request, res: Response, next: NextFunction): void {
         UserService.get().create(req.body)
             .then(user => {
                 res.status(httpStatus.CREATED)
                     .send(user);
             })
-            .catch(err => {
-                res.status(httpStatus.BAD_REQUEST)
-                    .send(new CustomError(httpStatus.INTERNAL_SERVER_ERROR, 'Bad request', err));
-            });
+            .catch(next);
     }
 
-    update(req: Request, res: Response): void {
-        UserService.get().update(req.params.id,req.body)
+    update(req: Request, res: Response, next: NextFunction): void {
+        UserService.get().update(req.params.id, req.body)
             .then(user => {
                 res.status(httpStatus.OK)
                     .send(user);
             })
-            .catch(err => {
-                res.status(httpStatus.BAD_REQUEST)
-                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
-            });
+            .catch(next);
     }
 
-    remove(req: Request, res: Response): void{
-        UserService.get().remove(req.params.id)
-            .then(result => {
-                if(result.n === 0){
-                    res.status(httpStatus.NOT_FOUND)
-                        .send(new CustomError(404, 'User not found'));
-                }else{
+    remove(req: Request, res: Response, next: NextFunction): void {
+        Promise.resolve()
+            .then(() => {
+            if ((req as any).user.userId === req.params.id) {
+                throw new CustomError(CustomErrorCode.ERRBADREQUEST,
+                    'Bad request : The user cannot delete himself');
+            }
+            return UserService.get().remove(req.params.id);
+        })
+            .then((result: any) => {
+                if (result.n === 0) {
+                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+                } else {
                     res.status(httpStatus.NO_CONTENT)
                         .send(result);
                 }
             })
-            .catch(err => {
-                res.status(httpStatus.BAD_REQUEST)
-                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
-            });
+            .catch(next);
     }
 
-    addRole(req: Request, res: Response): void{
+    addRole(req: Request, res: Response, next: NextFunction): void {
         UserService.get().addRole(req.params.id, req.body.roleId)
             .then(user => {
                 res.status(httpStatus.OK)
                     .send(user);
             })
-            .catch(err => {
-                res.status(httpStatus.BAD_REQUEST)
-                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
-            });
+            .catch(next);
     }
 
-    removeRole(req: Request, res: Response): void{
+    removeRole(req: Request, res: Response, next: NextFunction): void {
         UserService.get().removeRole(req.params.id, req.params.roleId)
             .then(user => {
                 res.status(httpStatus.OK)
                     .send(user);
             })
-            .catch(err => {
-                res.status(httpStatus.BAD_REQUEST)
-                    .send(new CustomError(httpStatus.BAD_REQUEST, 'Bad request', err));
-            });
+            .catch(next);
+    }
+
+    login(req: Request, res: Response, next: NextFunction): void {
+        UserService.get().login(req.body)
+            .then(token => {
+                res.status(httpStatus.CREATED)
+                    .send(token);
+            })
+            .catch(next);
+    }
+
+    current(req: Request, res: Response, next: NextFunction): void {
+        UserService.get().getCurrentUser(req.headers.authorization)
+            .then(user => {
+                res.status(httpStatus.OK)
+                    .send(user);
+            })
+            .catch(next);
+    }
+
+    isTokenValid(req: Request, res: Response, next: NextFunction): void {
+        UserService.get().isTokenValid(req.headers.authorization)
+            .then(user => {
+                res.status(httpStatus.NO_CONTENT)
+                    .send();
+            })
+            .catch(next);
+    }
+
+    isAuthorized(req: Request, res: Response, next: NextFunction): void {
+        UserService.get().isAuthorized((req as any).user, req.body)
+            .then(result => {
+                if(!result) {
+                    throw new CustomError(CustomErrorCode.ERRFORBIDDEN, 'Access forbidden');
+                }
+                res.status(httpStatus.NO_CONTENT)
+                    .send(result);
+            })
+            .catch(next);
     }
 }

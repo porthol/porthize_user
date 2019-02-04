@@ -12,6 +12,17 @@
         "port": 27017
       }
     ],
-    "databaseName": "user"
+    "databaseName": "user",
+    "traefik": {
+      "gatewayAddress": "gateway",
+      "gatewayPort": 80,
+      "nameRules": "{serviceName}.service"
+    },
+    "authorizationService": {
+      "name": "user",
+      "addRoute": "privileges/{resource}/routes",
+      "authorizationRoute": "users/isAuthorized",
+      "authenticationRoute": "token"
+    }
   }
 }

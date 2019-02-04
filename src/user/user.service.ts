@@ -3,8 +3,23 @@ import { hashPassword } from '../utils/hashPassword';
 import * as mongoose from 'mongoose';
 import { CustomError, CustomErrorCode } from '../utils/CustomError';
 import { RoleModel } from '../role';
+import { comparePassword } from '../utils/comparePassword';
+import * as jwt from 'jsonwebtoken';
+import { getConfiguration } from '../utils/configuration.helper';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from '../utils/logger';
+import { IUser } from './user.document';
+import { IRoute } from '../privilege';
+import { RoleService } from '../role/role.service';
 import ObjectId = mongoose.Types.ObjectId;
-import * as _ from 'lodash';
+
+const config = getConfiguration().user;
+configureLogger('UserService', defaultWinstonLoggerOptions);
+
+interface LoginRequest {
+    username?: string;
+    email?: string;
+    password: string;
+}
 
 export class UserService {
     private static instance: UserService;
@@ -23,15 +38,16 @@ export class UserService {
         return await UserModel.find(criteria || {});
     }
 
-    async get(id: ObjectId, criteria: any) {
+    async get(id: ObjectId, criteria = {} as any) {
         criteria._id = id;
-        return await UserModel.findOne(criteria || {});
+        const user = await UserModel.findOne(criteria || {});
+        return user ? this.getCleanUser(user) : null; // don't clean null object
     }
 
     async create(userData: any) {
         userData.password = await hashPassword(userData.password);
         const user = new UserModel(userData);
-        return await user.save();
+        return this.getCleanUser(await user.save());
     }
 
     async update(id: ObjectId, userData: any) {
@@ -42,7 +58,7 @@ export class UserService {
 
         user.set(userData);
 
-        return await user.save();
+        return this.getCleanUser(await user.save());
     }
 
     async remove(id: ObjectId) {
@@ -62,7 +78,7 @@ export class UserService {
 
         const index = user.roles.indexOf(new ObjectId(roleId));
 
-        if(index >= 0){
+        if (index >= 0) {
             throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Role already added');
         }
 
@@ -91,4 +107,102 @@ export class UserService {
         return await user.save();
     }
 
+    async login(loginRequest: LoginRequest) {
+        if (!config.jwt) {
+            throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal server error : no token config');
+        }
+
+        let criteria: any = {};
+        if (loginRequest.email) {
+            criteria = { email: loginRequest.email };
+        } else if (loginRequest.username) {
+            criteria = { username: loginRequest.username };
+        } else {
+            throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad request', null);
+        }
+
+        const user = await UserModel.findOne(criteria);
+
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'No match for user and password');
+        }
+
+        if (comparePassword(loginRequest.password, user.password)) {
+            const iat = Math.floor(Date.now() / 1000);
+            const payload: any = {
+                userId: user._id,
+                iat
+            };
+
+            const token = await jwt.sign(payload, config.jwt.secret, config.jwt.options);
+            getLogger('UserService').log('info', 'User %s connected at %d', user._id.toString(), iat);
+            return { token, iat };
+        }
+        return null;
+    }
+
+    async getCurrentUser(tokenFromHeader: string) {
+        if (!config.jwt) {
+            throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal server error : no token config');
+        }
+        const now = Math.floor(Date.now() / 1000);
+
+        const decodedPayload: any = await this.isTokenValid(tokenFromHeader);
+
+        if (now >= decodedPayload.exp) {
+            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Token expired');
+        }
+
+        const user = await UserModel.findById(decodedPayload.userId);
+
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+
+        return this.getCleanUser(user);
+    }
+
+    async isTokenValid(tokenFromHeader: string) {
+        if (!config.jwt) {
+            throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal server error : no token config');
+        }
+        if (!tokenFromHeader) {
+            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'There is no token present');
+        }
+        const token = getCleanToken(tokenFromHeader);
+
+        const result = await jwt.verify(token, config.jwt.secret, config.jwt.options);
+
+        return result;
+    }
+
+    async isAuthorized(partialUser: IUser, route: IRoute) {
+        let result = false;
+        try {
+            const user = await UserModel.findById(partialUser._id);
+            for (const roleId of user.roles) {
+                result = await RoleService.get().isAuthorized(roleId, route);
+                if (result === true) {
+                    break;
+                }
+            }
+        } catch (err) {
+            getLogger('UserService').log('error', err.message);
+        }
+        return result;
+    }
+
+    private getCleanUser(user: IUser) {
+        const cleanedUser = JSON.parse(JSON.stringify(user));
+
+        delete cleanedUser.password;
+        delete cleanedUser.roles;
+        delete cleanedUser.__v;
+
+        return cleanedUser;
+    }
+}
+
+function getCleanToken(tokenFromHeader: string) {
+    return tokenFromHeader.substr(7);
 }

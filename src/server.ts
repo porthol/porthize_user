@@ -1,30 +1,34 @@
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils/logger';
-import { getConfiguration } from './utils/configurationHelper';
+import { getConfiguration } from './utils/configuration.helper';
 import * as mongoose from 'mongoose';
-import { getPackageName } from './utils/packageHelper';
+import { getPackageName } from './utils/package.helper';
 import { App } from './app';
 import { createServer } from 'http';
-import { getDatabaseConnectionUrl } from './utils/connectionHelper';
+import { getDatabaseConnectionUrl } from './utils/connection.helper';
+import { CommunicationHelper } from './utils/communication.helper';
+import { configureModels } from './configure';
+import { initData } from './utils/InitData.helper';
+import { CustomError, CustomErrorCode } from './utils/CustomError';
+import { exportRoutes } from './utils/router.manager';
 
 const appName = getPackageName();
 
+const config: any = getConfiguration();
+
+export const communicationHelper = new CommunicationHelper(config[appName].traefik);
 
 const server = async (appName: string) => {
   try {
     configureLogger('default', defaultWinstonLoggerOptions);
 
-    const env = process.env.NODE_ENV || 'development';
-
-    const config: any = getConfiguration(null, env);
 
     if (config[appName] && config[appName].databases) {
       const databaseUrl = getDatabaseConnectionUrl();
-      const mongooseOptions: any = { useMongoClient: true};
-      if(config[appName].databases.length > 1) {
-        mongooseOptions.replicaSet= 'rs0';
+      const mongooseOptions: any = { useMongoClient: true };
+      if (config[appName].databases.length > 1) {
+        mongooseOptions.replicaSet = 'rs0';
       }
       if (databaseUrl) {
-
         // todo Check database connection https://github.com/Automattic/mongoose/pull/6652 commit 727eda48bcecfb8f4462162863e7beb7bca18fdb
         const mongooseObj: any = await mongoose.connect(
           databaseUrl,
@@ -33,9 +37,14 @@ const server = async (appName: string) => {
         getLogger('default').log('info',
           'Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
       } else {
-        getLogger('default').error('The database url can not be configured, you should check config.json');
+        throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'The database url can not be configured, you should check config.json');
       }
     }
+
+    // I should have a var with the database state available every where
+    // Model initialisation
+    configureModels();
+    await initData();
 
     const app: App = new App({
       appName,
@@ -76,6 +85,8 @@ const server = async (appName: string) => {
         getLogger('default').log('info', '  Press CTRL-C to stop\n');
       }
     });
+
+    await exportRoutes(config[appName].authorizationService);
 
   } catch (err) {
     getLogger('default').log('error', err.message || err);

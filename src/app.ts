@@ -2,7 +2,9 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
-import { configure } from './configure';
+import { configureRouter } from './configure';
+import { addStartTime, expressMetricsMiddleware } from './utils/expressMetrics.middleware';
+import { handleErrorMiddleware } from './utils/handleError.middleware';
 
 
 export class App {
@@ -21,7 +23,7 @@ export class App {
             this.configuration = params.configuration;
         }
 
-        this._app.set('_port', params.port || process.env.PORT || 3000);
+        this._app.set('port', params.port || process.env.PORT || 3000);
         this._app.set('env', params.env || process.env.NODE_ENV || 'development');
     }
 
@@ -63,7 +65,7 @@ export class App {
         if (this.appName in this.configuration) {
             configuration = this.configuration[this.appName];
         }
-        const appRouters: express.Router[] = configure(configuration);
+        const appRouters: express.Router[] = configureRouter(configuration);
         // Mount public router to /
         this.app.use('/', appRouters[0]);
 
@@ -74,16 +76,18 @@ export class App {
     }
 
     applyExpressMiddlewaresRouter(): void {
+        this.app.use(addStartTime);
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(helmet());
         this.app.use(cors());
+        this.app.use(expressMetricsMiddleware);
     }
 
     async bootstrap(): Promise<express.Application> {
         this.applyExpressMiddlewaresRouter();
         await this.registerAppRouters();
-
+        this.app.use(handleErrorMiddleware); // error handler middleware should be put after router
         return this.app;
     }
 }

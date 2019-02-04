@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
-import ObjectId = mongoose.Types.ObjectId;
 import { Document } from 'mongoose';
+import ObjectId = mongoose.Types.ObjectId;
 
 export interface IUser extends Document {
     username: string;

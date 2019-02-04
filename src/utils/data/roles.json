@@ -1,0 +1,22 @@
+{
+  "model": "role",
+  "data": [
+    {
+      "name": "Administrator",
+      "key": "root",
+      "privileges": [
+        {
+          "resource": "*",
+          "actions": [
+            "*"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "key": "user",
+      "privileges": []
+    }
+  ]
+}

@@ -1,21 +1,33 @@
 import * as express from 'express';
 import { RoleController } from './role.controller';
 import { Validator } from 'express-json-validator-middleware';
-import { RoleCreateSchema, RoleQuerySchema, RoleUpdateSchema } from './role.schemas';
+import {
+    RoleCreateSchema,
+    RolePrivilegeQuerySchema,
+    RolePrivilegeSchema,
+    RoleQuerySchema,
+    RoleUpdateSchema
+} from './role.schemas';
+import { RouterManager } from '../utils/router.manager';
+// import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
+import { internalAuthenticationMiddleware } from '../utils/internalAuthentication.middleware';
 
 const router: express.Router = express.Router();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
 const roleController = new RoleController();
 
+const routerManager = new RouterManager(router);
+
+const resource = 'roles';
 /**
  * @apiDefine Role Role
  *
  * List of endpoints for managing roles.
  */
-router
+routerManager
     .route('/roles')
     /**
-     * @api {get} /role Get role list
+     * @api {get} /roles Get role list
      *
      * @apiGroup Role
      *
@@ -25,121 +37,225 @@ router
      *     HTTP/1.1 200 OK
      *     [{
      *        "id": "5b179f629fea4000ffcf2fbc",
-     *        "name": "admin"
+     *        "name": "admin",
+     *        "privileges":[]
      *    }]
      */
-    .get(roleController.getAll)
+    .get({
+        handlers: [
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.getAll
+        ],
+        resource,
+        action: 'get'
+    })
     /**
-     * @api {post} /role Create role
+     * @api {post} /roles Create role
      *
      * @apiGroup Role
      *
      * @apiParam {String} name
      *
      * @apiSuccess {String} name
-     * @apiSuccess {String} id ObjectID
+     * @apiSuccess {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 201 Created
      *     {
-     *       "name": "admin",
-     *       "id": "5b179f629fea4000ffcf2fbc"
-     *     }
+     *        "id": "5b179f629fea4000ffcf2fbc",
+     *        "name": "admin",
+     *        "privileges":[]
+     *    }
      */
-    .post(
-        validator.validate({ body: RoleCreateSchema }),
-        roleController.create
-    );
+    .post({
+        handlers: [
+            validator.validate({
+                body: RoleCreateSchema
+            }),
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.create
+        ],
+        resource,
+        action: 'create'
+    });
 
-router
+routerManager
     .route('/roles/:id')
     /**
-     * @api {get} /role/:id Get role
+     * @api {get} /roles/:id Get role
      *
      * @apiGroup Role
      *
-     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} id ObjectId
      *
      * @apiSuccess {String} name
-     * @apiSuccess {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiSuccess {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 200 OK
      *     {
      *        "id": "5b179f629fea4000ffcf2fbc",
-     *        "name": "admin"
+     *        "name": "admin",
+     *        "privileges":[]
      *    }
      *
      * @apiErrorExample {json} Error role not found
      *     HTTP/1.1 404 Not Found
      *     {
      *       "error": {
-     *         "name": "Error",
-     *          "code": "ENOENT",
+     *          "code": "ERRNOTFOUND",
      *          "message": "Not found"
      *       }
      *     }
      */
-    .get(
-        validator.validate({ params: RoleQuerySchema }),
-        roleController.get
-    )
+    .get({
+        handlers: [
+            validator.validate({
+                params: RoleQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.get
+        ],
+        resource,
+        action: 'get'
+    })
     /**
-     * @api {put} /role/:id Update role
+     * @api {put} /roles/:id Update role
      *
      * @apiGroup Role
      *
-     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} id ObjectId
      *
      * @apiParam {String} name
      *
      * @apiSuccess {String} name
-     * @apiSuccess {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiSuccess {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 200 OK
      *     {
      *        "id": "5b179f629fea4000ffcf2fbc",
-     *        "name": "admin"
+     *        "name": "admin",
+     *        "privileges":[]
      *    }
      *
-     * @apiErrorExample {json} Error user not found
+     * @apiErrorExample {json} Error role not found
      *     HTTP/1.1 404 Not Found
      *     {
      *       "error": {
-     *         "name": "Error",
-     *          "code": "ENOENT",
+     *          "code": "ERRNOTFOUND",
      *          "message": "Not found"
      *       }
      *     }
      */
-    .put(
-        validator.validate({ body: RoleUpdateSchema, params: RoleQuerySchema }),
-        roleController.update
-    )
+    .put({
+        handlers: [
+            validator.validate({
+                body: RoleUpdateSchema,
+                params: RoleQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.update
+        ],
+        resource,
+        action: 'update'
+    })
     /**
-     * @api {delete} /role/:id Delete role
+     * @api {delete} /roles/:id Delete role
      *
      * @apiGroup Role
      *
-     * @apiParam {String} id ObjectID or uuid according to database type (MongoDB/SQL-kind)
+     * @apiParam {String} id ObjectId
      *
      * @apiSuccessExample {json} Success response
      *     HTTP/1.1 204 No Content
      *
-     * @apiErrorExample {json} Error user not found
+     * @apiErrorExample {json} Error role not found
      *     HTTP/1.1 404 Not Found
      *     {
      *       "error": {
-     *         "name": "Error",
-     *          "code": "ENOENT",
+     *          "code": "ERRNOTFOUND",
      *          "message": "Not found"
      *       }
      *     }
      */
-    .delete(
-        validator.validate({ params: RoleQuerySchema }),
-        roleController.remove
-    );
+    .delete({
+        handlers: [
+            validator.validate({
+                params: RoleQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.remove
+        ],
+        resource,
+        action: 'delete'
+    });
+
+routerManager
+    .route('/roles/:id/privileges')
+    /**
+     * @api {post} /roles/:id/privileges Add privilege to role
+     *
+     * @apiGroup Role
+     *
+     * @apiParam {String} id ObjectId
+     *
+     * @apiSuccessExample {json} Success response
+     *      HTTP/1.1 200 OK
+     *      {
+     *        "id": "5b179f629fea4000ffcf2fbc",
+     *        "name": "admin",
+     *        "privileges":[{
+     *          "_id": "5b179f629fea4000ffcf2fbc",
+     *          "resource": "user",
+     *          "action":["find"]
+     *          }]
+     *      }
+     *
+     */
+    .post({
+        handlers: [
+            validator.validate({
+                params: RoleQuerySchema,
+                body: RolePrivilegeSchema
+            }),
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.addPrivilege
+        ],
+        resource,
+        action: 'updatePrivilege'
+    });
+
+routerManager
+    .route('/roles/:id/privileges/:privilegeId')
+    /**
+     * @api {delete} /roles/:id/privileges/:privilegeId Remove privilege to role
+     *
+     * @apiGroup Role
+     *
+     * @apiParam {String} id ObjectId
+     * @apiParam {String} privilegeId ObjectId
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 202 Accepted
+     */
+    .delete({
+        handlers: [
+            validator.validate({
+                params: RolePrivilegeQuerySchema
+            }),
+            internalAuthenticationMiddleware,
+            // internalAuthorizationMiddleware,
+            roleController.removePrivilege
+        ],
+        resource,
+        action: 'updatePrivilege'
+    });
 
 export default router;

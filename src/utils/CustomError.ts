@@ -1,8 +1,12 @@
 import * as httpStatus from 'http-status';
 
 export enum CustomErrorCode {
-
-    'ERRNOTFOUND','ERRBADREQUEST','ERRINTERNALSERVER', 'ERRNOCONF'
+    ERRNOTFOUND='ERRNOTFOUND',
+    ERRBADREQUEST='ERRBADREQUEST',
+    ERRINTERNALSERVER='ERRINTERNALSERVER',
+    ERRNOCONF='ERRNOCONF',
+    ERRFORBIDDEN='ERRFORBIDDEN',
+    ERRUNAUTHORIZED='ERRUNAUTHORIZED',
 }
 
 export function CustomErrorCodeToHttpStatus(code: CustomErrorCode) {
@@ -16,6 +20,12 @@ export function CustomErrorCodeToHttpStatus(code: CustomErrorCode) {
         }
         case CustomErrorCode.ERRINTERNALSERVER: {
             return httpStatus.INTERNAL_SERVER_ERROR;
+        }
+        case CustomErrorCode.ERRFORBIDDEN: {
+            return httpStatus.FORBIDDEN;
+        }
+        case CustomErrorCode.ERRUNAUTHORIZED: {
+            return httpStatus.UNAUTHORIZED;
         }
         default: {
             return httpStatus.INTERNAL_SERVER_ERROR;

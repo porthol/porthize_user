@@ -6,6 +6,22 @@
         "port": 27017
       }
     ],
-    "databaseName": "user"
+    "databaseName": "user",
+    "traefik": {
+      "gatewayAddress": "127.0.0.1",
+      "gatewayPort": 3000,
+      "nameRules": "{serviceName}.service"
+    },
+    "authorizationService": {
+      "name": "user",
+      "addRoute": "privileges/{resource}/routes",
+      "authorizationRoute": "users/isAuthorized",
+      "authenticationRoute": "token"
+    },
+    "jwt": {
+      "options": {
+        "expiresIn": "365d"
+      }
+    }
   }
 }

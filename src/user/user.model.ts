@@ -1,29 +1,38 @@
-import { model, Schema } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { model, Schema } from 'mongoose';
 import { isEmail } from 'validator';
-import ObjectId = mongoose.Schema.Types.ObjectId;
 import { IUser } from './user.document';
+import ObjectId = mongoose.Schema.Types.ObjectId;
 
 
 export const UserSchema = new Schema({
     username: {
-        type: String
+        type: String,
+        unique: true
     },
     email: {
-        type : String,
+        type: String,
         validate: [isEmail, 'invalid email'],
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
         required: true
     },
-    date: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
     enabled: {
         type: Boolean,
-        default : true
+        default: true
     },
     roles: [ObjectId]
+});
+
+UserSchema.pre('save', next => {
+    this.updatedAt = Date.now();
+
+    next();
 });
 
 export const UserModel = model<IUser>('user', UserSchema, 'users');

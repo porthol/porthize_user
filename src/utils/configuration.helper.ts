@@ -1,12 +1,14 @@
-import { join, extname } from 'path';
+import { extname, join } from 'path';
 import { path } from 'app-root-path';
 import { CustomError, CustomErrorCode } from './CustomError';
 import * as _ from 'lodash';
 
 const CONFIGURATION: Map<string, object> = new Map();
 
-export function getConfiguration(configPath?: string, env?: string): object {
+export function getConfiguration(configPath?: string): any {
   try {
+    const env = process.env.NODE_ENV || 'development';
+
     let envConfigPath;
     if (configPath) {
       configPath = join(path, configPath);
@@ -14,10 +16,10 @@ export function getConfiguration(configPath?: string, env?: string): object {
       configPath = join(path, 'config', 'config.json');
       switch (env) {
         case 'development':
-            envConfigPath = join(path, 'config', 'config.dev.json');
+          envConfigPath = join(path, 'config', 'config.dev.json');
           break;
         case 'production':
-            envConfigPath = join(path, 'config', 'config.prod.json');
+          envConfigPath = join(path, 'config', 'config.prod.json');
           break;
       }
     }
@@ -29,7 +31,7 @@ export function getConfiguration(configPath?: string, env?: string): object {
         let configObject = require(configPath);
         const envConfigObject = require(envConfigPath);
 
-        configObject = _.merge(configObject,envConfigObject);
+        configObject = _.merge(configObject, envConfigObject);
 
         CONFIGURATION.set(configPath, configObject);
       }
@@ -39,9 +41,9 @@ export function getConfiguration(configPath?: string, env?: string): object {
   } catch (err) {
     throw new CustomError(
       CustomErrorCode.ERRNOCONF,
-        err.message || `Unable to get JSON config file application. \r\n` +
-        `Please verify that the path is correct. \r\n` +
-        `If you don't have define one, verify that the file ${configPath} exists.`,
+      err.message || `Unable to get JSON config file application. \r\n` +
+      `Please verify that the path is correct. \r\n` +
+      `If you don't have define one, verify that the file ${configPath} exists.`,
       err
     );
   }
