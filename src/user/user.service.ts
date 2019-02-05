@@ -197,6 +197,7 @@ export class UserService {
 
         delete cleanedUser.password;
         delete cleanedUser.roles;
+        delete cleanedUser.emailing;
         delete cleanedUser.__v;
 
         return cleanedUser;

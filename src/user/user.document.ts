@@ -8,5 +8,6 @@ export interface IUser extends Document {
     password: string;
     date: Date;
     enabled: boolean;
+    emailing: boolean;
     roles: ObjectId[];
 }

@@ -38,6 +38,9 @@ export const UserUpdateSchema = {
         },
         enabled: {
             type: 'boolean'
+        },
+        emailing: {
+            type: 'boolean'
         }
     }
 };
