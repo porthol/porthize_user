@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
-import ObjectId = mongoose.Types.ObjectId;
 import { ExampleModel } from './example.model';
+import ObjectId = mongoose.Types.ObjectId;
 
 export class ExampleService {
     private static instance: ExampleService;
@@ -29,12 +29,12 @@ export class ExampleService {
         return await example.save();
     }
 
-    async update(id: ObjectId, userData: any){
-        return await ExampleModel.updateOne({_id:id},userData);
+    async update(id: ObjectId, userData: any) {
+        return await ExampleModel.updateOne({ _id: id }, userData);
     }
 
-    async delete(id: ObjectId){
-        return await ExampleModel.deleteOne({_id:id});
+    async delete(id: ObjectId) {
+        return await ExampleModel.deleteOne({ _id: id });
     }
 
 }

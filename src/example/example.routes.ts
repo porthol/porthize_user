@@ -1,8 +1,8 @@
 import * as express from 'express';
-import {Validator} from 'express-json-validator-middleware';
-import {ExampleController} from './example.controller';
-import {ExampleCreateSchema, ExampleUpdateSchema} from './example.schema';
-import {RouterManager} from '../utils/router.manager';
+import { Validator } from 'express-json-validator-middleware';
+import { ExampleController } from './example.controller';
+import { ExampleCreateSchema, ExampleUpdateSchema } from './example.schema';
+import { RouterManager } from '../utils/router.manager';
 
 const router: express.Router = express.Router();
 const controller = new ExampleController();
@@ -67,7 +67,7 @@ routerManager
      */
     .post({
         handlers: [
-            validator.validate({body: ExampleCreateSchema}),
+            validator.validate({ body: ExampleCreateSchema }),
             controller.register
         ],
         action: 'create',
@@ -134,7 +134,7 @@ routerManager
      */
     .put({
         handlers: [
-            validator.validate({body: ExampleUpdateSchema}),
+            validator.validate({ body: ExampleUpdateSchema }),
             controller.update
         ],
         action: 'update',

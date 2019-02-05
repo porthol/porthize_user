@@ -1,4 +1,3 @@
-
 export const ExampleCreateSchema = {
     type: 'object',
     additionalProperties: false,

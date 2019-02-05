@@ -1,9 +1,9 @@
-import {NextFunction, Request, Response} from 'express';
-import {communicationHelper} from '../server';
-import {getPackageName} from './package.helper';
-import {getConfiguration} from './configuration.helper';
-import {IConfigAuthorizationService} from './router.manager';
-import {CustomError, CustomErrorCode} from './custom-error';
+import { NextFunction, Request, Response } from 'express';
+import { communicationHelper } from '../server';
+import { getPackageName } from './package.helper';
+import { getConfiguration } from './configuration.helper';
+import { IConfigAuthorizationService } from './router.manager';
+import { CustomError, CustomErrorCode } from './custom-error';
 
 
 const appName = getPackageName();

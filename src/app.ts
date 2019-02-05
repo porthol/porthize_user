@@ -2,18 +2,12 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
-import {configureRouter} from './configure';
-import {addStartTime, expressMetricsMiddleware} from './utils/express-metrics.middleware';
-import {handleErrorMiddleware} from './utils/handle-error.middleware';
+import { configureRouter } from './configure';
+import { addStartTime, expressMetricsMiddleware } from './utils/express-metrics.middleware';
+import { handleErrorMiddleware } from './utils/handle-error.middleware';
 
 
 export class App {
-    private _appName: string;
-    private _app: express.Application;
-    private _port: number;
-    private _configuration?: { [key: string]: any };
-
-
     constructor(params: any) {
         this._app = express();
 
@@ -27,6 +21,7 @@ export class App {
         this._app.set('env', params.env || process.env.NODE_ENV || 'development');
     }
 
+    private _appName: string;
 
     get appName(): string {
         return this._appName;
@@ -36,6 +31,8 @@ export class App {
         this._appName = value;
     }
 
+    private _app: express.Application;
+
     get app(): express.Application {
         return this._app;
     }
@@ -44,6 +41,8 @@ export class App {
         this._app = value;
     }
 
+    private _port: number;
+
     get port(): number {
         return this._port;
     }
@@ -51,6 +50,8 @@ export class App {
     set port(value: number) {
         this._port = value;
     }
+
+    private _configuration?: { [key: string]: any };
 
     get configuration(): { [p: string]: any } {
         return this._configuration;
