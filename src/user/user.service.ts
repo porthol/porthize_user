@@ -1,6 +1,7 @@
 import { UserModel } from './user.model';
 import { hashPassword } from '../utils/hashPassword';
 import * as mongoose from 'mongoose';
+import { Model } from 'mongoose';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
 import { RoleModel } from '../role';
 import { comparePassword } from '../utils/comparePassword';
@@ -10,6 +11,7 @@ import { configureLogger, defaultWinstonLoggerOptions, getLogger } from '../util
 import { IUser } from './user.document';
 import { IRoute } from '../privilege';
 import { RoleService } from '../role/role.service';
+import { Service } from '../utils/service.interface';
 import ObjectId = mongoose.Types.ObjectId;
 
 const config = getConfiguration().user;
@@ -21,10 +23,21 @@ interface LoginRequest {
     password: string;
 }
 
-export class UserService {
+export class UserService implements Service {
     private static instance: UserService;
+    private readonly name: string;
+    private readonly model = UserModel;
 
     constructor() {
+        this.name = 'user';
+    }
+
+    getName(): string {
+        return this.name;
+    }
+
+    getModel(): Model<any> {
+        return this.model;
     }
 
     public static get(): UserService {

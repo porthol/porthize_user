@@ -1,7 +1,9 @@
 import { RoleModel } from './role.model';
 import * as mongoose from 'mongoose';
+import { Model } from 'mongoose';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
 import { IPrivilegeEmmbedded, IRoute, PrivilegeModel, PrivilegeService } from '../privilege';
+import { Service } from '../utils/service.interface';
 import ObjectId = mongoose.Types.ObjectId;
 
 export interface PrivilegeRoleAdd {
@@ -9,10 +11,21 @@ export interface PrivilegeRoleAdd {
     actions: string[];
 }
 
-export class RoleService {
+export class RoleService implements Service{
     private static instance: RoleService;
+    model = RoleModel;
+    private readonly name: string;
 
     constructor() {
+        this.name = 'role';
+    }
+
+    getName(): string {
+        return this.name;
+    }
+
+    getModel(): Model<any> {
+        return this.model;
     }
 
     public static get(): RoleService {

@@ -2,10 +2,10 @@ import * as express from 'express';
 import UserRoutes from './user/user.routes';
 import PrivilegeRoutes from './privilege/privilege.routes';
 import RoleRoutes from './role/role.routes';
-import { UserModel } from './user';
-import { PrivilegeModel } from './privilege';
-import { RoleModel } from './role';
-import { modelManager } from './utils/model.manager';
+import { serviceManager } from './utils/service.manager';
+import { RoleService } from './role';
+import { UserService } from './user';
+import { PrivilegeService } from './privilege';
 
 /**
  * Function used to configure application
@@ -44,10 +44,10 @@ export function configureRouter(configuration?: object): express.Router[] {
     return [router, privateRouter];
 }
 
-export function configureModels() {
+export function configureServices() {
     // Insert here all your model
     // Register models created
-    modelManager.registerModel(UserModel);
-    modelManager.registerModel(PrivilegeModel);
-    modelManager.registerModel(RoleModel);
+    serviceManager.registerService(UserService.get());
+    serviceManager.registerService(PrivilegeService.get());
+    serviceManager.registerService(RoleService.get());
 }

@@ -6,7 +6,7 @@ import { App } from './app';
 import { createServer } from 'http';
 import { getDatabaseConnectionUrl } from './utils/connection.helper';
 import { CommunicationHelper } from './utils/communication.helper';
-import { configureModels } from './configure';
+import { configureServices } from './configure';
 import { initData } from './utils/Init-data.helper';
 import { CustomError, CustomErrorCode } from './utils/custom-error';
 import { exportRoutes } from './utils/router.manager';
@@ -43,7 +43,7 @@ const server = async (appName: string) => {
 
         // I should have a var with the database state available every where
         // Model initialisation
-        configureModels();
+        configureServices();
         await initData();
 
         const app: App = new App({

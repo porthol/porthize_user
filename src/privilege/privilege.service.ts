@@ -1,14 +1,27 @@
 import { PrivilegeModel } from './privilege.model';
 import * as mongoose from 'mongoose';
+import { Model } from 'mongoose';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
 import { IRoute } from './privilege.document';
 import * as _ from 'lodash';
+import { Service } from '../utils/service.interface';
 import ObjectId = mongoose.Types.ObjectId;
 
-export class PrivilegeService {
+export class PrivilegeService implements Service {
     private static instance: PrivilegeService;
+    model = PrivilegeModel;
+    private readonly name: string;
 
     constructor() {
+        this.name = 'privilege';
+    }
+
+    getName(): string {
+        return this.name;
+    }
+
+    getModel(): Model<any> {
+        return this.model;
     }
 
     public static get(): PrivilegeService {
