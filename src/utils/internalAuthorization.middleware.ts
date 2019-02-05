@@ -3,6 +3,9 @@ import { CustomError, CustomErrorCode } from './custom-error';
 import { UserService } from '../user/user.service';
 
 export function internalAuthorizationMiddleware(req: Request, res: Response, next: NextFunction) {
+    if (req.headers['internal-request']) { // like this authorization middleware
+        next(); // todo for moment we accept that internal request has all ACL, we should not
+    }
     try {
         const user = (req as any).user;
 
