@@ -12,6 +12,9 @@ const config: any = getConfiguration();
 const configAuthService: IConfigAuthorizationService = config[appName].authorizationService;
 
 export function authorizationMiddleware(req: Request, res: Response, next: NextFunction) {
+    if (req.headers['internal-request']) {
+        next(); // todo for moment we accept that internal request has all ACL, we should not
+    }
     communicationHelper.post(
         configAuthService.name,
         configAuthService.authorizationRoute,
