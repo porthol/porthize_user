@@ -1,9 +1,9 @@
-import { join } from 'path';
-import { path } from 'app-root-path';
+import {join} from 'path';
+import {path} from 'app-root-path';
 import * as fs from 'fs';
-import { getLogger } from './logger';
+import {getLogger} from './logger';
 import * as Ajv from 'ajv';
-import { modelManager } from './ModelManager';
+import {modelManager} from './model.manager';
 
 const ajv = new Ajv();
 

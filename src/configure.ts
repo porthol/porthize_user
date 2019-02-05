@@ -1,7 +1,7 @@
 import * as express from 'express';
 import ExampleRoutes from './example/example.routes';
-import { modelManager } from './utils/ModelManager';
-import { ExampleModel } from './example';
+import {modelManager} from './utils/model.manager';
+import {ExampleModel} from './example';
 
 /**
  * Function used to configure application

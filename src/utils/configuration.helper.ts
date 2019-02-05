@@ -1,6 +1,6 @@
-import { join, extname } from 'path';
-import { path } from 'app-root-path';
-import { CustomError, CustomErrorCode } from './CustomError';
+import {extname, join} from 'path';
+import {path} from 'app-root-path';
+import {CustomError, CustomErrorCode} from './custom-error';
 import * as _ from 'lodash';
 
 const CONFIGURATION: Map<string, object> = new Map();

@@ -2,9 +2,9 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
-import { configureRouter } from './configure';
-import { addStartTime, expressMetricsMiddleware } from './utils/expressMetrics.middleware';
-import { handleErrorMiddleware } from './utils/handleError.middleware';
+import {configureRouter} from './configure';
+import {addStartTime, expressMetricsMiddleware} from './utils/express-metrics.middleware';
+import {handleErrorMiddleware} from './utils/handle-error.middleware';
 
 
 export class App {

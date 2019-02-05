@@ -7,8 +7,8 @@ import {createServer} from 'http';
 import {getDatabaseConnectionUrl} from './utils/connection.helper';
 import {CommunicationHelper} from './utils/communication.helper';
 import {configureModels} from './configure';
-import {initData} from './utils/InitData.helper';
-import {CustomError, CustomErrorCode} from './utils/CustomError';
+import {initData} from './utils/Init-data.helper';
+import {CustomError, CustomErrorCode} from './utils/custom-error';
 import {exportRoutes} from './utils/router.manager';
 
 const appName = getPackageName();

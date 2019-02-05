@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from 'express';
-import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
+import {NextFunction, Request, Response} from 'express';
+import {configureLogger, defaultWinstonLoggerOptions, getLogger} from './logger';
 import * as winston from 'winston';
 
 export function expressMetricsMiddleware(req: Request, res: Response, next: NextFunction) {
