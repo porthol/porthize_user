@@ -1,11 +1,24 @@
 import * as mongoose from 'mongoose';
+import { Model } from 'mongoose';
 import { ExampleModel } from './example.model';
+import { Service } from '../utils/service.interface';
 import ObjectId = mongoose.Types.ObjectId;
 
-export class ExampleService {
+export class ExampleService implements Service {
     private static instance: ExampleService;
+    private readonly name: string;
+    private readonly model = ExampleModel;
 
     constructor() {
+        this.name = 'example';
+    }
+
+    getName(): string {
+        return this.name;
+    }
+
+    getModel(): Model<any> {
+        return this.model;
     }
 
     public static get(): ExampleService {

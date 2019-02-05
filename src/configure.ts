@@ -1,7 +1,7 @@
 import * as express from 'express';
 import ExampleRoutes from './example/example.routes';
-import { modelManager } from './utils/model.manager';
-import { ExampleModel } from './example';
+import { serviceManager } from './utils/service.manager';
+import { ExampleService } from './example';
 
 /**
  * Function used to configure application
@@ -38,8 +38,8 @@ export function configureRouter(configuration?: object): express.Router[] {
     return [router, privateRouter];
 }
 
-export function configureModels() {
+export function configureServices() {
     // Insert here all your model
     // Register models created
-    modelManager.registerModel(ExampleModel);
+    serviceManager.registerService(ExampleService.get());
 }

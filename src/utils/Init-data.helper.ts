@@ -3,7 +3,7 @@ import { path } from 'app-root-path';
 import * as fs from 'fs';
 import { getLogger } from './logger';
 import * as Ajv from 'ajv';
-import { modelManager } from './model.manager';
+import { serviceManager } from './service.manager';
 
 const ajv = new Ajv();
 
@@ -37,11 +37,13 @@ export async function initData() {
                         getLogger('default').log('warn', ajv.errorsText());
                         return;
                     }
-                    const model = modelManager.getModel(importFile.model);
-                    model.countDocuments({})
-                        .then(count => {
+                    const service = serviceManager.getService(importFile.model);
+                    service.getModel().countDocuments({})
+                        .then(async count => {
                             if (!count || count <= 0) {
-                                model.insertMany(importFile.data);
+                                for (const data of importFile.data) {
+                                    await service.create(data);
+                                }
                             }
                             getLogger('default').log('info', 'Data already here for ' + file);
                         });
