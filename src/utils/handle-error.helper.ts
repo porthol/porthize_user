@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import * as httpStatus from 'http-status';
-import { CustomError, CustomErrorCode, CustomErrorCodeToHttpStatus } from './CustomError';
+import { CustomError, CustomErrorCode, CustomErrorCodeToHttpStatus } from './custom-error';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { ValidationError } from 'ajv';
 import { MongoError } from 'mongodb';

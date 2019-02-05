@@ -1,7 +1,7 @@
 import { UserModel } from './user.model';
 import { hashPassword } from '../utils/hashPassword';
 import * as mongoose from 'mongoose';
-import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import { CustomError, CustomErrorCode } from '../utils/custom-error';
 import { RoleModel } from '../role';
 import { comparePassword } from '../utils/comparePassword';
 import * as jwt from 'jsonwebtoken';

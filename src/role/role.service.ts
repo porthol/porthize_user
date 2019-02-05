@@ -1,6 +1,6 @@
 import { RoleModel } from './role.model';
 import * as mongoose from 'mongoose';
-import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import { CustomError, CustomErrorCode } from '../utils/custom-error';
 import { IPrivilegeEmmbedded, IRoute, PrivilegeModel, PrivilegeService } from '../privilege';
 import ObjectId = mongoose.Types.ObjectId;
 
@@ -70,7 +70,7 @@ export class RoleService {
         }
 
         (role.privileges || []).push({
-            resource : privilegeFromDb.resource,
+            resource: privilegeFromDb.resource,
             actions: privilege.actions
         } as IPrivilegeEmmbedded);
 
@@ -105,13 +105,13 @@ export class RoleService {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found');
         }
         for (const privilege of role.privileges) {
-            if(privilege.resource === '*') {
+            if (privilege.resource === '*') {
                 result = true;
                 break;
             }
             result = await PrivilegeService.get().isAuthorized(privilege, route);
 
-            if(result === true) {
+            if (result === true) {
                 break;
             }
         }

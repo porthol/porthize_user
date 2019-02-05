@@ -1,7 +1,7 @@
 import { UserService } from './user.service';
 import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
-import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import { CustomError, CustomErrorCode } from '../utils/custom-error';
 
 export class UserController {
 
@@ -48,12 +48,12 @@ export class UserController {
     remove(req: Request, res: Response, next: NextFunction): void {
         Promise.resolve()
             .then(() => {
-            if ((req as any).user.userId === req.params.id) {
-                throw new CustomError(CustomErrorCode.ERRBADREQUEST,
-                    'Bad request : The user cannot delete himself');
-            }
-            return UserService.get().remove(req.params.id);
-        })
+                if ((req as any).user.userId === req.params.id) {
+                    throw new CustomError(CustomErrorCode.ERRBADREQUEST,
+                        'Bad request : The user cannot delete himself');
+                }
+                return UserService.get().remove(req.params.id);
+            })
             .then((result: any) => {
                 if (result.n === 0) {
                     throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
@@ -113,7 +113,7 @@ export class UserController {
     isAuthorized(req: Request, res: Response, next: NextFunction): void {
         UserService.get().isAuthorized((req as any).user, req.body)
             .then(result => {
-                if(!result) {
+                if (!result) {
                     throw new CustomError(CustomErrorCode.ERRFORBIDDEN, 'Access forbidden');
                 }
                 res.status(httpStatus.NO_CONTENT)

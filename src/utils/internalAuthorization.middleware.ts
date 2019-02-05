@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { CustomError, CustomErrorCode } from './CustomError';
+import { CustomError, CustomErrorCode } from './custom-error';
 import { UserService } from '../user/user.service';
 
 export function internalAuthorizationMiddleware(req: Request, res: Response, next: NextFunction) {
@@ -13,9 +13,10 @@ export function internalAuthorizationMiddleware(req: Request, res: Response, nex
         // todo if a route got no control (like login or create user) authorization return false because it don't it
         UserService.get().isAuthorized(user, {
             url: req.originalUrl.substr(4), // remove '/api'
-            method: req.method })
+            method: req.method
+        })
             .then(result => {
-                if(!result) {
+                if (!result) {
                     throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized to access this resource');
                 }
                 next();

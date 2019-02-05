@@ -286,13 +286,13 @@ routerManager
      *
      */
     .post({
-       handlers: [
-           validator.validate({
-               body: UserAuthorizedSchema
-           }),
-           internalAuthenticationMiddleware,
+        handlers: [
+            validator.validate({
+                body: UserAuthorizedSchema
+            }),
+            internalAuthenticationMiddleware,
             userController.isAuthorized
-       ]
+        ]
     });
 
 routerManager

@@ -1,6 +1,6 @@
 import { PrivilegeModel } from './privilege.model';
 import * as mongoose from 'mongoose';
-import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import { CustomError, CustomErrorCode } from '../utils/custom-error';
 import { IRoute } from './privilege.document';
 import * as _ from 'lodash';
 import ObjectId = mongoose.Types.ObjectId;
@@ -80,7 +80,7 @@ export class PrivilegeService {
         }
 
         for (const action in privilegeFromDb.actionsAvailable) {
-            if ( privilege.actions.indexOf(action) === -1 ){ // you do not have this action available
+            if (privilege.actions.indexOf(action) === -1) { // you do not have this action available
                 continue;
             }
             for (const dbRoute of privilegeFromDb.actionsAvailable[action]) {
