@@ -73,6 +73,7 @@ export class PrivilegeService implements Service {
         }
 
         for (const route of routes) {
+            route.url = this.removeQueryParams(route.url);
             if (actions[action].map(a => a.url).indexOf(route.url) === -1) {
                 route.regexp = new RegExp(route.regexp);
                 actions[action].push(route);
@@ -97,12 +98,20 @@ export class PrivilegeService implements Service {
                 continue;
             }
             for (const dbRoute of privilegeFromDb.actionsAvailable[action]) {
+                route.url = this.removeQueryParams(route.url);
                 if (dbRoute.regexp.test(route.url) && dbRoute.method.toLowerCase() === route.method.toLowerCase()) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    private removeQueryParams(url: string){
+        if(url.indexOf('?') > 0) {
+            url = url.substr(0, url.indexOf('?'));
+        }
+        return url;
     }
 
 }
