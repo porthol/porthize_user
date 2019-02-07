@@ -41,6 +41,7 @@
         "path-to-regexp": "^3.0.0",
         "request": "^2.88.0",
         "request-promise": "^4.2.2",
+        "uuid": "^3.3.2",
         "winston": "^3.1.0"
     },
     "devDependencies": {
@@ -57,6 +58,7 @@
         "@types/mongoose": "^5.3.7",
         "@types/request": "^2.48.1",
         "@types/request-promise": "^4.1.42",
+        "@types/uuid": "^3.4.4",
         "@types/validator": "^10.9.0",
         "apidoc": "^0.17.7",
         "nodemon": "^1.18.9",

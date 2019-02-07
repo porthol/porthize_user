@@ -1,5 +1,5 @@
 {
     "templateexpress": {
-        "defaultValue": "foo"
+        "registerRetryTime": 30000
     }
 }
