@@ -6,6 +6,8 @@
                 "expiresIn": "12h",
                 "algorithm": "HS512"
             }
-        }
+        },
+        "roleBotKey": "bot",
+        "botTokenRenew" :"8h"
     }
 }

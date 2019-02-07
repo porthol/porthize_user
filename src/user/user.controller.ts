@@ -121,4 +121,22 @@ export class UserController {
             })
             .catch(next);
     }
+
+    registerMicroService(req: Request, res: Response, next: NextFunction): void {
+        UserService.get().createBotUser(req.body.uuid)
+            .then(token => {
+                res.status(httpStatus.CREATED)
+                    .send(token);
+            })
+            .catch(next);
+    }
+
+    renewToken(req: Request, res: Response, next: NextFunction): void {
+        UserService.get().getBotToken(req.body.token)
+            .then(token => {
+                res.status(httpStatus.CREATED)
+                    .send(token);
+            })
+            .catch(next);
+    }
 }

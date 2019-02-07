@@ -5,7 +5,9 @@ import {
     UserAuthorizedSchema,
     UserCreateSchema,
     UserLoginSchema,
+    UserMicroServiceSchema,
     UserQuerySchema,
+    UserRenewBotTokenSchema,
     UserRoleQuerySchema,
     UserRoleSchema,
     UserUpdateSchema
@@ -13,6 +15,7 @@ import {
 import { internalAuthenticationMiddleware } from '../utils/internalAuthentication.middleware';
 import { RouterManager } from '../utils/router.manager';
 import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
+import { denyExternalRequestMiddleware } from '../utils/deny-external-request.middleware';
 
 const router: express.Router = express.Router();
 const userController = new UserController();
@@ -191,11 +194,11 @@ routerManager
      */
     .get({
         handlers: [
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
             validator.validate({
                 params: UserQuerySchema
             }),
-            internalAuthenticationMiddleware,
-            internalAuthorizationMiddleware,
             userController.get
         ],
         resource,
@@ -229,12 +232,12 @@ routerManager
      */
     .put({
         handlers: [
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
             validator.validate({
                 params: UserQuerySchema,
                 body: UserUpdateSchema
             }),
-            internalAuthenticationMiddleware,
-            internalAuthorizationMiddleware,
             userController.update
         ],
         resource,
@@ -259,11 +262,11 @@ routerManager
      */
     .delete({
         handlers: [
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
             validator.validate({
                 params: UserQuerySchema
             }),
-            internalAuthenticationMiddleware,
-            internalAuthorizationMiddleware,
             userController.remove
         ],
         resource,
@@ -287,10 +290,10 @@ routerManager
      */
     .post({
         handlers: [
+            internalAuthenticationMiddleware,
             validator.validate({
                 body: UserAuthorizedSchema
             }),
-            internalAuthenticationMiddleware,
             userController.isAuthorized
         ]
     });
@@ -311,12 +314,12 @@ routerManager
      */
     .post({
         handlers: [
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
             validator.validate({
                 params: UserQuerySchema,
                 body: UserRoleSchema
             }),
-            internalAuthenticationMiddleware,
-            internalAuthorizationMiddleware,
             userController.addRole
         ],
         resource,
@@ -338,15 +341,41 @@ routerManager
      */
     .delete({
         handlers: [
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
             validator.validate({
                 params: UserRoleQuerySchema
             }),
-            internalAuthenticationMiddleware,
-            internalAuthorizationMiddleware,
             userController.removeRole
         ],
         resource,
         action: 'updateRole'
+    });
+
+    // todo add api doc
+
+routerManager
+    .route('/users/registerMicroService')
+    .post({
+        handlers: [
+            denyExternalRequestMiddleware,
+            validator.validate({
+                body: UserMicroServiceSchema
+            }),
+            userController.registerMicroService
+        ]
+    });
+
+routerManager
+    .route('/users/renewBotToken')
+    .post({
+        handlers: [
+            denyExternalRequestMiddleware,
+            validator.validate({
+                body: UserRenewBotTokenSchema
+            }),
+            userController.renewToken
+        ]
     });
 
 export default router;

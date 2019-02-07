@@ -12,6 +12,7 @@ import { IUser } from './user.document';
 import { IRoute } from '../privilege';
 import { RoleService } from '../role/role.service';
 import { Service } from '../utils/service.interface';
+import ms = require('ms');
 import ObjectId = mongoose.Types.ObjectId;
 
 const config = getConfiguration().user;
@@ -78,7 +79,7 @@ export class UserService implements Service {
         return await UserModel.deleteOne({ _id: id });
     }
 
-    async addRole(userId: string, roleId: string) {
+    async addRole(userId: string, roleId: string): Promise<IUser> {
         const user = await UserModel.findById(userId);
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
@@ -138,6 +139,10 @@ export class UserService implements Service {
 
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'No match for user and password');
+        }
+
+        if (!user.loginEnabled) {
+            return null;
         }
 
         if (comparePassword(loginRequest.password, user.password)) {
@@ -205,7 +210,56 @@ export class UserService implements Service {
         return result;
     }
 
-    private getCleanUser(user: IUser) {
+    async createBotUser(uuid: string) {
+        const appUser = {
+            username: uuid,
+            email: uuid + '@micro-service.com',
+            password: 'none',
+            loginEnabled: false,
+            emailing: false
+        };
+
+        let user = await this.create(appUser);
+
+        const botRole = await RoleService.get().getOne({ key: config.roleBotKey });
+
+        if (!botRole) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND,
+                'The bot role doesn\'t exist on key ' +
+                config.roleBotKey + '. Can not register the user');
+        }
+        user = await this.addRole(user._id, botRole._id);
+        const token = await this.generateBotToken((user as IUser)._id.toString());
+        return token;
+    }
+
+    async getBotToken(token: string) {
+        const payload: any = await this.isTokenValid(token);
+        return await this.generateBotToken(payload.userId);
+    }
+
+    private async generateBotToken(userId: string) {
+        const user = await UserModel.findOne({ _id: userId });
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+        const roles = await RoleModel.find({ _id: { $in: user.roles } });
+        if (roles.map(r => r.key).indexOf(config.roleBotKey) !== -1 && !user.loginEnabled) {
+            const iat = Math.floor(Date.now() / 1000);
+            const payload: any = {
+                userId: user._id,
+                iat
+            };
+
+            const token = await jwt.sign(payload, config.jwt.secret, config.jwt.options);
+            getLogger('UserService').log('info', 'Bot %s get his token %d', user.username, iat);
+            return { token, renewTimeOut: ms(config.botTokenRenew) };
+        }
+        return null;
+    }
+
+
+    private getCleanUser(user: IUser): IUser {
         const cleanedUser = JSON.parse(JSON.stringify(user));
 
         delete cleanedUser.password;

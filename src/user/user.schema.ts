@@ -11,6 +11,12 @@ export const UserCreateSchema = {
         },
         password: {
             type: 'string'
+        },
+        loginEnabled: {
+            type: 'boolean'
+        },
+        emailing: {
+            type: 'boolean'
         }
     }
 };
@@ -37,6 +43,9 @@ export const UserUpdateSchema = {
             type: 'string'
         },
         enabled: {
+            type: 'boolean'
+        },
+        loginEnabled: {
             type: 'boolean'
         },
         emailing: {
@@ -99,6 +108,31 @@ export const UserAuthorizedSchema = {
             type: 'string'
         },
         regexp: {
+            type: 'string'
+        }
+    }
+};
+
+export const UserMicroServiceSchema = {
+    type: 'object',
+    required: ['uuid'],
+    additionalProperties: false,
+    properties: {
+        uuid: {
+            type: 'string'
+        },
+        hostname: {
+            type: 'string'
+        }
+    }
+};
+
+export const UserRenewBotTokenSchema = {
+    type: 'object',
+    required: ['token'],
+    additionalProperties: false,
+    properties: {
+        token: {
             type: 'string'
         }
     }

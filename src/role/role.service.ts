@@ -39,6 +39,10 @@ export class RoleService implements Service{
         return await RoleModel.find(criteria || {});
     }
 
+    async getOne(criteria: any) {
+        return await RoleModel.findOne(criteria || {});
+    }
+
     async get(id: ObjectId, criteria = {} as any) {
         criteria._id = id;
         return await RoleModel.findOne(criteria);
