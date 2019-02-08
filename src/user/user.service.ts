@@ -49,10 +49,17 @@ export class UserService implements Service {
     }
 
     async getAll(criteria: any) {
-        return await UserModel.find(criteria || {});
+        const users = await UserModel.find(criteria || {});
+
+        for (let i = 0; i < users.length; i++) {
+            users[i] = this.getCleanUser(users[i]);
+        }
+
+        return users;
     }
 
     async get(id: ObjectId, criteria = {} as any) {
+        // todo we will need to get role one time =/
         criteria._id = id;
         const user = await UserModel.findOne(criteria || {});
         return user ? this.getCleanUser(user) : null; // don't clean null object
