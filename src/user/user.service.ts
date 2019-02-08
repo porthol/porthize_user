@@ -63,16 +63,18 @@ export class UserService implements Service {
         const user = new UserModel(userData);
         await user.save();
 
-        const defaultRole = await RoleService.get().getOne({ key: config.defaultRoleKey });
+        if(addDefaultRole) {
+            const defaultRole = await RoleService.get().getOne({ key: config.defaultRoleKey });
 
-        if (!defaultRole) {
-            getLogger('UserService').log('warn', 'Default role has not been found. User created got no role !');
+            if (!defaultRole) {
+                getLogger('UserService').log('warn', 'Default role has not been found. User created got no role !');
+            }
+            user.roles.push(defaultRole._id);
+            user.markModified('roles');
+            await user.save();
         }
 
-        user.roles.push(defaultRole._id);
-        user.markModified('roles');
-
-        return this.getCleanUser(await user.save());
+        return this.getCleanUser(user);
     }
 
     async update(id: ObjectId, userData: any) {
