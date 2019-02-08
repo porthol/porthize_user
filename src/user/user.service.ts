@@ -63,7 +63,7 @@ export class UserService implements Service {
         const user = new UserModel(userData);
         await user.save();
 
-        if(addDefaultRole) {
+        if (addDefaultRole) {
             const defaultRole = await RoleService.get().getOne({ key: config.defaultRoleKey });
 
             if (!defaultRole) {
@@ -154,8 +154,8 @@ export class UserService implements Service {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'No match for user and password');
         }
 
-        if (!user.loginEnabled) {
-            return null;
+        if (!user.loginEnabled || !user.enabled) {
+            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized to log in');
         }
 
         if (comparePassword(loginRequest.password, user.password)) {
@@ -169,7 +169,7 @@ export class UserService implements Service {
             getLogger('UserService').log('info', 'User %s connected at %d', user._id.toString(), iat);
             return { token, iat };
         }
-        return null;
+        throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'No match for user and password');
     }
 
     async getCurrentUser(tokenFromHeader: string) {
@@ -188,6 +188,10 @@ export class UserService implements Service {
 
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+
+        if (!user.enabled) {
+            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized');
         }
 
         return this.getCleanUser(user);
@@ -209,16 +213,21 @@ export class UserService implements Service {
 
     async isAuthorized(partialUser: IUser, route: IRoute) {
         let result = false;
-        try {
-            const user = await UserModel.findById(partialUser._id);
-            for (const roleId of user.roles) {
-                result = await RoleService.get().isAuthorized(roleId, route);
-                if (result === true) {
-                    break;
-                }
+
+        const user = await UserModel.findById(partialUser._id);
+
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+
+        if (!user.enabled) {
+            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized');
+        }
+        for (const roleId of user.roles) {
+            result = await RoleService.get().isAuthorized(roleId, route);
+            if (result === true) {
+                break;
             }
-        } catch (err) {
-            getLogger('UserService').log('error', err.message);
         }
         return result;
     }
@@ -255,6 +264,9 @@ export class UserService implements Service {
         const user = await UserModel.findOne({ _id: userId });
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+        if (!user.enabled) {
+            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized');
         }
         const roles = await RoleModel.find({ _id: { $in: user.roles } });
         if (roles.map(r => r.key).indexOf(config.roleBotKey) !== -1 && !user.loginEnabled) {
