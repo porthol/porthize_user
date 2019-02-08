@@ -6,7 +6,7 @@
         "port": 27017
       }
     ],
-    "databaseName": "user",
+    "databaseName": "users",
     "traefik": {
       "gatewayAddress": "127.0.0.1",
       "gatewayPort": 3000,
@@ -16,7 +16,9 @@
       "name": "user",
       "addRoute": "privileges/{resource}/routes",
       "authorizationRoute": "users/isAuthorized",
-      "authenticationRoute": "token"
+      "authenticationRoute": "token",
+      "registerAppRoute": "users/registerMicroService",
+      "renewTokenRoute": "users/renewBotToken"
     },
     "jwt": {
       "options": {

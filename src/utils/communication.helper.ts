@@ -1,6 +1,7 @@
 import * as request from 'request-promise';
 import { RequestPromiseOptions } from 'request-promise';
 import { UriOptions } from 'request';
+import { app } from '../server';
 
 interface Headers {
     [key: string]: string;
@@ -44,15 +45,19 @@ export class CommunicationHelper {
 
         headers.Host = this.config.nameRules.replace('{serviceName}', serviceName);
 
+        if (!headers.authorization) {
+            headers.authorization = 'Bearer ' + app.token;
+        }
+
         const options: UriOptions & RequestPromiseOptions = {
             headers,
             uri,
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
+            json: true
         };
 
         if (body) {
             options.body = body;
-            options.json = true;
         }
 
         return options;

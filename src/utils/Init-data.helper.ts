@@ -27,28 +27,27 @@ export async function initData() {
     try {
         const folderPath = join(path, 'src/utils/data/');
         if (fs.existsSync(folderPath)) {
-            fs.readdir(folderPath, (err, files) => {
-                files.map(async file => {
-                    const importFile = require(folderPath + file);
-                    const valid = ajv.validate(IDataToImport, importFile);
-                    if (!valid) {
-                        getLogger('default').log('warn', 'The imports file ' + file + ' is not correctly formatted');
-                        getLogger('default').log('warn', 'The file will not me imported');
-                        getLogger('default').log('warn', ajv.errorsText());
-                        return;
+            const files = fs.readdirSync(folderPath);
+            for (const file of files) {
+                const importFile = require(folderPath + file);
+                const valid = ajv.validate(IDataToImport, importFile);
+                if (!valid) {
+                    getLogger('default').log('warn', 'The imports file ' + file + ' is not correctly formatted');
+                    getLogger('default').log('warn', 'The file will not me imported');
+                    getLogger('default').log('warn', ajv.errorsText());
+                    return;
+                }
+                const service = serviceManager.getService(importFile.model);
+                const count = await service.getModel().countDocuments({});
+
+                if (!count || count <= 0) {
+                    for (const data of importFile.data) {
+                        await service.create(data);
                     }
-                    const service = serviceManager.getService(importFile.model);
-                    service.getModel().countDocuments({})
-                        .then(async count => {
-                            if (!count || count <= 0) {
-                                for (const data of importFile.data) {
-                                    await service.create(data);
-                                }
-                            }
-                            getLogger('default').log('info', 'Data already here for ' + file);
-                        });
-                });
-            });
+                }
+                getLogger('default').log('info', 'Data already here for ' + file);
+            }
+
         }
     } catch (err) {
         getLogger('default').error(err);

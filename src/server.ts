@@ -17,6 +17,11 @@ const config: any = getConfiguration();
 
 export const communicationHelper = new CommunicationHelper(config[appName].traefik);
 
+export const app: App = new App({
+    appName,
+    configuration: config
+});
+
 const server = async (appName: string) => {
     try {
         configureLogger('default', defaultWinstonLoggerOptions);
@@ -29,15 +34,18 @@ const server = async (appName: string) => {
                 mongooseOptions.replicaSet = 'rs0';
             }
             if (databaseUrl) {
-                // todo Check database connection https://github.com/Automattic/mongoose/pull/6652 commit 727eda48bcecfb8f4462162863e7beb7bca18fdb
+                // todo Check database connection
+                //  https://github.com/Automattic/mongoose/pull/6652 commit 727eda48bcecfb8f4462162863e7beb7bca18fdb
                 const mongooseObj: any = await mongoose.connect(
                     databaseUrl,
                     mongooseOptions);
                 const databaseConnection = mongooseObj.connections[0]; // default conn
                 getLogger('default').log('info',
-                    'Connection on database ready state is ' + databaseConnection.states[databaseConnection.readyState]);
+                    'Connection on database ready state is ' +
+                    databaseConnection.states[databaseConnection.readyState]);
             } else {
-                throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'The database url can not be configured, you should check config.json');
+                throw new CustomError(CustomErrorCode.ERRINTERNALSERVER,
+                    'The database url can not be configured, you should check config.json');
             }
         }
 
@@ -46,10 +54,6 @@ const server = async (appName: string) => {
         configureServices();
         await initData();
 
-        const app: App = new App({
-            appName,
-            configuration: config
-        });
         const expressApp = await app.bootstrap();
 
         const port = expressApp.get('port') || 3000;

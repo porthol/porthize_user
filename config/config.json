@@ -1,5 +1,6 @@
 {
     "user": {
+        "registerRetryTime": 30000,
         "jwt": {
             "secret": "h8IBWbX3nDwN4X3xsaIUlfGvwQet04QA0oOTnwnq",
             "options": {
