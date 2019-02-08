@@ -107,6 +107,7 @@ export class App {
         this.applyExpressMiddlewaresRouter();
         await this.registerAppRouters();
         this.app.use(handleErrorMiddleware); // error handler middleware should be put after router
+        // todo user service can't register itself at start because the call is launch before listening, should put delay ou move out registering
         await this.registerApp();
         return this.app;
     }

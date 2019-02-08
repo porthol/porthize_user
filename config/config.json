@@ -9,6 +9,7 @@
             }
         },
         "roleBotKey": "bot",
-        "botTokenRenew" :"8h"
+        "botTokenRenew" :"8h",
+        "defaultRoleKey": "user"
     }
 }

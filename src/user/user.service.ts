@@ -58,9 +58,20 @@ export class UserService implements Service {
         return user ? this.getCleanUser(user) : null; // don't clean null object
     }
 
-    async create(userData: any) {
+    async create(userData: any, addDefaultRole = true) {
         userData.password = await hashPassword(userData.password);
         const user = new UserModel(userData);
+        await user.save();
+
+        const defaultRole = await RoleService.get().getOne({ key: config.defaultRoleKey });
+
+        if (!defaultRole) {
+            getLogger('UserService').log('warn', 'Default role has not been found. User created got no role !');
+        }
+
+        user.roles.push(defaultRole._id);
+        user.markModified('roles');
+
         return this.getCleanUser(await user.save());
     }
 
@@ -219,7 +230,7 @@ export class UserService implements Service {
             emailing: false
         };
 
-        let user = await this.create(appUser);
+        let user = await this.create(appUser, false);
 
         const botRole = await RoleService.get().getOne({ key: config.roleBotKey });
 
