@@ -1,14 +1,27 @@
 import { PrivilegeModel } from './privilege.model';
 import * as mongoose from 'mongoose';
-import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import { Model } from 'mongoose';
+import { CustomError, CustomErrorCode } from '../utils/custom-error';
 import { IRoute } from './privilege.document';
 import * as _ from 'lodash';
+import { Service } from '../utils/service.interface';
 import ObjectId = mongoose.Types.ObjectId;
 
-export class PrivilegeService {
+export class PrivilegeService implements Service {
     private static instance: PrivilegeService;
+    model = PrivilegeModel;
+    private readonly name: string;
 
     constructor() {
+        this.name = 'privilege';
+    }
+
+    getName(): string {
+        return this.name;
+    }
+
+    getModel(): Model<any> {
+        return this.model;
     }
 
     public static get(): PrivilegeService {
@@ -60,6 +73,7 @@ export class PrivilegeService {
         }
 
         for (const route of routes) {
+            route.url = this.removeQueryParams(route.url);
             if (actions[action].map(a => a.url).indexOf(route.url) === -1) {
                 route.regexp = new RegExp(route.regexp);
                 actions[action].push(route);
@@ -80,16 +94,24 @@ export class PrivilegeService {
         }
 
         for (const action in privilegeFromDb.actionsAvailable) {
-            if ( privilege.actions.indexOf(action) === -1 ){ // you do not have this action available
+            if (privilege.actions.indexOf(action) === -1) { // you do not have this action available
                 continue;
             }
             for (const dbRoute of privilegeFromDb.actionsAvailable[action]) {
+                route.url = this.removeQueryParams(route.url);
                 if (dbRoute.regexp.test(route.url) && dbRoute.method.toLowerCase() === route.method.toLowerCase()) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    private removeQueryParams(url: string){
+        if(url.indexOf('?') > 0) {
+            url = url.substr(0, url.indexOf('?'));
+        }
+        return url;
     }
 
 }

@@ -3,16 +3,21 @@ import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
 import { configureRouter } from './configure';
-import { addStartTime, expressMetricsMiddleware } from './utils/expressMetrics.middleware';
-import { handleErrorMiddleware } from './utils/handleError.middleware';
+import { addStartTime, expressMetricsMiddleware } from './utils/express-metrics.middleware';
+import { handleErrorMiddleware } from './utils/handle-error.middleware';
+import * as uuid from 'uuid/v4';
+import { communicationHelper } from './server';
+import * as os from 'os';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils/logger';
+
+configureLogger('mainApp', defaultWinstonLoggerOptions);
 
 
 export class App {
-    private _appName: string;
-    private _app: express.Application;
-    private _port: number;
-    private _configuration?: { [key: string]: any };
+    private readonly _uuid: string;
 
+    private _appName: string;
+    private renewTimeOut: number;
 
     constructor(params: any) {
         this._app = express();
@@ -20,13 +25,21 @@ export class App {
         this.appName = params.appName;
 
         if (params.configuration) {
-            this.configuration = params.configuration;
+            if (this.appName in params.configuration) {
+                this.configuration = params.configuration[this.appName];
+            }
         }
 
         this._app.set('port', params.port || process.env.PORT || 3000);
         this._app.set('env', params.env || process.env.NODE_ENV || 'development');
+        this._uuid = uuid();
     }
 
+    private _token: string;
+
+    get token(): string {
+        return this._token;
+    }
 
     get appName(): string {
         return this._appName;
@@ -36,6 +49,12 @@ export class App {
         this._appName = value;
     }
 
+    get uuid(): string {
+        return this._uuid;
+    }
+
+    private _app: express.Application;
+
     get app(): express.Application {
         return this._app;
     }
@@ -44,6 +63,8 @@ export class App {
         this._app = value;
     }
 
+    private _port: number;
+
     get port(): number {
         return this._port;
     }
@@ -51,6 +72,8 @@ export class App {
     set port(value: number) {
         this._port = value;
     }
+
+    private _configuration?: { [key: string]: any };
 
     get configuration(): { [p: string]: any } {
         return this._configuration;
@@ -61,11 +84,7 @@ export class App {
     }
 
     async registerAppRouters() {
-        let configuration;
-        if (this.appName in this.configuration) {
-            configuration = this.configuration[this.appName];
-        }
-        const appRouters: express.Router[] = configureRouter(configuration);
+        const appRouters: express.Router[] = configureRouter(this.configuration);
         // Mount public router to /
         this.app.use('/', appRouters[0]);
 
@@ -88,6 +107,64 @@ export class App {
         this.applyExpressMiddlewaresRouter();
         await this.registerAppRouters();
         this.app.use(handleErrorMiddleware); // error handler middleware should be put after router
+        // todo user service can't register itself at start because the call is launch before listening, should put delay ou move out registering
+        await this.registerApp();
         return this.app;
+    }
+
+    async registerApp() {
+        try {
+            const response = await communicationHelper.post(
+                this.configuration.authorizationService.name,
+                this.configuration.authorizationService.registerAppRoute,
+                {
+                    'internal-request': os.hostname()
+                },
+                {
+                    uuid: this.uuid
+                });
+
+            this._token = response.body.token;
+            this.renewTimeOut = response.body.renewTimeOut;
+            setTimeout(this.renewToken.bind(this), this.renewTimeOut);
+            getLogger('mainApp').log('info', 'App registered on authorization service');
+        } catch (err) {
+            getLogger('mainApp').log('error',
+                'Can not register the ' + this.appName + ' service on authorization service');
+            getLogger('mainApp').log('error',
+                'Retry in ' + (this._configuration.registerRetryTime / 1000) + ' sec(s)');
+            getLogger('mainApp').log('error', err.message);
+
+            // if we can't register the service we retry in X secs
+            setTimeout(this.registerApp.bind(this), this._configuration.registerRetryTime);
+        }
+    }
+
+    async renewToken() {
+        try {
+            const response = await communicationHelper.post(
+                this.configuration.authorizationService.name,
+                this.configuration.authorizationService.renewTokenRoute,
+                {
+                    'internal-request': os.hostname()
+                },
+                {
+                    token: 'Bearer ' + this.token
+                });
+
+            this._token = response.body.token;
+            this.renewTimeOut = response.body.renewTimeOut;
+            setTimeout(this.renewToken.bind(this), this.renewTimeOut);
+        } catch (err) {
+
+            getLogger('mainApp').log('error',
+                'Can not renew the ' + this.appName + ' token on authorization service');
+            getLogger('mainApp').log('error',
+                'Retry in ' + (this._configuration.registerRetryTime / 1000) + ' sec(s)');
+            getLogger('mainApp').log('error', err.message);
+
+            // if we can't register the service we retry in X secs
+            setTimeout(this.renewToken.bind(this), this._configuration.registerRetryTime);
+        }
     }
 }

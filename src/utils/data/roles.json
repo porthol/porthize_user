@@ -17,6 +17,11 @@
       "name": "User",
       "key": "user",
       "privileges": []
+    },
+    {
+      "name": "Bot",
+      "key": "bot",
+      "privileges": []
     }
   ]
 }

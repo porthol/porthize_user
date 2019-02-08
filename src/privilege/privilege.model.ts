@@ -8,10 +8,10 @@ export const PrivilegeSchema = new Schema({
     resource: {
         type: String,
         required: true,
-        unique : true
+        unique: true
     },
     actionsAvailable: {
-        type: Mixed,
+        type: Mixed
     }
 });
 

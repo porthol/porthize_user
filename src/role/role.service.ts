@@ -1,7 +1,9 @@
 import { RoleModel } from './role.model';
 import * as mongoose from 'mongoose';
-import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import { Model } from 'mongoose';
+import { CustomError, CustomErrorCode } from '../utils/custom-error';
 import { IPrivilegeEmmbedded, IRoute, PrivilegeModel, PrivilegeService } from '../privilege';
+import { Service } from '../utils/service.interface';
 import ObjectId = mongoose.Types.ObjectId;
 
 export interface PrivilegeRoleAdd {
@@ -9,10 +11,21 @@ export interface PrivilegeRoleAdd {
     actions: string[];
 }
 
-export class RoleService {
+export class RoleService implements Service{
     private static instance: RoleService;
+    model = RoleModel;
+    private readonly name: string;
 
     constructor() {
+        this.name = 'role';
+    }
+
+    getName(): string {
+        return this.name;
+    }
+
+    getModel(): Model<any> {
+        return this.model;
     }
 
     public static get(): RoleService {
@@ -24,6 +37,10 @@ export class RoleService {
 
     async getAll(criteria: any) {
         return await RoleModel.find(criteria || {});
+    }
+
+    async getOne(criteria: any) {
+        return await RoleModel.findOne(criteria || {});
     }
 
     async get(id: ObjectId, criteria = {} as any) {
@@ -70,7 +87,7 @@ export class RoleService {
         }
 
         (role.privileges || []).push({
-            resource : privilegeFromDb.resource,
+            resource: privilegeFromDb.resource,
             actions: privilege.actions
         } as IPrivilegeEmmbedded);
 
@@ -105,13 +122,13 @@ export class RoleService {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found');
         }
         for (const privilege of role.privileges) {
-            if(privilege.resource === '*') {
+            if (privilege.resource === '*') {
                 result = true;
                 break;
             }
             result = await PrivilegeService.get().isAuthorized(privilege, route);
 
-            if(result === true) {
+            if (result === true) {
                 break;
             }
         }

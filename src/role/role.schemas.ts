@@ -42,9 +42,9 @@ export const RolePrivilegeSchema = {
     required: ['privilegeId', 'actions'],
     additionalProperties: false,
     properties: {
-        privilegeId:{
-                type: 'string'
-            },
+        privilegeId: {
+            type: 'string'
+        },
         actions: {
             type: 'array',
             items: {
@@ -62,7 +62,7 @@ export const RolePrivilegeQuerySchema = {
         id: {
             type: 'string'
         },
-        privilegeId:{
+        privilegeId: {
             type: 'string'
         }
     }

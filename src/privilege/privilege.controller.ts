@@ -1,7 +1,7 @@
 import { PrivilegeService } from './privilege.service';
 import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
-import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import { CustomError, CustomErrorCode } from '../utils/custom-error';
 
 export class PrivilegeController {
 
@@ -63,7 +63,7 @@ export class PrivilegeController {
             req.params.resource,
             req.body.action,
             req.body.routes)
-            .then( privilege => {
+            .then(privilege => {
                 res.status(httpStatus.OK)
                     .send(privilege);
             })

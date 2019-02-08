@@ -1,7 +1,8 @@
 import { UserModel } from './user.model';
 import { hashPassword } from '../utils/hashPassword';
 import * as mongoose from 'mongoose';
-import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import { Model } from 'mongoose';
+import { CustomError, CustomErrorCode } from '../utils/custom-error';
 import { RoleModel } from '../role';
 import { comparePassword } from '../utils/comparePassword';
 import * as jwt from 'jsonwebtoken';
@@ -10,6 +11,8 @@ import { configureLogger, defaultWinstonLoggerOptions, getLogger } from '../util
 import { IUser } from './user.document';
 import { IRoute } from '../privilege';
 import { RoleService } from '../role/role.service';
+import { Service } from '../utils/service.interface';
+import ms = require('ms');
 import ObjectId = mongoose.Types.ObjectId;
 
 const config = getConfiguration().user;
@@ -21,10 +24,21 @@ interface LoginRequest {
     password: string;
 }
 
-export class UserService {
+export class UserService implements Service {
     private static instance: UserService;
+    private readonly name: string;
+    private readonly model = UserModel;
 
     constructor() {
+        this.name = 'user';
+    }
+
+    getName(): string {
+        return this.name;
+    }
+
+    getModel(): Model<any> {
+        return this.model;
     }
 
     public static get(): UserService {
@@ -35,19 +49,39 @@ export class UserService {
     }
 
     async getAll(criteria: any) {
-        return await UserModel.find(criteria || {});
+        const users = await UserModel.find(criteria || {});
+
+        for (let i = 0; i < users.length; i++) {
+            users[i] = this.getCleanUser(users[i]);
+        }
+
+        return users;
     }
 
     async get(id: ObjectId, criteria = {} as any) {
+        // todo we will need to get role one time =/
         criteria._id = id;
         const user = await UserModel.findOne(criteria || {});
         return user ? this.getCleanUser(user) : null; // don't clean null object
     }
 
-    async create(userData: any) {
+    async create(userData: any, addDefaultRole = true) {
         userData.password = await hashPassword(userData.password);
         const user = new UserModel(userData);
-        return this.getCleanUser(await user.save());
+        await user.save();
+
+        if (addDefaultRole) {
+            const defaultRole = await RoleService.get().getOne({ key: config.defaultRoleKey });
+
+            if (!defaultRole) {
+                getLogger('UserService').log('warn', 'Default role has not been found. User created got no role !');
+            }
+            user.roles.push(defaultRole._id);
+            user.markModified('roles');
+            await user.save();
+        }
+
+        return this.getCleanUser(user);
     }
 
     async update(id: ObjectId, userData: any) {
@@ -65,7 +99,7 @@ export class UserService {
         return await UserModel.deleteOne({ _id: id });
     }
 
-    async addRole(userId: string, roleId: string) {
+    async addRole(userId: string, roleId: string): Promise<IUser> {
         const user = await UserModel.findById(userId);
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
@@ -127,6 +161,10 @@ export class UserService {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'No match for user and password');
         }
 
+        if (!user.loginEnabled || !user.enabled) {
+            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized to log in');
+        }
+
         if (comparePassword(loginRequest.password, user.password)) {
             const iat = Math.floor(Date.now() / 1000);
             const payload: any = {
@@ -138,7 +176,7 @@ export class UserService {
             getLogger('UserService').log('info', 'User %s connected at %d', user._id.toString(), iat);
             return { token, iat };
         }
-        return null;
+        throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'No match for user and password');
     }
 
     async getCurrentUser(tokenFromHeader: string) {
@@ -157,6 +195,10 @@ export class UserService {
 
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+
+        if (!user.enabled) {
+            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized');
         }
 
         return this.getCleanUser(user);
@@ -178,25 +220,83 @@ export class UserService {
 
     async isAuthorized(partialUser: IUser, route: IRoute) {
         let result = false;
-        try {
-            const user = await UserModel.findById(partialUser._id);
-            for (const roleId of user.roles) {
-                result = await RoleService.get().isAuthorized(roleId, route);
-                if (result === true) {
-                    break;
-                }
+
+        const user = await UserModel.findById(partialUser._id);
+
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+
+        if (!user.enabled) {
+            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized');
+        }
+        for (const roleId of user.roles) {
+            result = await RoleService.get().isAuthorized(roleId, route);
+            if (result === true) {
+                break;
             }
-        } catch (err) {
-            getLogger('UserService').log('error', err.message);
         }
         return result;
     }
 
-    private getCleanUser(user: IUser) {
+    async createBotUser(uuid: string) {
+        const appUser = {
+            username: uuid,
+            email: uuid + '@micro-service.com',
+            password: 'none',
+            loginEnabled: false,
+            emailing: false
+        };
+
+        let user = await this.create(appUser, false);
+
+        const botRole = await RoleService.get().getOne({ key: config.roleBotKey });
+
+        if (!botRole) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND,
+                'The bot role doesn\'t exist on key ' +
+                config.roleBotKey + '. Can not register the user');
+        }
+        user = await this.addRole(user._id, botRole._id);
+        const token = await this.generateBotToken((user as IUser)._id.toString());
+        return token;
+    }
+
+    async getBotToken(token: string) {
+        const payload: any = await this.isTokenValid(token);
+        return await this.generateBotToken(payload.userId);
+    }
+
+    private async generateBotToken(userId: string) {
+        const user = await UserModel.findOne({ _id: userId });
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+        if (!user.enabled) {
+            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized');
+        }
+        const roles = await RoleModel.find({ _id: { $in: user.roles } });
+        if (roles.map(r => r.key).indexOf(config.roleBotKey) !== -1 && !user.loginEnabled) {
+            const iat = Math.floor(Date.now() / 1000);
+            const payload: any = {
+                userId: user._id,
+                iat
+            };
+
+            const token = await jwt.sign(payload, config.jwt.secret, config.jwt.options);
+            getLogger('UserService').log('info', 'Bot %s get his token %d', user.username, iat);
+            return { token, renewTimeOut: ms(config.botTokenRenew) };
+        }
+        return null;
+    }
+
+
+    private getCleanUser(user: IUser): IUser {
         const cleanedUser = JSON.parse(JSON.stringify(user));
 
         delete cleanedUser.password;
         delete cleanedUser.roles;
+        delete cleanedUser.emailing;
         delete cleanedUser.__v;
 
         return cleanedUser;

@@ -16,7 +16,9 @@
       "name": "user",
       "addRoute": "privileges/{resource}/routes",
       "authorizationRoute": "users/isAuthorized",
-      "authenticationRoute": "token"
+      "authenticationRoute": "token",
+      "registerAppRoute": "users/registerMicroService",
+      "renewTokenRoute": "users/renewBotToken"
     },
     "jwt": {
       "options": {

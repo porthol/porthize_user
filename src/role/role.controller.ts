@@ -1,7 +1,7 @@
 import { RoleService } from './role.service';
 import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
-import { CustomError, CustomErrorCode } from '../utils/CustomError';
+import { CustomError, CustomErrorCode } from '../utils/custom-error';
 
 export class RoleController {
 

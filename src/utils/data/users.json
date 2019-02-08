@@ -1,0 +1,9 @@
+{
+  "model": "user",
+  "data": [
+    {
+      "user": "Admin",
+      "password": "123aze456"
+    }
+  ]
+}

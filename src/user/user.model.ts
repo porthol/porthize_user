@@ -26,6 +26,14 @@ export const UserSchema = new Schema({
         type: Boolean,
         default: true
     },
+    emailing: {
+        type: Boolean,
+        default: true
+    },
+    loginEnabled: {
+        type: Boolean,
+        default: true
+    },
     roles: [ObjectId]
 });
 

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { CustomError, CustomErrorCode } from './CustomError';
+import { CustomError, CustomErrorCode } from './custom-error';
 
 // todo check the content of the authorize. By Ip ? By asking traefik ? Registering ip ? Shared secret ?
 export function denyExternalRequestMiddleware(req: Request, res: Response, next: NextFunction) {

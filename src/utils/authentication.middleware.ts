@@ -3,7 +3,7 @@ import { communicationHelper } from '../server';
 import { getPackageName } from './package.helper';
 import { getConfiguration } from './configuration.helper';
 import { IConfigAuthorizationService } from './router.manager';
-import { CustomError, CustomErrorCode } from './CustomError';
+import { CustomError, CustomErrorCode } from './custom-error';
 
 
 const appName = getPackageName();

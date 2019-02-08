@@ -11,7 +11,7 @@ import {
 import { RouterManager } from '../utils/router.manager';
 import { internalAuthenticationMiddleware } from '../utils/internalAuthentication.middleware';
 import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
-import { denyExternalRequestMiddleware } from '../utils/denyExternalRequest.middleware';
+import { denyExternalRequestMiddleware } from '../utils/deny-external-request.middleware';
 
 const router: express.Router = express.Router();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
@@ -238,7 +238,7 @@ routerManager
             privilegeController.addRoutes
         ],
         resource,
-        action:'addRoutes'
+        action: 'addRoutes'
     });
 
 export default router;
