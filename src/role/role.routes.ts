@@ -11,6 +11,7 @@ import {
 import { RouterManager } from '../utils/router.manager';
 // import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
 import { internalAuthenticationMiddleware } from '../utils/internalAuthentication.middleware';
+import { denyExternalRequestMiddleware } from '../utils/deny-external-request.middleware';
 
 const router: express.Router = express.Router();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
@@ -256,6 +257,15 @@ routerManager
         ],
         resource,
         action: 'updatePrivilege'
+    });
+
+routerManager
+    .route('/roles/importPrivileges')
+    .post({
+        handlers: [
+            denyExternalRequestMiddleware,
+            roleController.importPrivilege
+        ]
     });
 
 export default router;

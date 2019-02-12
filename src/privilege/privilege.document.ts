@@ -13,7 +13,7 @@ export interface IPrivilege extends Document {
     };
 }
 
-export interface IPrivilegeEmmbedded extends Document {
+export interface IPrivilegeEmbedded extends Document {
     resource: string;
     actions: string[];
 }

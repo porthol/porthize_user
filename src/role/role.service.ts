@@ -2,16 +2,28 @@ import { RoleModel } from './role.model';
 import * as mongoose from 'mongoose';
 import { Model } from 'mongoose';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
-import { IPrivilegeEmmbedded, IRoute, PrivilegeModel, PrivilegeService } from '../privilege';
+import { IPrivilegeEmbedded, IRoute, PrivilegeModel, PrivilegeService } from '../privilege';
 import { Service } from '../utils/service.interface';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from '../utils/logger';
+import * as _ from 'lodash';
 import ObjectId = mongoose.Types.ObjectId;
 
-export interface PrivilegeRoleAdd {
+configureLogger('roleService', defaultWinstonLoggerOptions);
+
+export interface IPrivilegeRoleAdd {
     privilegeId: string;
     actions: string[];
 }
 
-export class RoleService implements Service{
+export interface IPrivilegeToImport {
+    roleKey: string;
+    resources: {
+        resourceKey: string;
+        actions: string[]
+    }[];
+}
+
+export class RoleService implements Service {
     private static instance: RoleService;
     model = RoleModel;
     private readonly name: string;
@@ -69,7 +81,7 @@ export class RoleService implements Service{
     }
 
 
-    async addPrivilege(roleId: string, privilege: PrivilegeRoleAdd) {
+    async addPrivilege(roleId: string, privilege: IPrivilegeRoleAdd) {
         const role = await RoleModel.findById(roleId);
         if (!role) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found');
@@ -80,16 +92,19 @@ export class RoleService implements Service{
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
         }
 
-        const index = role.privileges.map(p => p._id.toString()).indexOf(privilege.privilegeId);
+        const index = role.privileges.map(p => p.resource.toString()).indexOf(privilegeFromDb.resource);
 
         if (index >= 0) {
-            throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Privilege already added');
+            const privilegeStored = role.privileges[index];
+            privilegeStored.actions = _.union(privilegeStored.actions, privilege.actions);
+        } else {
+            (role.privileges || []).push({
+                resource: privilegeFromDb.resource,
+                actions: privilege.actions
+            } as IPrivilegeEmbedded);
         }
 
-        (role.privileges || []).push({
-            resource: privilegeFromDb.resource,
-            actions: privilege.actions
-        } as IPrivilegeEmmbedded);
+        role.markModified('privileges');
 
         return await role.save();
     }
@@ -99,12 +114,6 @@ export class RoleService implements Service{
         if (!role) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found');
         }
-
-        // if the privilege is an orphan we can't remove it from privilege
-        // const privilege = await PrivilegeModel.findById(privilegeId);
-        // if (!privilege) {
-        //     throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
-        // }
 
         const index = role.privileges.map(p => p._id.toString()).indexOf(privilegeId);
 
@@ -135,4 +144,32 @@ export class RoleService implements Service{
         return result;
     }
 
+    async importPrivilege(privilegeToImports: IPrivilegeToImport[]) {
+        for (const privilegeToImport of privilegeToImports) {
+            const role = await RoleModel.findOne({ key: privilegeToImport.roleKey });
+            if (!role) {
+                getLogger('roleService').log('warn',
+                    JSON.stringify(new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found')));
+                continue;
+            }
+            for (const resource of privilegeToImport.resources) {
+                const privilege = await PrivilegeModel.findOne({ resource: resource.resourceKey });
+                if (!privilege) {
+                    getLogger('roleService').log('warn',
+                        JSON.stringify(new CustomError(CustomErrorCode.ERRNOTFOUND, 'privilege not found')));
+                    continue;
+                }
+                try {
+                    await this.addPrivilege(role.id, {
+                        privilegeId: privilege.id,
+                        actions: resource.actions
+                    });
+                } catch (e) {
+                    getLogger('roleService').log('warn',
+                        e.message, e);
+                }
+            }
+
+        }
+    }
 }

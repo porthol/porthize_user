@@ -75,4 +75,13 @@ export class RoleController {
             })
             .catch(next);
     }
+
+    importPrivilege(req: Request, res: Response, next: NextFunction): void {
+        RoleService.get().importPrivilege(req.body)
+            .then(role => {
+                res.status(httpStatus.OK)
+                    .send(role);
+            })
+            .catch(next);
+    }
 }
