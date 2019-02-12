@@ -283,7 +283,7 @@ export class UserService implements Service {
                 iat
             };
 
-            const token = await jwt.sign(payload, config.jwt.secret, config.jwt.options);
+            const token = await jwt.sign(payload, config.jwt.secret, config.jwt.botOptions);
             getLogger('UserService').log('info', 'Bot %s get his token %d', user.username, iat);
             return { token, renewTimeOut: ms(config.botTokenRenew) };
         }
