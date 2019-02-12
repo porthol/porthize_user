@@ -7,7 +7,6 @@ import { addStartTime, expressMetricsMiddleware } from './utils/express-metrics.
 import { handleErrorMiddleware } from './utils/handle-error.middleware';
 import * as uuid from 'uuid/v4';
 import { communicationHelper } from './server';
-import * as os from 'os';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils/logger';
 
 configureLogger('mainApp', defaultWinstonLoggerOptions);
@@ -117,7 +116,7 @@ export class App {
                 this.configuration.authorizationService.name,
                 this.configuration.authorizationService.registerAppRoute,
                 {
-                    'internal-request': os.hostname()
+                    'internal-request': this.uuid
                 },
                 {
                     uuid: this.uuid
@@ -145,7 +144,7 @@ export class App {
                 this.configuration.authorizationService.name,
                 this.configuration.authorizationService.renewTokenRoute,
                 {
-                    'internal-request': os.hostname()
+                    'internal-request': this.uuid
                 },
                 {
                     token: 'Bearer ' + this.token

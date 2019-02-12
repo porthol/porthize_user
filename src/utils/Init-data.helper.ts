@@ -1,9 +1,12 @@
 import { join } from 'path';
 import { path } from 'app-root-path';
 import * as fs from 'fs';
-import { getLogger } from './logger';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import * as Ajv from 'ajv';
 import { serviceManager } from './service.manager';
+import { app, communicationHelper } from '../server';
+
+configureLogger('initData', defaultWinstonLoggerOptions);
 
 const ajv = new Ajv();
 
@@ -32,9 +35,9 @@ export async function initData() {
                 const importFile = require(folderPath + file);
                 const valid = ajv.validate(IDataToImport, importFile);
                 if (!valid) {
-                    getLogger('default').log('warn', 'The imports file ' + file + ' is not correctly formatted');
-                    getLogger('default').log('warn', 'The file will not me imported');
-                    getLogger('default').log('warn', ajv.errorsText());
+                    getLogger('initData').log('warn', 'The imports file ' + file + ' is not correctly formatted');
+                    getLogger('initData').log('warn', 'The file will not me imported');
+                    getLogger('initData').log('warn', ajv.errorsText());
                     return;
                 }
                 const service = serviceManager.getService(importFile.model);
@@ -45,11 +48,33 @@ export async function initData() {
                         await service.create(data);
                     }
                 }
-                getLogger('default').log('info', 'Data already here for ' + file);
+                getLogger('initData').log('info', 'Data already here for ' + file);
             }
 
         }
     } catch (err) {
-        getLogger('default').error(err);
+        getLogger('initData').log('error', err);
     }
+}
+
+
+export async function initPrivileges(config: any) {
+    try {
+        const filePath = join(path, 'config/privileges-roles.json');
+        const privilegesRolesData = require(filePath);
+
+        await communicationHelper.post(
+            config.authorizationService.name,
+            config.authorizationService.rolePrivilegeRoute,
+            {
+                'internal-request': app.uuid
+            },
+            privilegesRolesData
+        );
+
+        getLogger('initData').log('info', 'info privileges exported');
+    } catch (err) {
+        getLogger('initData').log('error', err);
+    }
+
 }

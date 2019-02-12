@@ -1,0 +1,29 @@
+[
+  {
+    "roleKey": "user",
+    "resources": [
+      {
+        "resourceKey": "example",
+        "actions": [
+          "read",
+          "create",
+          "toto"
+        ]
+      }
+    ]
+  },
+  {
+    "roleKey": "bot",
+    "resources": [
+      {
+        "resourceKey": "example",
+        "actions": [
+          "read",
+          "create",
+          "update",
+          "delete"
+        ]
+      }
+    ]
+  }
+]

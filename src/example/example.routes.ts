@@ -36,7 +36,7 @@ routerManager
         handlers: [
             controller.getAll
         ],
-        action: 'get',
+        action: 'read',
         resource: 'example'
     })
     /**
@@ -101,7 +101,7 @@ routerManager
         handlers: [
             controller.get
         ],
-        action: 'get',
+        action: 'read',
         resource: 'example'
     })
     /**
