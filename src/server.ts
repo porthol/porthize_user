@@ -10,6 +10,8 @@ import { configureServices } from './configure';
 import { initData, initPrivileges } from './utils/init-data.helper';
 import { CustomError, CustomErrorCode } from './utils/custom-error';
 import { exportRoutes } from './utils/router.manager';
+import { botCheck } from './utils/bot-check.helper';
+import ms = require('ms');
 
 const appName = getPackageName();
 
@@ -92,6 +94,8 @@ const server = async (appName: string) => {
 
         await exportRoutes(config[appName].authorizationService);
         await initPrivileges(config[appName]);
+        const time: number =  parseInt(ms(config[appName].checkBotAccountTime));
+        botCheck(config[appName].roleBotKey, time);
 
     } catch (err) {
         getLogger('default').log('error', err.message || err);

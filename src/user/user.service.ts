@@ -155,6 +155,8 @@ export class UserService implements Service {
             throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad request', null);
         }
 
+        criteria.enabled = true;
+
         const user = await UserModel.findOne(criteria);
 
         if (!user) {
@@ -194,7 +196,7 @@ export class UserService implements Service {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Token expired');
         }
 
-        const user = await UserModel.findById(decodedPayload.userId);
+        const user = await UserModel.findOne({ _id: decodedPayload.userId, enabled: true });
 
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
@@ -224,7 +226,7 @@ export class UserService implements Service {
     async isAuthorized(partialUser: IUser, route: IRoute) {
         let result = false;
 
-        const user = await UserModel.findById(partialUser._id);
+        const user = await UserModel.findOne({ _id: partialUser._id, enabled: true });
 
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
@@ -271,7 +273,7 @@ export class UserService implements Service {
     }
 
     private async generateBotToken(userId: string) {
-        const user = await UserModel.findOne({ _id: userId });
+        const user = await UserModel.findOne({ _id: userId, enabled: true });
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
         }

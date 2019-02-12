@@ -26,6 +26,7 @@
       "registerAppRoute": "users/registerMicroService",
       "renewTokenRoute": "users/renewBotToken",
       "rolePrivilegeRoute": "roles/importPrivileges"
-    }
+    },
+    "checkBotAccountTime": "48h"
   }
 }
