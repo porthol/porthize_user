@@ -395,8 +395,8 @@ routerManager
 routerManager
     .route('/users/registerMicroService')
     .post({
-        handlers: [
-            denyExternalRequestMiddleware,
+        handlers: [ // todo we can not protect him if we use uuid to verify
+            // denyExternalRequestMiddleware,
             validator.validate({
                 body: UserMicroServiceSchema
             }),
