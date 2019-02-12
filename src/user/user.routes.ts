@@ -12,9 +12,9 @@ import {
     UserRoleSchema,
     UserUpdateSchema
 } from './user.schema';
-import { internalAuthenticationMiddleware } from '../utils/internalAuthentication.middleware';
+import { internalAuthenticationMiddleware } from '../utils/internal-authentication.middleware';
 import { RouterManager } from '../utils/router.manager';
-import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
+import { internalAuthorizationMiddleware } from '../utils/internal-authorization.middleware';
 import { denyExternalRequestMiddleware } from '../utils/deny-external-request.middleware';
 
 const router: express.Router = express.Router();
@@ -52,7 +52,7 @@ routerManager
             userController.getAll
         ],
         resource,
-        action: 'get'
+        action: 'read'
     })
     /**
      * @api {post} /users Create user
@@ -171,6 +171,44 @@ routerManager
             internalAuthenticationMiddleware,
             userController.current
         ]
+    })
+    /**
+     * @api {put} /users/:id Update user
+     *
+     * @apiGroup User
+     *
+     * @apiParam {String} id ObjectId
+     *
+     * @apiParam {String} [username] Must be unique
+     * @apiParam {String} [email] Must be unique
+     *
+     * @apiSuccess {String} username
+     * @apiSuccess {String} email
+     * @apiSuccess {String} password Hashed password
+     * @apiSuccess {String} id ObjectId
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 200 OK
+     *     {
+     *        "id": "5b179f629fea4000ffcf2fbc",
+     *        "username": "foo",
+     *        "email": "foo@bar.baz",
+     *        "password": "xqPGyK3yWtIsCupTiyajMZJMKs9Oeby3",
+     *        "roles": []
+     *    }
+     *
+     */
+    .put({
+        handlers: [
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            validator.validate({
+                body: UserUpdateSchema
+            }),
+            userController.updateMe
+        ],
+        resource,
+        action: 'updateMe'
     });
 
 routerManager
@@ -202,7 +240,7 @@ routerManager
             userController.get
         ],
         resource,
-        action: 'get'
+        action: 'read'
     })
     /**
      * @api {put} /users/:id Update user

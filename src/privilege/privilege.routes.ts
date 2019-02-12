@@ -9,8 +9,8 @@ import {
     PrivilegeUpdateSchema
 } from './privilege.schemas';
 import { RouterManager } from '../utils/router.manager';
-import { internalAuthenticationMiddleware } from '../utils/internalAuthentication.middleware';
-import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
+import { internalAuthenticationMiddleware } from '../utils/internal-authentication.middleware';
+import { internalAuthorizationMiddleware } from '../utils/internal-authorization.middleware';
 import { denyExternalRequestMiddleware } from '../utils/deny-external-request.middleware';
 
 const router: express.Router = express.Router();
@@ -49,7 +49,7 @@ routerManager
             privilegeController.getAll
         ],
         resource,
-        action: 'get'
+        action: 'read'
     })
     /**
      * @api {post} /privileges Create privilege
@@ -123,7 +123,7 @@ routerManager
             privilegeController.get
         ],
         resource,
-        action: 'get'
+        action: 'read'
     })
     /**
      * @api {put} /privileges/:id Update privilege
@@ -236,9 +236,7 @@ routerManager
                 body: PrivilegeAddRouteSchema
             }),
             privilegeController.addRoutes
-        ],
-        resource,
-        action: 'addRoutes'
+        ]
     });
 
 export default router;

@@ -1,0 +1,51 @@
+[
+  {
+    "roleKey": "user",
+    "resources": [
+      {
+        "resourceKey": "users",
+        "actions": [
+          "read",
+          "updateMe"
+        ]
+      },
+      {
+        "resourceKey": "roles",
+        "actions": [
+          "read"
+        ]
+      }
+    ]
+  },
+  {
+    "roleKey": "bot",
+    "resources": [
+      {
+        "resourceKey": "users",
+        "actions": [
+          "read",
+          "update",
+          "updateRole"
+        ]
+      },
+      {
+        "resourceKey": "roles",
+        "actions": [
+          "read",
+          "create",
+          "update",
+          "delete",
+          "updatePrivilege"
+        ]
+      },
+      {
+        "resourceKey": "privileges",
+        "actions": [
+          "read",
+          "create",
+          "update"
+        ]
+      }
+    ]
+  }
+]

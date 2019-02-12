@@ -10,7 +10,7 @@ import {
 } from './role.schemas';
 import { RouterManager } from '../utils/router.manager';
 // import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
-import { internalAuthenticationMiddleware } from '../utils/internalAuthentication.middleware';
+import { internalAuthenticationMiddleware } from '../utils/internal-authentication.middleware';
 import { denyExternalRequestMiddleware } from '../utils/deny-external-request.middleware';
 
 const router: express.Router = express.Router();
@@ -49,7 +49,7 @@ routerManager
             roleController.getAll
         ],
         resource,
-        action: 'get'
+        action: 'read'
     })
     /**
      * @api {post} /roles Create role
@@ -121,7 +121,7 @@ routerManager
             roleController.get
         ],
         resource,
-        action: 'get'
+        action: 'read'
     })
     /**
      * @api {put} /roles/:id Update role

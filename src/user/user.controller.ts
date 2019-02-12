@@ -2,6 +2,7 @@ import { UserService } from './user.service';
 import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
+import { RoleService } from '../role';
 
 export class UserController {
 
@@ -41,6 +42,15 @@ export class UserController {
             .then(user => {
                 res.status(httpStatus.OK)
                     .send(user);
+            })
+            .catch(next);
+    }
+
+    updateMe(req: Request, res: Response, next: NextFunction): void {
+        RoleService.get().update((req as any).user._id, req.body)
+            .then(role => {
+                res.status(httpStatus.OK)
+                    .send(role);
             })
             .catch(next);
     }

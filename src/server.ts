@@ -7,7 +7,7 @@ import { createServer } from 'http';
 import { getDatabaseConnectionUrl } from './utils/connection.helper';
 import { CommunicationHelper } from './utils/communication.helper';
 import { configureServices } from './configure';
-import { initData } from './utils/Init-data.helper';
+import { initData, initPrivileges } from './utils/Init-data.helper';
 import { CustomError, CustomErrorCode } from './utils/custom-error';
 import { exportRoutes } from './utils/router.manager';
 
@@ -91,6 +91,7 @@ const server = async (appName: string) => {
         });
 
         await exportRoutes(config[appName].authorizationService);
+        await initPrivileges(config[appName]);
 
     } catch (err) {
         getLogger('default').log('error', err.message || err);
