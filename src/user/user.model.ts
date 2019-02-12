@@ -34,11 +34,14 @@ export const UserSchema = new Schema({
         type: Boolean,
         default: true
     },
-    roles: [ObjectId]
+    roles: [ObjectId],
+    lastLogIn: {
+        type: Date
+    }
 });
 
 UserSchema.pre('save', next => {
-    this.updatedAt = Date.now();
+    this.updatedAt = new Date();
 
     next();
 });

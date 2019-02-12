@@ -172,6 +172,9 @@ export class UserService implements Service {
                 iat
             };
 
+            user.lastLogIn = new Date();
+            await user.save();
+
             const token = await jwt.sign(payload, config.jwt.secret, config.jwt.options);
             getLogger('UserService').log('info', 'User %s connected at %d', user._id.toString(), iat);
             return { token, iat };
@@ -282,6 +285,9 @@ export class UserService implements Service {
                 userId: user._id,
                 iat
             };
+
+            user.lastLogIn = new Date();
+            await user.save();
 
             const token = await jwt.sign(payload, config.jwt.secret, config.jwt.botOptions);
             getLogger('UserService').log('info', 'Bot %s get his token %d', user.username, iat);
