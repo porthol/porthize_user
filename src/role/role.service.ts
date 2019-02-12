@@ -169,7 +169,6 @@ export class RoleService implements Service {
                         e.message, e);
                 }
             }
-
         }
     }
 }

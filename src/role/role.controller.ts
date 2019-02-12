@@ -78,9 +78,9 @@ export class RoleController {
 
     importPrivilege(req: Request, res: Response, next: NextFunction): void {
         RoleService.get().importPrivilege(req.body)
-            .then(role => {
-                res.status(httpStatus.OK)
-                    .send(role);
+            .then(() => {
+                res.status(httpStatus.NO_CONTENT)
+                    .send();
             })
             .catch(next);
     }
