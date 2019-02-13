@@ -45,7 +45,7 @@ export class CommunicationHelper {
 
         headers.Host = this.config.nameRules.replace('{serviceName}', serviceName);
 
-        if (!headers.authorization) {
+        if (!headers.authorization && app.token) {
             headers.authorization = 'Bearer ' + app.token;
         }
 
