@@ -101,6 +101,10 @@ const server = async (appName: string) => {
                 .then(() => {
                     const time: number =  parseInt(ms(config[appName].checkBotAccountTime));
                     botCheck(config[appName].roleBotKey, time);
+                })
+                .catch( err => {
+                    getLogger('default').log('error', err.message || err);
+                    process.exit(1);
                 });
         });
 
