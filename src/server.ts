@@ -90,12 +90,19 @@ const server = async (appName: string) => {
             if (expressApp.get('env') === 'development') {
                 getLogger('default').log('info', '  Press CTRL-C to stop\n');
             }
-        });
 
-        await exportRoutes(config[appName].authorizationService);
-        await initPrivileges(config[appName]);
-        const time: number =  parseInt(ms(config[appName].checkBotAccountTime));
-        botCheck(config[appName].roleBotKey, time);
+            app.registerApp()
+                .then(() =>  {
+                    return exportRoutes(config[appName].authorizationService);
+                })
+                .then(() => {
+                    return initPrivileges(config[appName]);
+                })
+                .then(() => {
+                    const time: number =  parseInt(ms(config[appName].checkBotAccountTime));
+                    botCheck(config[appName].roleBotKey, time);
+                });
+        });
 
     } catch (err) {
         getLogger('default').log('error', err.message || err);
