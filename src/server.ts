@@ -91,12 +91,13 @@ const server = async (appName: string) => {
                 getLogger('default').log('info', '  Press CTRL-C to stop\n');
             }
 
+            // Place here all action to do after starting is complete
             app.registerApp()
-                .then(() =>  {
+                .then(() => {
                     return exportRoutes(config[appName].authorizationService);
                 })
                 .then(() => {
-                    return initPrivileges(config[appName]);
+                    return initPrivileges(config[appName].authorizationService);
                 })
                 .then(() => {
                     const time: number =  parseInt(ms(config[appName].checkBotAccountTime));

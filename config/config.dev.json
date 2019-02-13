@@ -12,15 +12,6 @@
       "gatewayPort": 3000,
       "nameRules": "{serviceName}.service"
     },
-    "authorizationService": {
-      "name": "user",
-      "addRoute": "privileges/{resource}/routes",
-      "authorizationRoute": "users/isAuthorized",
-      "authenticationRoute": "token",
-      "registerAppRoute": "users/registerMicroService",
-      "renewTokenRoute": "users/renewBotToken",
-      "rolePrivilegeRoute": "roles/importPrivileges"
-    },
     "jwt": {
       "options": {
         "expiresIn": "365d"
