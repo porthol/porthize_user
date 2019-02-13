@@ -88,10 +88,20 @@ const server = async (appName: string) => {
             if (expressApp.get('env') === 'development') {
                 getLogger('default').log('info', '  Press CTRL-C to stop\n');
             }
-        });
 
-        await exportRoutes(config[appName].authorizationService);
-        await initPrivileges(config[appName]);
+            // Place here all action to do after starting is complete
+            app.registerApp()
+                .then(() => {
+                    return exportRoutes(config[appName].authorizationService);
+                })
+                .then(() => {
+                    return initPrivileges(config[appName].authorizationService);
+                })
+                .catch(err => {
+                    getLogger('default').log('error', err.message || err);
+                    process.exit(1);
+                });
+        });
 
     } catch (err) {
         getLogger('default').log('error', err.message || err);

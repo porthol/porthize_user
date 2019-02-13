@@ -106,7 +106,6 @@ export class App {
         this.applyExpressMiddlewaresRouter();
         await this.registerAppRouters();
         this.app.use(handleErrorMiddleware); // error handler middleware should be put after router
-        await this.registerApp();
         return this.app;
     }
 

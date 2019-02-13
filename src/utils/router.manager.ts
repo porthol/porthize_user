@@ -100,6 +100,10 @@ export interface IConfigAuthorizationService {
     addRoute: string;
     authorizationRoute: string;
     authenticationRoute: string;
+    registerAppRoute: string;
+    renewTokenRoute: string;
+    rolePrivilegeRoute: string;
+    internalRequestRoute: string;
 }
 
 export async function exportRoutes(config: IConfigAuthorizationService) {
