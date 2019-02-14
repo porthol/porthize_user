@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
 import { RoleService } from '../role';
+import { isEmail } from 'validator';
 
 export class UserController {
 
@@ -143,6 +144,18 @@ export class UserController {
 
     renewToken(req: Request, res: Response, next: NextFunction): void {
         UserService.get().getBotToken(req.body.token)
+            .then(token => {
+                res.status(httpStatus.CREATED)
+                    .send(token);
+            })
+            .catch(next);
+    }
+
+    resetPassword(req: Request, res: Response, next: NextFunction): void {
+        if(isEmail(req.body.email)){
+            next(new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad email format'));
+        }
+        UserService.get().resetPassword(req.body.email)
             .then(token => {
                 res.status(httpStatus.CREATED)
                     .send(token);

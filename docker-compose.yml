@@ -18,7 +18,8 @@ services:
 
   user:
     hostname: user
-    image: registry.gitlab.com/workkaylleur/user-service:develop
+    build:
+      dockerfile: Dockerfile.dev
     environment:
       - NODE_ENV=development
     restart: always

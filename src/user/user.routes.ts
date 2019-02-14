@@ -5,7 +5,7 @@ import {
     UserAuthorizedSchema,
     UserCreateSchema,
     UserLoginSchema,
-    UserMicroServiceSchema,
+    UserMicroServiceSchema, UserPasswordResetSchema,
     UserQuerySchema,
     UserRenewBotTokenSchema,
     UserRoleQuerySchema,
@@ -413,6 +413,17 @@ routerManager
                 body: UserRenewBotTokenSchema
             }),
             userController.renewToken
+        ]
+    });
+
+routerManager
+    .route('/users/password/reset')
+    .post({
+        handlers: [
+            validator.validate({
+                body:UserPasswordResetSchema
+            }),
+            userController.resetPassword
         ]
     });
 

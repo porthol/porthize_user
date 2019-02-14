@@ -14,14 +14,21 @@ import { RoleService } from '../role/role.service';
 import { Service } from '../utils/service.interface';
 import ms = require('ms');
 import ObjectId = mongoose.Types.ObjectId;
+import { communicationHelper } from '../server';
 
-const config = getConfiguration().user;
+const config: any = getConfiguration().user;
 configureLogger('UserService', defaultWinstonLoggerOptions);
 
-interface LoginRequest {
+interface ILoginRequest {
     username?: string;
     email?: string;
     password: string;
+}
+
+interface INotificationService {
+    name: string;
+    sendNotifRoute: string;
+    resetLinkTemplate: string;
 }
 
 export class UserService implements Service {
@@ -141,7 +148,7 @@ export class UserService implements Service {
         return await user.save();
     }
 
-    async login(loginRequest: LoginRequest) {
+    async login(loginRequest: ILoginRequest) {
         if (!config.jwt) {
             throw new CustomError(CustomErrorCode.ERRINTERNALSERVER, 'Internal server error : no token config');
         }
@@ -272,13 +279,47 @@ export class UserService implements Service {
         return await this.generateBotToken(payload.userId);
     }
 
+    async resetPassword(email: string) {
+        const user = await UserModel.findOne({ email, enabled: true });
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+
+        const token = this.getNewToken();
+
+        const notifConfig: INotificationService = config.notificationService;
+
+        return await communicationHelper.post(
+            notifConfig.name,
+            notifConfig.sendNotifRoute,
+            null,
+            {
+                'type':'resetPassword',
+                'format':'email',
+                'data': {
+                    'subject': 'Reset Password',
+                    'username': user.username,
+                    'link':notifConfig.resetLinkTemplate.replace('{token}', token).replace('{email}', user.email)
+                },
+                'users': [user._id]
+            });
+    }
+
+    private getNewToken(){
+        const possibleLetters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        let token = '';
+
+        for (let i = 0; i < config.resetTokenLength; i++) {
+            token += possibleLetters[Math.floor(Math.random() * possibleLetters.length) ];
+        }
+
+        return token;
+    }
+
     private async generateBotToken(userId: string) {
         const user = await UserModel.findOne({ _id: userId, enabled: true });
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
-        }
-        if (!user.enabled) {
-            throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized');
         }
         const roles = await RoleModel.find({ _id: { $in: user.roles } });
         if (roles.map(r => r.key).indexOf(config.roleBotKey) !== -1 && !user.loginEnabled) {
@@ -297,7 +338,6 @@ export class UserService implements Service {
         }
         return null;
     }
-
 
     private getCleanUser(user: IUser): IUser {
         const cleanedUser = JSON.parse(JSON.stringify(user));

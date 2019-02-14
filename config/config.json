@@ -15,6 +15,7 @@
         "botTokenRenew" :"20h",
         "defaultRoleKey": "user",
         "registerRetryTime": 30000,
+        "resetTokenLength": 40,
         "authorizationService": {
             "name": "user",
             "addRoute": "privileges/{resource}/routes",
@@ -24,6 +25,11 @@
             "renewTokenRoute": "users/renewBotToken",
             "rolePrivilegeRoute": "roles/importPrivileges",
             "internalRequestRoute": "users?username={uuid}&enabled=true"
+        },
+        "notificationService": {
+            "name": "notification",
+            "sendNotifRoute": "notifications",
+            "resetLinkTemplate": "http://127.0.0.1:3000/api/toto?token={token}&email={email}"
         }
     }
 }
