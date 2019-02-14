@@ -103,8 +103,10 @@ const server = async (appName: string) => {
                     const time: number =  parseInt(ms(config[appName].checkBotAccountTime));
                     botCheck(config[appName].roleBotKey, time);
                 })
-                .catch( err => {
+                .catch(err => {
+                    getLogger('default').log('error', 'An error has been thrown the micro service can not be start normally');
                     getLogger('default').log('error', err.message || err);
+                    getLogger('default').log('error', 'Exiting with code 1...');
                     process.exit(1);
                 });
         });

@@ -110,31 +110,20 @@ export class App {
     }
 
     async registerApp() {
-        try {
-            const response = await communicationHelper.post(
-                this.configuration.authorizationService.name,
-                this.configuration.authorizationService.registerAppRoute,
-                {
-                    'internal-request': this.uuid
-                },
-                {
-                    uuid: this.uuid
-                });
+        const response = await communicationHelper.post(
+            this.configuration.authorizationService.name,
+            this.configuration.authorizationService.registerAppRoute,
+            {
+                'internal-request': this.uuid
+            },
+            {
+                uuid: this.uuid
+            });
 
-            this._token = response.body.token;
-            this.renewTimeOut = response.body.renewTimeOut;
-            setTimeout(this.renewToken.bind(this), this.renewTimeOut);
-            getLogger('mainApp').log('info', 'App registered on authorization service');
-        } catch (err) {
-            getLogger('mainApp').log('error',
-                'Can not register the ' + this.appName + ' service on authorization service');
-            getLogger('mainApp').log('error',
-                'Retry in ' + (this._configuration.registerRetryTime / 1000) + ' sec(s)');
-            getLogger('mainApp').log('error', err.message);
-
-            // if we can't register the service we retry in X secs
-            setTimeout(this.registerApp.bind(this), this._configuration.registerRetryTime);
-        }
+        this._token = response.body.token;
+        this.renewTimeOut = response.body.renewTimeOut;
+        setTimeout(this.renewToken.bind(this), this.renewTimeOut);
+        getLogger('mainApp').log('info', 'App registered on authorization service');
     }
 
     async renewToken() {
