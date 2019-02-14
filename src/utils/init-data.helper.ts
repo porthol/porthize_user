@@ -27,7 +27,6 @@ const IDataToImport = {
 };
 
 export async function initData() {
-    getLogger('initData').log('info', 'Initializing data...');
     try {
         const folderPath = join(path, 'src/utils/data/');
         if (fs.existsSync(folderPath)) {
@@ -46,6 +45,7 @@ export async function initData() {
 
                 if (!count || count <= 0) {
                     for (const data of importFile.data) {
+                        getLogger('initData').log('info', 'Data initialised : ' + file);
                         await service.create(data);
                     }
                 }
