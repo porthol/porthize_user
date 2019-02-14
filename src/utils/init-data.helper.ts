@@ -27,6 +27,7 @@ const IDataToImport = {
 };
 
 export async function initData() {
+    getLogger('initData').log('info', 'Initializing data...');
     try {
         const folderPath = join(path, 'src/utils/data/');
         if (fs.existsSync(folderPath)) {
