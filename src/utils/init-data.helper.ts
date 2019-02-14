@@ -43,9 +43,9 @@ export async function initData() {
                 const service = serviceManager.getService(importFile.model);
                 const count = await service.getModel().countDocuments({});
 
+                getLogger('initData').log('info', 'Data initialised : ' + file);
                 if (!count || count <= 0) {
                     for (const data of importFile.data) {
-                        getLogger('initData').log('info', 'Data initialised : ' + file);
                         await service.create(data);
                     }
                 }

@@ -13,18 +13,18 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock  # listen docker
     restart: always
-    depends_on:
-      - user
 
   user:
     hostname: user
     build:
       dockerfile: Dockerfile.dev
+      context: ./
     environment:
       - NODE_ENV=development
     restart: always
     depends_on:
       - mongo
+      - gateway
     labels:
       - "traefik.frontend.rule=Host:user.service"
     ports:

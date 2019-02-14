@@ -2,7 +2,8 @@ FROM node:8-jessie
 
 WORKDIR "/opt/app"
 
-COPY . ./
+COPY . .
+RUN rm -rf node_modules
 RUN npm install
 RUN npm run build
 
