@@ -5,6 +5,7 @@ import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logge
 import * as Ajv from 'ajv';
 import { serviceManager } from './service.manager';
 import { app, communicationHelper } from '../server';
+import { RoleService } from '../role';
 
 configureLogger('initData', defaultWinstonLoggerOptions);
 
@@ -73,9 +74,23 @@ export async function initPrivileges(config: any) {
             privilegesRolesData
         );
 
-        getLogger('initData').log('info', 'info privileges exported');
+        getLogger('initData').log('info', 'Privileges exported');
     } catch (err) {
         getLogger('initData').log('error', err);
     }
 
+}
+
+export async function internalInitPrivileges() {
+    getLogger('initData').log('info', 'Importing privileges from internal');
+    try {
+        const filePath = join(path, 'config/privileges-roles.json');
+        const privilegesRolesData = require(filePath);
+
+        await RoleService.get().importPrivilege(privilegesRolesData);
+
+        getLogger('initData').log('info', 'Privileges imported');
+    } catch (err) {
+        getLogger('initData').log('error', err);
+    }
 }

@@ -7,9 +7,9 @@ import { createServer } from 'http';
 import { getDatabaseConnectionUrl } from './utils/connection.helper';
 import { CommunicationHelper } from './utils/communication.helper';
 import { configureServices } from './configure';
-import { initData, initPrivileges } from './utils/init-data.helper';
+import { initData, internalInitPrivileges } from './utils/init-data.helper';
 import { CustomError, CustomErrorCode } from './utils/custom-error';
-import { exportRoutes } from './utils/router.manager';
+import { internalExportRoutes } from './utils/router.manager';
 import { botCheck } from './utils/bot-check.helper';
 import ms = require('ms');
 
@@ -94,10 +94,10 @@ const server = async (appName: string) => {
             // Place here all action to do after starting is complete
             app.registerApp()
                 .then(() => {
-                    return exportRoutes(config[appName].authorizationService);
+                    return internalExportRoutes();
                 })
                 .then(() => {
-                    return initPrivileges(config[appName].authorizationService);
+                    return internalInitPrivileges();
                 })
                 .then(() => {
                     const time: number =  parseInt(ms(config[appName].checkBotAccountTime));

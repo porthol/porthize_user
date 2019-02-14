@@ -2,6 +2,7 @@ import { RequestHandler, Router } from 'express-serve-static-core';
 import { app, communicationHelper } from '../server';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import * as pathToRegexp from 'path-to-regexp';
+import { PrivilegeService } from '../privilege';
 
 configureLogger('routerManager', defaultWinstonLoggerOptions);
 
@@ -125,6 +126,31 @@ export async function exportRoutes(config: IConfigAuthorizationService) {
                     }]
                 }
             );
+        } catch (err) {
+            // Silent error we do not stop the service
+            if (err.statusCode >= 400) {
+                getLogger('routerManager')
+                    .log('warn', 'Can not add route ' + route.url +
+                        ' on ' + route.method + ' to the authorization service.');
+                getLogger('routerManager').log('error', JSON.stringify(err.error, null, ' '));
+            }
+        }
+    }
+}
+
+export async function internalExportRoutes() {
+    getLogger('routerManager').log('info', 'Exporting routes to the authorization server...');
+    for (const route of routes) {
+        try {
+            await PrivilegeService.get().addRoutes(
+                route.resource,
+                route.action,
+                [{
+                    method: route.method,
+                    url: route.url,
+                    regexp: new RegExp(route.regexp.source)
+                }]);
+
         } catch (err) {
             // Silent error we do not stop the service
             if (err.statusCode >= 400) {

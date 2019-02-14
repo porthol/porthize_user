@@ -12,6 +12,7 @@ import { RouterManager } from '../utils/router.manager';
 // import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
 import { internalAuthenticationMiddleware } from '../utils/internal-authentication.middleware';
 import { denyExternalRequestMiddleware } from '../utils/deny-external-request.middleware';
+import { internalAuthorizationMiddleware } from '../utils/internal-authorization.middleware';
 
 const router: express.Router = express.Router();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
@@ -45,7 +46,7 @@ routerManager
     .get({
         handlers: [
             internalAuthenticationMiddleware,
-            // internalAuthorizationMiddleware,
+            internalAuthorizationMiddleware,
             roleController.getAll
         ],
         resource,
@@ -75,7 +76,7 @@ routerManager
                 body: RoleCreateSchema
             }),
             internalAuthenticationMiddleware,
-            // internalAuthorizationMiddleware,
+            internalAuthorizationMiddleware,
             roleController.create
         ],
         resource,
@@ -117,7 +118,7 @@ routerManager
                 params: RoleQuerySchema
             }),
             internalAuthenticationMiddleware,
-            // internalAuthorizationMiddleware,
+            internalAuthorizationMiddleware,
             roleController.get
         ],
         resource,
@@ -159,7 +160,7 @@ routerManager
                 params: RoleQuerySchema
             }),
             internalAuthenticationMiddleware,
-            // internalAuthorizationMiddleware,
+            internalAuthorizationMiddleware,
             roleController.update
         ],
         resource,
@@ -190,7 +191,7 @@ routerManager
                 params: RoleQuerySchema
             }),
             internalAuthenticationMiddleware,
-            // internalAuthorizationMiddleware,
+            internalAuthorizationMiddleware,
             roleController.remove
         ],
         resource,
@@ -226,7 +227,7 @@ routerManager
                 body: RolePrivilegeSchema
             }),
             internalAuthenticationMiddleware,
-            // internalAuthorizationMiddleware,
+            internalAuthorizationMiddleware,
             roleController.addPrivilege
         ],
         resource,
@@ -252,7 +253,7 @@ routerManager
                 params: RolePrivilegeQuerySchema
             }),
             internalAuthenticationMiddleware,
-            // internalAuthorizationMiddleware,
+            internalAuthorizationMiddleware,
             roleController.removePrivilege
         ],
         resource,

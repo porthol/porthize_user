@@ -156,7 +156,7 @@ export class RoleService implements Service {
                 const privilege = await PrivilegeModel.findOne({ resource: resource.resourceKey });
                 if (!privilege) {
                     getLogger('roleService').log('warn',
-                        JSON.stringify(new CustomError(CustomErrorCode.ERRNOTFOUND, 'privilege not found')));
+                        JSON.stringify(new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found')));
                     continue;
                 }
                 try {

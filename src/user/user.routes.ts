@@ -5,7 +5,8 @@ import {
     UserAuthorizedSchema,
     UserCreateSchema,
     UserLoginSchema,
-    UserMicroServiceSchema, UserPasswordResetSchema,
+    UserMicroServiceSchema,
+    UserPasswordResetSchema,
     UserQuerySchema,
     UserRenewBotTokenSchema,
     UserRoleQuerySchema,
@@ -15,7 +16,7 @@ import {
 import { internalAuthenticationMiddleware } from '../utils/internal-authentication.middleware';
 import { RouterManager } from '../utils/router.manager';
 import { internalAuthorizationMiddleware } from '../utils/internal-authorization.middleware';
-import { denyExternalRequestMiddleware } from '../utils/deny-external-request.middleware';
+import { internalDenyExternalRequestMiddleware } from '../utils/internal-deny-external-request';
 
 const router: express.Router = express.Router();
 const userController = new UserController();
@@ -408,7 +409,7 @@ routerManager
     .route('/users/renewBotToken')
     .post({
         handlers: [
-            denyExternalRequestMiddleware,
+            internalDenyExternalRequestMiddleware,
             validator.validate({
                 body: UserRenewBotTokenSchema
             }),
