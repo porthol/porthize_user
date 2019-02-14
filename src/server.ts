@@ -98,7 +98,9 @@ const server = async (appName: string) => {
                     return initPrivileges(config[appName].authorizationService);
                 })
                 .catch(err => {
+                    getLogger('default').log('error', 'An error has been thrown the micro service can not be start normally');
                     getLogger('default').log('error', err.message || err);
+                    getLogger('default').log('error', 'Exiting with code 1...');
                     process.exit(1);
                 });
         });
