@@ -6,7 +6,7 @@ COPY . ./
 RUN npm install
 RUN npm run build
 
-FROM node:8-alpine as runner
+FROM node:8 as runner
 # Expose default port
 EXPOSE 3000
 
