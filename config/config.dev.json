@@ -8,8 +8,8 @@
     ],
     "databaseName": "user",
     "traefik": {
-      "gatewayAddress": "127.0.0.1",
-      "gatewayPort": 3000,
+      "gatewayAddress": "gateway",
+      "gatewayPort": 80,
       "nameRules": "{serviceName}.service"
     },
     "jwt": {
