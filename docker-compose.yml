@@ -1,0 +1,126 @@
+version: '3'
+# this compose should be used only for dev env !
+# if not the service in development should be updated
+services:
+  gateway:
+    hostname: gateway
+    container_name: gateway
+    image: traefik:1.7
+    command: --api --docker
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # listen docker
+    restart: always
+    depends_on:
+      - user
+
+  user:
+    hostname: user
+    image: registry.gitlab.com/workkaylleur/user-service:develop
+    environment:
+      - NODE_ENV=development
+    restart: always
+    depends_on:
+      - mongo1
+    labels:
+      - "traefik.frontend.rule=Host:user.service"
+
+  workspace:
+    hostname: workspace
+    image: registry.gitlab.com/workkaylleur/workspaceservice:develop
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - mongo1
+      - user
+    restart: always
+    labels:
+      - "traefik.frontend.rule=Host:workspace.service"
+
+  device:
+    hostname: device
+    image: registry.gitlab.com/workkaylleur/deviceservice:develop
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - mongo1
+      - user
+    restart: always
+    labels:
+      - "traefik.frontend.rule=Host:device.service"
+  notification:
+    hostname: notification
+    image: registry.gitlab.com/workkaylleur/notificationservice:develop
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - mongo1
+      - user
+      - amqp
+    restart: always
+    labels:
+      - "traefik.frontend.rule=Host:notification.service"œ
+  event:
+    hostname: device
+    image: registry.gitlab.com/workkaylleur/eventservice:develop
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - mongo1
+      - user
+      - amqp
+      - redis
+    restart: always
+    labels:
+      - "traefik.frontend.rule=Host:event.service"
+
+  # Mongo replica set
+  mongo1:
+    hostname: mongo1
+    container_name: mongo1
+    image: mongo:4
+    restart: always
+    labels:
+      - "traefik.enable=false"
+
+  proxy:
+    hostname: proxy
+    container_name: proxy
+    image: nginx:1
+    volumes:
+      - ./nginx/configuration/default.conf:/etc/nginx/nginx.conf
+      - ./nginx/configuration/conf.d:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - front
+    labels:
+      - "traefik.enable=false"
+
+  amqp:
+    hostname: amqp
+    container_name: amqp
+    image: rabbitmq:management-alpine
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+  redis:
+    hostname: redis
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  front:
+    hostname: front
+    container_name: front
+    image: containous/whoami
+    depends_on:
+      - gateway
+    labels:
+      - "traefik.enable=true"
