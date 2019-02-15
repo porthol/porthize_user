@@ -19,6 +19,9 @@ services:
     build:
       dockerfile: Dockerfile.dev
       context: ./
+    volumes:
+      - ./:/opt/app
+    command: npm run compose
     environment:
       - NODE_ENV=development
     restart: always

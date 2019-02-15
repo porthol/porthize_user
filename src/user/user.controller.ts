@@ -152,8 +152,9 @@ export class UserController {
     }
 
     resetPassword(req: Request, res: Response, next: NextFunction): void {
-        if(isEmail(req.body.email)){
+        if(!isEmail(req.body.email)){
             next(new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad email format'));
+            return;
         }
         UserService.get().resetPassword(req.body.email)
             .then(token => {

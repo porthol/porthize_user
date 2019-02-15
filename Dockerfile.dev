@@ -10,7 +10,5 @@ RUN npm run build
 # Expose default port
 EXPOSE 3000
 
-RUN npm install --quiet
-
 # Execute default startup command
 CMD [ "npm", "run", "start" ]
