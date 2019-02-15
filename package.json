@@ -11,7 +11,9 @@
         "watch": "npm run build && (tsc -p tsconfig.back.json -watch | nodemon ./dist/server.js)",
         "doc:clean": "rimraf docs",
         "doc:apidoc": "apidoc -i ./src/ -o ./docs/api/",
-        "doc": "npm run doc:clean && npm run doc:apidoc"
+        "doc": "npm run doc:clean && npm run doc:apidoc",
+        "docker": "docker-compose up --build user",
+        "compose": "npm install && npm run watch"
     },
     "author": "Thomas BRUNET",
     "license": "ISC",
