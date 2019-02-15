@@ -92,10 +92,15 @@ const server = async (appName: string) => {
             // Place here all action to do after starting is complete
             app.registerApp()
                 .then(() => {
+                    getLogger('default').log('error', 'App correctly registered.');
                     return exportRoutes(config[appName].authorizationService);
                 })
                 .then(() => {
+                    getLogger('default').log('error', 'Routes exported');
                     return initPrivileges(config[appName].authorizationService);
+                })
+                .then(() => {
+                    getLogger('default').log('error', 'Privileges exported');
                 })
                 .catch(err => {
                     getLogger('default').log('error', 'An error has been thrown the micro service can not be start normally');
