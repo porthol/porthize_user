@@ -94,14 +94,19 @@ const server = async (appName: string) => {
             // Place here all action to do after starting is complete
             app.registerApp()
                 .then(() => {
+                    getLogger('default').log('info', 'App correctly registered.');
                     return internalExportRoutes();
                 })
                 .then(() => {
+                    getLogger('default').log('info', 'Routes exported');
                     return internalInitPrivileges();
                 })
                 .then(() => {
                     const time: number =  parseInt(ms(config[appName].checkBotAccountTime));
                     botCheck(config[appName].roleBotKey, time);
+                })
+                .then(() => {
+                    getLogger('default').log('info', 'Privileges exported');
                 })
                 .catch(err => {
                     getLogger('default').log('error', 'An error has been thrown the micro service can not be start normally');

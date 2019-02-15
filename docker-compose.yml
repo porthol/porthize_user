@@ -44,7 +44,6 @@ services:
     ports:
       - 3002:3000
 
-
   device:
     hostname: device
     image: registry.gitlab.com/workkaylleur/deviceservice:develop
