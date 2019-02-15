@@ -1,0 +1,10 @@
+{
+  "model": "user",
+  "data": [
+    {
+      "user": "Admin",
+      "email": "toto@toto.com",
+      "password": "123aze456"
+    }
+  ]
+}
