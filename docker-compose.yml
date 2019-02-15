@@ -27,6 +27,11 @@ services:
       - "traefik.frontend.rule=Host:user.service"
     ports:
       - 3001:3000
+  #    volumes:
+  #      - ./src:/opt/app/src
+  #      - ./config:/opt/app/config
+  #      - ./types:/opt/app/types
+  #      - ./package.json:/opt/app/package.json
 
   workspace:
     hostname: workspace
