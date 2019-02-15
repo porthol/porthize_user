@@ -30,6 +30,7 @@ export async function initData() {
     try {
         const folderPath = join(path, 'src/utils/data/');
         if (fs.existsSync(folderPath)) {
+            getLogger('initData').log('info', 'Initialise default data');
             const files = fs.readdirSync(folderPath);
             for (const file of files) {
                 const importFile = require(folderPath + file);
@@ -41,16 +42,20 @@ export async function initData() {
                     return;
                 }
                 const service = serviceManager.getService(importFile.model);
-                const count = await service.getModel().countDocuments({});
 
+                const count = await service.getModel().countDocuments({});
                 if (!count || count <= 0) {
                     for (const data of importFile.data) {
                         await service.create(data);
                     }
+                    getLogger('initData').log('info', 'Data initialised : ' + file);
+                } else {
+                    getLogger('initData').log('info', 'Data already here for ' + file);
                 }
-                getLogger('initData').log('info', 'Data already here for ' + file);
             }
 
+        } else {
+            getLogger('initData').log('info', 'No data to initialise');
         }
     } catch (err) {
         getLogger('initData').log('error', err);
