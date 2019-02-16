@@ -2,7 +2,7 @@
   "model": "user",
   "data": [
     {
-      "user": "Admin",
+      "username": "Admin",
       "email": "toto@toto.com",
       "password": "123aze456"
     }

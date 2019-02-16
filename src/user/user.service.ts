@@ -12,9 +12,9 @@ import { IUser } from './user.document';
 import { IRoute } from '../privilege';
 import { RoleService } from '../role/role.service';
 import { Service } from '../utils/service.interface';
+import { communicationHelper } from '../server';
 import ms = require('ms');
 import ObjectId = mongoose.Types.ObjectId;
-import { communicationHelper } from '../server';
 
 const config: any = getConfiguration().user;
 configureLogger('UserService', defaultWinstonLoggerOptions);
@@ -289,28 +289,28 @@ export class UserService implements Service {
 
         const notifConfig: INotificationService = config.notificationService;
 
-        return await communicationHelper.post(
+        await communicationHelper.post(
             notifConfig.name,
             notifConfig.sendNotifRoute,
             null,
             {
-                'type':'resetPassword',
-                'format':'email',
+                'type': 'resetPassword',
+                'format': 'email',
                 'data': {
                     'subject': 'Reset Password',
-                    'username': user.username,
-                    'link':notifConfig.resetLinkTemplate.replace('{token}', token).replace('{email}', user.email)
+                    'username': (user.username || user.email),
+                    'link': notifConfig.resetLinkTemplate.replace('{token}', token).replace('{email}', user.email)
                 },
                 'users': [user._id]
             });
     }
 
-    private getNewToken(){
+    private getNewToken() {
         const possibleLetters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
         let token = '';
 
         for (let i = 0; i < config.resetTokenLength; i++) {
-            token += possibleLetters[Math.floor(Math.random() * possibleLetters.length) ];
+            token += possibleLetters[Math.floor(Math.random() * possibleLetters.length)];
         }
 
         return token;

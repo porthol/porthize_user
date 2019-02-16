@@ -157,9 +157,9 @@ export class UserController {
             return;
         }
         UserService.get().resetPassword(req.body.email)
-            .then(token => {
-                res.status(httpStatus.CREATED)
-                    .send(token);
+            .then(() => {
+                res.status(httpStatus.NO_CONTENT)
+                    .send();
             })
             .catch(next);
     }

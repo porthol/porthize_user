@@ -20,7 +20,10 @@ services:
       dockerfile: Dockerfile.dev
       context: ./
     volumes:
-      - ./:/opt/app
+      - ./src:/opt/app/src
+      - ./config:/opt/app/config
+      - ./types:/opt/app/types
+      - ./package.json:/opt/app/package.json
     command: npm run compose
     environment:
       - NODE_ENV=development
