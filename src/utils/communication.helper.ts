@@ -20,23 +20,23 @@ export class CommunicationHelper {
     ) {
     }
 
-    async get(serviceName: string, path: string, headers?: Headers) {
-        return await request.get(this.generateOptions(serviceName, path, headers));
+    async get(serviceName: string, path: string, headers?: Headers, query?: any) {
+        return await request.get(this.generateOptions(serviceName, path, headers, query));
     }
 
-    async post(serviceName: string, path: string, headers?: Headers, body?: any) {
-        return await request.post(this.generateOptions(serviceName, path, headers, body));
+    async post(serviceName: string, path: string, headers?: Headers, query?: any, body?: any) {
+        return await request.post(this.generateOptions(serviceName, path, headers, query, body));
     }
 
-    async put(serviceName: string, path: string, headers?: Headers, body?: any) {
-        return await request.put(this.generateOptions(serviceName, path, headers, body));
+    async put(serviceName: string, path: string, headers?: Headers, query?: any, body?: any) {
+        return await request.put(this.generateOptions(serviceName, path, headers, query, body));
     }
 
-    async delete(serviceName: string, path: string, headers?: Headers) {
-        return await request.delete(this.generateOptions(serviceName, path, headers));
+    async delete(serviceName: string, path: string, headers?: Headers, query?: any) {
+        return await request.delete(this.generateOptions(serviceName, path, headers, query));
     }
 
-    private generateOptions(serviceName: string, path: string, headers?: Headers, body?: any): UriOptions & RequestPromiseOptions {
+    private generateOptions(serviceName: string, path: string, headers?: Headers, qs?: any, body?: any): UriOptions & RequestPromiseOptions {
         const uri = this.getBaseUrl() + path;
 
         if (!headers) {
@@ -53,7 +53,8 @@ export class CommunicationHelper {
             headers,
             uri,
             resolveWithFullResponse: true,
-            json: true
+            json: true,
+            qs
         };
 
         if (body) {
