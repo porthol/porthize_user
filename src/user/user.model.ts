@@ -41,7 +41,7 @@ export const UserSchema = new Schema({
 });
 
 UserSchema.pre('save', function(next) {
-    this.updatedAt = new Date();
+    (this as IUser).updatedAt = new Date();
 
     next();
 });
