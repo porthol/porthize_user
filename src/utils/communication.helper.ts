@@ -24,11 +24,11 @@ export class CommunicationHelper {
         return await request.get(this.generateOptions(serviceName, path, headers, query));
     }
 
-    async post(serviceName: string, path: string, headers?: Headers, query?: any, body?: any) {
+    async post(serviceName: string, path: string, headers?: Headers, body?: any, query?: any) {
         return await request.post(this.generateOptions(serviceName, path, headers, query, body));
     }
 
-    async put(serviceName: string, path: string, headers?: Headers, query?: any, body?: any) {
+    async put(serviceName: string, path: string, headers?: Headers, body?: any, query?: any) {
         return await request.put(this.generateOptions(serviceName, path, headers, query, body));
     }
 
@@ -39,11 +39,7 @@ export class CommunicationHelper {
     private generateOptions(serviceName: string, path: string, headers?: Headers, qs?: any, body?: any): UriOptions & RequestPromiseOptions {
         const uri = this.getBaseUrl() + path;
 
-        if (!headers) {
-            headers = {};
-        }
-
-        headers.Host = this.config.nameRules.replace('{serviceName}', serviceName);
+        (headers || {}).Host = this.config.nameRules.replace('{serviceName}', serviceName);
 
         if (!headers.authorization && app.token) {
             headers.authorization = 'Bearer ' + app.token;
@@ -54,12 +50,9 @@ export class CommunicationHelper {
             uri,
             resolveWithFullResponse: true,
             json: true,
-            qs
+            qs,
+            body
         };
-
-        if (body) {
-            options.body = body;
-        }
 
         return options;
     }
