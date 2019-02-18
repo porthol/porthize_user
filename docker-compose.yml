@@ -16,6 +16,7 @@ services:
 
   user:
     hostname: user
+    container_name: user
     build:
       dockerfile: Dockerfile.dev
       context: ./
