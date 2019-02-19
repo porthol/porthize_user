@@ -78,7 +78,7 @@ services:
       - 3004:3000
 
   event:
-    hostname: device
+    hostname: event
     image: registry.gitlab.com/workkaylleur/eventservice:develop
     environment:
       - NODE_ENV=development
