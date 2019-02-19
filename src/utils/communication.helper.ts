@@ -39,7 +39,7 @@ export class CommunicationHelper {
     private generateOptions(serviceName: string, path: string, headers?: Headers, qs?: any, body?: any): UriOptions & RequestPromiseOptions {
         const uri = this.getBaseUrl() + path;
 
-        (headers || {}).Host = this.config.nameRules.replace('{serviceName}', serviceName);
+        (headers || (headers = {})).Host = this.config.nameRules.replace('{serviceName}', serviceName);
 
         if (!headers.authorization && app.token) {
             headers.authorization = 'Bearer ' + app.token;
