@@ -31,7 +31,7 @@ const server = async (appName: string) => {
 
         if (config[appName] && config[appName].databases) {
             const databaseUrl = getDatabaseConnectionUrl();
-            const mongooseOptions: any = { useMongoClient: true };
+            const mongooseOptions: any = { useNewUrlParser: true };
             if (config[appName].databases.length > 1) {
                 mongooseOptions.replicaSet = 'rs0';
             }

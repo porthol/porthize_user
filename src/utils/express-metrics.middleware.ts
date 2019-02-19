@@ -47,7 +47,7 @@ export function expressMetricsMiddleware(req: Request, res: Response, next: Next
             const method: string = req.method;
 
             // Tell winston to print message
-            logger.log(level, JSON.stringify({ statusCode: res.statusCode, responseTimeInMs, body, method, url }));
+            logger.log(level, JSON.stringify({ statusCode: res.statusCode, responseTimeInMs, body, method, url, headers: req.headers }));
         } catch (err) {
 
             // tslint:disable

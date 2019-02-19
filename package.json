@@ -12,7 +12,7 @@
         "doc:clean": "rimraf docs",
         "doc:apidoc": "apidoc -i ./src/ -o ./docs/api/",
         "doc": "npm run doc:clean && npm run doc:apidoc",
-        "docker": "docker-compose up --build user",
+        "docker": "docker-compose up --build",
         "compose": "npm install && npm run watch"
     },
     "author": "Thomas BRUNET",
@@ -40,7 +40,7 @@
         "jsonwebtoken": "^8.4.0",
         "lodash": "^4.17.11",
         "mongodb": "^3.1.10",
-        "mongoose": "^5.4.4",
+        "mongoose": "^5.4.13",
         "ms": "^2.1.1",
         "path-to-regexp": "^3.0.0",
         "request": "^2.88.0",

@@ -30,6 +30,11 @@
             "name": "notification",
             "sendNotifRoute": "notifications",
             "resetLinkTemplate": "http://127.0.0.1:3000/api/toto?token={token}&email={email}"
+        },
+        "workspaceService": {
+            "name": "workspace",
+            "existRoute": "workspaces?key={{key}}&enabled=true",
+            "getAllRoute": "workspaces?enabled=true"
         }
     }
 }
