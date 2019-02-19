@@ -10,6 +10,11 @@
             "renewTokenRoute": "users/renewBotToken",
             "rolePrivilegeRoute": "roles/importPrivileges",
             "internalRequestRoute": "users?username={uuid}&enabled=true"
+        },
+        "workspaceService": {
+            "name": "workspace",
+            "existRoute": "workspaces?key={{key}}&enabled=true",
+            "getAllRoute": "workspaces?enabled=true"
         }
     }
 }
