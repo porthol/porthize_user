@@ -23,6 +23,7 @@ services:
     depends_on:
       - mongo
       - gateway
+      - workspace
     labels:
       - "traefik.frontend.rule=Host:user.service"
     ports:
@@ -40,7 +41,6 @@ services:
       - NODE_ENV=development
     depends_on:
       - mongo
-      - user
     restart: always
     labels:
       - "traefik.frontend.rule=Host:workspace.service"
@@ -55,6 +55,7 @@ services:
     depends_on:
       - mongo
       - user
+      - workspace
     restart: always
     labels:
       - "traefik.frontend.rule=Host:device.service"
@@ -86,11 +87,26 @@ services:
       - user
       - amqp
       - redis
+      - workspace
     restart: always
     labels:
       - "traefik.frontend.rule=Host:event.service"
     ports:
       - 3005:3000
+
+  proxy:
+    hostname: proxy
+    image: registry.gitlab.com/workkaylleur/proxyservice:develop
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - user
+      - workspace
+    restart: always
+    labels:
+      - "traefik.frontend.rule=Host:proxy.service"
+    ports:
+      - 3006:3000
 
   # Mongo replica set
   mongo:
@@ -103,9 +119,9 @@ services:
     ports:
       - 27018:27017
 
-  proxy:
-    hostname: proxy
-    container_name: proxy
+  nginx:
+    hostname: nginx
+    container_name: nginx
     image: nginx:1
     volumes:
       - ./default.conf:/etc/nginx/nginx.conf
