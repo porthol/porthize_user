@@ -12,7 +12,7 @@
         "doc:clean": "rimraf docs",
         "doc:apidoc": "apidoc -i ./src/ -o ./docs/api/",
         "doc": "npm run doc:clean && npm run doc:apidoc",
-        "docker": "docker-compose up --build",
+        "docker": "docker-compose up -d --no-deps --build template",
         "compose": "npm install && npm run watch"
     },
     "author": "Thomas BRUNET",
