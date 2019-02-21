@@ -24,7 +24,7 @@ export function denyExternalRequestMiddleware(req: Request, res: Response, next:
             configAuthService.internalRequestRoute.replace('{uuid}', uuid),
             {
                 'internal-request': app.uuid
-            })
+            }, null, true)
             .then(() => next())
             .catch(next);
 

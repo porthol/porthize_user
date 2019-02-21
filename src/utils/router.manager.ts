@@ -124,7 +124,7 @@ export async function exportRoutes(config: IConfigAuthorizationService) {
                         url: route.url,
                         regexp: route.regexp.source
                     }]
-                }
+                }, null, true
             );
         } catch (err) {
             // Silent error we do not stop the service
