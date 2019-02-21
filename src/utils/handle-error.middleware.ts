@@ -44,7 +44,7 @@ export function handleErrorMiddleware(err: any, req: Request, res: Response, nex
             }
         }
     }
-    if (err.constructor.name === CustomError.name) {
+    if (err.name === CustomError.name) {
         res.status(CustomErrorCodeToHttpStatus(err.code))
             .send(err);
     } else {

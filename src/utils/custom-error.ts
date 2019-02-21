@@ -35,6 +35,7 @@ export function CustomErrorCodeToHttpStatus(code: CustomErrorCode) {
 
 
 export class CustomError {
+    name = CustomError.name;
     code: CustomErrorCode;
     message: string;
     cause: any;
