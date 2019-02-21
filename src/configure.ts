@@ -3,9 +3,9 @@ import UserRoutes from './user/user.routes';
 import PrivilegeRoutes from './privilege/privilege.routes';
 import RoleRoutes from './role/role.routes';
 import { serviceManager } from './utils/service.manager';
-import { RoleService } from './role';
-import { UserService } from './user';
-import { PrivilegeService } from './privilege';
+import { RoleService } from './role/role.service';
+import { UserService } from './user/user.service';
+import { PrivilegeService } from './privilege/privilege.service';
 
 /**
  * Function used to configure application

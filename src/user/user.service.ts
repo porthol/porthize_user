@@ -3,16 +3,16 @@ import { hashPassword } from '../utils/hashPassword';
 import * as mongoose from 'mongoose';
 import { Model } from 'mongoose';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
-import { RoleModel } from '../role';
+import { RoleModel } from '../role/role.model';
 import { comparePassword } from '../utils/comparePassword';
 import * as jwt from 'jsonwebtoken';
 import { getConfiguration } from '../utils/configuration.helper';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from '../utils/logger';
 import { IUser } from './user.document';
-import { IRoute } from '../privilege';
 import { RoleService } from '../role/role.service';
 import { Service } from '../utils/service.interface';
 import { communicationHelper } from '../server';
+import { IRouteEmbedded } from '../privilege/privilege.document';
 import ms = require('ms');
 import ObjectId = mongoose.Types.ObjectId;
 
@@ -230,7 +230,7 @@ export class UserService implements Service {
         return result;
     }
 
-    async isAuthorized(partialUser: IUser, route: IRoute) {
+    async isAuthorized(partialUser: IUser, route: IRouteEmbedded) {
         let result = false;
 
         const user = await UserModel.findOne({ _id: partialUser._id, enabled: true });

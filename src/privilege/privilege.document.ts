@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface IRoute {
+export interface IRouteEmbedded {
     method: string;
     url: string;
     regexp?: RegExp;
@@ -9,7 +9,7 @@ export interface IRoute {
 export interface IPrivilege extends Document {
     resource: string;
     actionsAvailable: {
-        [action: string]: IRoute[]
+        [action: string]: IRouteEmbedded[]
     };
 }
 

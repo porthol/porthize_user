@@ -11,7 +11,7 @@ import {
 import { RouterManager } from '../utils/router.manager';
 import { internalAuthenticationMiddleware } from '../utils/internal-authentication.middleware';
 import { internalAuthorizationMiddleware } from '../utils/internal-authorization.middleware';
-import { denyExternalRequestMiddleware } from '../utils/deny-external-request.middleware';
+import { internalDenyExternalRequestMiddleware } from '../utils/internal-deny-external-request';
 
 const router: express.Router = express.Router();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
@@ -230,7 +230,7 @@ routerManager
      */
     .post({
         handlers: [
-            denyExternalRequestMiddleware,
+            internalDenyExternalRequestMiddleware,
             validator.validate({
                 params: PrivilegeResourceQuerySchema,
                 body: PrivilegeAddRouteSchema

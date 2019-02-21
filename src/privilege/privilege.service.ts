@@ -2,7 +2,7 @@ import { PrivilegeModel } from './privilege.model';
 import * as mongoose from 'mongoose';
 import { Model } from 'mongoose';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
-import { IRoute } from './privilege.document';
+import { IRouteEmbedded } from './privilege.document';
 import * as _ from 'lodash';
 import { Service } from '../utils/service.interface';
 import ObjectId = mongoose.Types.ObjectId;
@@ -60,7 +60,7 @@ export class PrivilegeService implements Service {
         return await PrivilegeModel.deleteOne({ _id: id });
     }
 
-    async addRoutes(resource: string, action: string, routes: IRoute[]) {
+    async addRoutes(resource: string, action: string, routes: IRouteEmbedded[]) {
         let privilege = await PrivilegeModel.findOne({ resource });
         if (!privilege) {
             // if the resource doesn't exist create it
@@ -87,7 +87,7 @@ export class PrivilegeService implements Service {
     }
 
 
-    async isAuthorized(privilege: any, route: IRoute) {
+    async isAuthorized(privilege: any, route: IRouteEmbedded) {
         const privilegeFromDb = await PrivilegeModel.findOne({ resource: privilege.resource });
         if (!privilegeFromDb) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');

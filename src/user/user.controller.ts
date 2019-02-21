@@ -2,7 +2,7 @@ import { UserService } from './user.service';
 import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
-import { RoleService } from '../role';
+import { RoleService } from '../role/role.service';
 import { isEmail } from 'validator';
 
 export class UserController {

@@ -2,7 +2,7 @@ import { RequestHandler, Router } from 'express-serve-static-core';
 import { app, communicationHelper } from '../server';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import * as pathToRegexp from 'path-to-regexp';
-import { PrivilegeService } from '../privilege';
+import { PrivilegeService } from '../privilege/privilege.service';
 
 configureLogger('routerManager', defaultWinstonLoggerOptions);
 

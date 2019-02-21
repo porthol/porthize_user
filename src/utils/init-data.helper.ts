@@ -5,7 +5,7 @@ import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logge
 import * as Ajv from 'ajv';
 import { serviceManager } from './service.manager';
 import { app, communicationHelper } from '../server';
-import { RoleService } from '../role';
+import { RoleService } from '../role/role.service';
 
 configureLogger('initData', defaultWinstonLoggerOptions);
 

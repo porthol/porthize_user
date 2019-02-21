@@ -3,8 +3,8 @@
  * @param roleBotKey
  * @param checkTime time in ms
  */
-import { RoleService } from '../role';
-import { UserService } from '../user';
+import { RoleService } from '../role/role.service';
+import { UserService } from '../user/user.service';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import ms = require('ms');
 

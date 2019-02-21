@@ -9,10 +9,9 @@ import {
     RoleUpdateSchema
 } from './role.schemas';
 import { RouterManager } from '../utils/router.manager';
-// import { internalAuthorizationMiddleware } from '../utils/internalAuthorization.middleware';
 import { internalAuthenticationMiddleware } from '../utils/internal-authentication.middleware';
-import { denyExternalRequestMiddleware } from '../utils/deny-external-request.middleware';
 import { internalAuthorizationMiddleware } from '../utils/internal-authorization.middleware';
+import { internalDenyExternalRequestMiddleware } from '../utils/internal-deny-external-request';
 
 const router: express.Router = express.Router();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
@@ -264,7 +263,7 @@ routerManager
     .route('/roles/importPrivileges')
     .post({
         handlers: [
-            denyExternalRequestMiddleware,
+            internalDenyExternalRequestMiddleware,
             roleController.importPrivilege
         ]
     });

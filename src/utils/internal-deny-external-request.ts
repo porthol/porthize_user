@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { CustomError, CustomErrorCode } from './custom-error';
-import { UserModel } from '../user';
+import { UserService } from '../user/user.service';
 
 export function internalDenyExternalRequestMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
@@ -10,7 +10,7 @@ export function internalDenyExternalRequestMiddleware(req: Request, res: Respons
         }
         const uuid = req.headers['internal-request'].toString();
 
-        UserModel.findOne({ username: uuid, enabled: true })
+        UserService.get().get(null, { username: uuid, enabled: true })
             .then( user => {
                 next();
             })

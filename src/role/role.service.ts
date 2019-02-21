@@ -2,10 +2,12 @@ import { RoleModel } from './role.model';
 import * as mongoose from 'mongoose';
 import { Model } from 'mongoose';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
-import { IPrivilegeEmbedded, IRoute, PrivilegeModel, PrivilegeService } from '../privilege';
 import { Service } from '../utils/service.interface';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from '../utils/logger';
 import * as _ from 'lodash';
+import { PrivilegeModel } from '../privilege/privilege.model';
+import { PrivilegeService } from '../privilege/privilege.service';
+import { IPrivilegeEmbedded, IRouteEmbedded } from '../privilege/privilege.document';
 import ObjectId = mongoose.Types.ObjectId;
 
 configureLogger('roleService', defaultWinstonLoggerOptions);
@@ -124,7 +126,8 @@ export class RoleService implements Service {
         return await role.save();
     }
 
-    async isAuthorized(roleId: ObjectId, route: IRoute) {
+    // todo IRouteEmbedded is ambiguous
+    async isAuthorized(roleId: ObjectId, route: IRouteEmbedded) {
         let result = false;
         const role = await this.get(roleId);
         if (!role) {
