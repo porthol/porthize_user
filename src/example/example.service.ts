@@ -49,5 +49,4 @@ export class ExampleService implements Service {
     async delete(id: ObjectId) {
         return await ExampleModel.deleteOne({ _id: id });
     }
-
 }

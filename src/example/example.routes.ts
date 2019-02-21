@@ -33,9 +33,7 @@ routerManager
      *  }]
      */
     .get({
-        handlers: [
-            controller.getAll
-        ],
+        handlers: [controller.getAll],
         action: 'read',
         resource: 'example'
     })
@@ -74,7 +72,6 @@ routerManager
         resource: 'example'
     });
 
-
 routerManager
     .route('/examples/:id')
     /**
@@ -98,9 +95,7 @@ routerManager
      *  }
      */
     .get({
-        handlers: [
-            controller.get
-        ],
+        handlers: [controller.get],
         action: 'read',
         resource: 'example'
     })
@@ -158,9 +153,7 @@ routerManager
      *     }
      */
     .delete({
-        handlers: [
-            controller.delete
-        ],
+        handlers: [controller.delete],
         action: 'delete',
         resource: 'example'
     });
