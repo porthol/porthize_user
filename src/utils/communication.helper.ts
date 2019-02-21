@@ -84,9 +84,12 @@ export class CommunicationHelper {
             uri,
             resolveWithFullResponse: true,
             json: true,
-            qs,
-            body
+            qs
         };
+
+        if (body) {
+            options.body = body;
+        }
 
         getLogger('communicationHelper').log(
             'info',
