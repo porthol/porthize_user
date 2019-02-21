@@ -1,9 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
-import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
+import {
+    configureLogger,
+    defaultWinstonLoggerOptions,
+    getLogger
+} from './logger';
 import * as winston from 'winston';
 
-export function expressMetricsMiddleware(req: Request, res: Response, next: NextFunction) {
-
+export function expressMetricsMiddleware(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
     const end: {
         (cb?: () => void): void;
         (chunk: any, cb?: () => void): void;
@@ -21,7 +28,8 @@ export function expressMetricsMiddleware(req: Request, res: Response, next: Next
             // Calculate response time
             let responseTimeInMs: number;
             if ((req as any).startTime) {
-                responseTimeInMs = new Date().getTime() - (req as any).startTime;
+                responseTimeInMs =
+                    new Date().getTime() - (req as any).startTime;
             }
 
             let body: any = {};
@@ -47,9 +55,18 @@ export function expressMetricsMiddleware(req: Request, res: Response, next: Next
             const method: string = req.method;
 
             // Tell winston to print message
-            logger.log(level, JSON.stringify({ statusCode: res.statusCode, responseTimeInMs, body, method, url, headers: req.headers }));
+            logger.log(
+                level,
+                JSON.stringify({
+                    statusCode: res.statusCode,
+                    responseTimeInMs,
+                    body,
+                    method,
+                    url,
+                    headers: req.headers
+                })
+            );
         } catch (err) {
-
             // tslint:disable
             console.log('Cannot print log for this request', err);
         }
