@@ -25,7 +25,7 @@ services:
       - gateway
       - workspace
     labels:
-      - "traefik.frontend.rule=Host:user.service"
+      - "traefik.frontend.rule=PathPrefix:/api/users,/api/roles,/api/privileges"
     ports:
       - 3001:3000
   #    volumes:
@@ -43,7 +43,7 @@ services:
       - mongo
     restart: always
     labels:
-      - "traefik.frontend.rule=Host:workspace.service"
+      - "traefik.frontend.rule=PathPrefix:/api/workspaces"
     ports:
       - 3002:3000
 
@@ -58,7 +58,7 @@ services:
       - workspace
     restart: always
     labels:
-      - "traefik.frontend.rule=Host:device.service"
+      - "traefik.frontend.rule=PathPrefix:/api/devices"
     ports:
       - 3003:3000
 
@@ -73,7 +73,7 @@ services:
       - amqp
     restart: always
     labels:
-      - "traefik.frontend.rule=Host:notification.service"
+      - "traefik.frontend.rule=PathPrefix:/api/notifications,/api/notifications-types"
     ports:
       - 3004:3000
 
@@ -90,7 +90,7 @@ services:
       - workspace
     restart: always
     labels:
-      - "traefik.frontend.rule=Host:event.service"
+      - "traefik.frontend.rule=PathPrefix:/api/events"
     ports:
       - 3005:3000
 
@@ -104,7 +104,7 @@ services:
       - workspace
     restart: always
     labels:
-      - "traefik.frontend.rule=Host:proxy.service"
+      - "traefik.frontend.rule=PathPrefix:/api/proxy"
     ports:
       - 3006:3000
 
