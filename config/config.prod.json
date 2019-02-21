@@ -1,5 +1,5 @@
 {
-  "user": {
+  "templateexpress": {
     "databases": [
       {
         "host": "mongo1",
@@ -15,8 +15,22 @@
     "databaseName": "user",
     "traefik": {
       "gatewayAddress": "gateway",
-      "gatewayPort": 80,
-      "nameRules": "{serviceName}.service"
+      "gatewayPort": 80
+    },
+    "rabbitmq": {
+      "url": "amqp",
+      "port": 5672,
+      "user": "guest",
+      "password": "guest",
+      "options": {
+        "queueName": "notification-service",
+        "exchangeName": "",
+        "enableAMQPLogger": false,
+        "autoDelete": true,
+        "messageTTL": 60000,
+        "noAck": true,
+        "reconnectTime": 10000
+      }
     },
     "authorizationService": {
       "name": "user",

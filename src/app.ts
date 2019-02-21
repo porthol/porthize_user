@@ -111,7 +111,6 @@ export class App {
 
     async registerApp() {
         const response = await communicationHelper.post(
-            this.configuration.authorizationService.name,
             this.configuration.authorizationService.registerAppRoute,
             {
                 'internal-request': this.uuid
@@ -129,7 +128,6 @@ export class App {
     async renewToken() {
         try {
             const response = await communicationHelper.post(
-                this.configuration.authorizationService.name,
                 this.configuration.authorizationService.renewTokenRoute,
                 {
                     "internal-request": this.uuid

@@ -11,6 +11,7 @@ import { initData, internalInitPrivileges } from './utils/init-data.helper';
 import { CustomError, CustomErrorCode } from './utils/custom-error';
 import { internalExportRoutes } from './utils/router.manager';
 import { botCheck } from './utils/bot-check.helper';
+import { AmqpManager } from './utils/amqp.manager';
 import ms = require('ms');
 
 const appName = getPackageName();
@@ -18,6 +19,8 @@ const appName = getPackageName();
 const config: any = getConfiguration();
 
 export const communicationHelper = new CommunicationHelper(config[appName].traefik);
+
+export const amqpManager = new AmqpManager(config[appName].rabbitmq);
 
 export const app: App = new App({
     appName,

@@ -1,8 +1,8 @@
-import * as request from "request-promise";
-import { RequestPromiseOptions } from "request-promise";
-import { UriOptions } from "request";
-import { app } from "../server";
-import { configureLogger, defaultWinstonLoggerOptions, getLogger } from "./logger";
+import * as request from 'request-promise';
+import { RequestPromiseOptions } from 'request-promise';
+import { UriOptions } from 'request';
+import { app } from '../server';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 
 configureLogger("communicationHelper", defaultWinstonLoggerOptions);
 
@@ -23,26 +23,24 @@ export class CommunicationHelper {
     ) {
     }
 
-    async get(serviceName: string, path: string, headers?: Headers, query?: any, addAppToken = false) {
-        return await request.get(this.generateOptions(serviceName, path, headers, query, null, addAppToken));
+    async get(path: string, headers?: Headers, query?: any, addAppToken = false) {
+        return await request.get(this.generateOptions(path, headers, query, null, addAppToken));
     }
 
-    async post(serviceName: string, path: string, headers?: Headers, body?: any, query?: any, addAppToken = false) {
-        return await request.post(this.generateOptions(serviceName, path, headers, query, body, addAppToken));
+    async post(path: string, headers?: Headers, body?: any, query?: any, addAppToken = false) {
+        return await request.post(this.generateOptions(path, headers, query, body, addAppToken));
     }
 
-    async put(serviceName: string, path: string, headers?: Headers, body?: any, query?: any, addAppToken = false) {
-        return await request.put(this.generateOptions(serviceName, path, headers, query, body, addAppToken));
+    async put(path: string, headers?: Headers, body?: any, query?: any, addAppToken = false) {
+        return await request.put(this.generateOptions(path, headers, query, body, addAppToken));
     }
 
-    async delete(serviceName: string, path: string, headers?: Headers, query?: any, addAppToken = false) {
-        return await request.delete(this.generateOptions(serviceName, path, headers, query, null, addAppToken));
+    async delete(path: string, headers?: Headers, query?: any, addAppToken = false) {
+        return await request.delete(this.generateOptions(path, headers, query, null, addAppToken));
     }
 
-    private generateOptions(serviceName: string, path: string, headers?: Headers, qs?: any, body?: any, addAppToken = false): UriOptions & RequestPromiseOptions {
+    private generateOptions(path: string, headers?: Headers, qs?: any, body?: any, addAppToken = false): UriOptions & RequestPromiseOptions {
         const uri = this.getBaseUrl() + path;
-
-        (headers || (headers = {})).Host = this.config.nameRules.replace("{serviceName}", serviceName);
 
         if (!headers.authorization && app.token && addAppToken) {
             headers.authorization = "Bearer " + app.token;
