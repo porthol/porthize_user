@@ -8,21 +8,28 @@ const appName = getPackageName();
 
 const config: any = getConfiguration();
 
-const configAuthService: IConfigAuthorizationService = config[appName].authorizationService;
+const configAuthService: IConfigAuthorizationService =
+    config[appName].authorizationService;
 
-export function authorizationMiddleware(req: Request, res: Response, next: NextFunction) {
+export function authorizationMiddleware(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
     if (req.headers['internal-request']) {
         next(); // todo for moment we accept that internal request has all ACL, we should not
     }
-    communicationHelper.post(
-        configAuthService.authorizationRoute,
-        {
-            authorization: req.headers.authorization
-        },
-        {
-            method: req.method,
-            url: req.originalUrl.substr(4) // remove /api
-        })
+    communicationHelper
+        .post(
+            configAuthService.authorizationRoute,
+            {
+                authorization: req.headers.authorization
+            },
+            {
+                method: req.method,
+                url: req.originalUrl.substr(4) // remove /api
+            }
+        )
         .then(() => next())
         .catch(next);
 }

@@ -6,7 +6,7 @@ export enum CustomErrorCode {
     ERRINTERNALSERVER = 'ERRINTERNALSERVER',
     ERRNOCONF = 'ERRNOCONF',
     ERRFORBIDDEN = 'ERRFORBIDDEN',
-    ERRUNAUTHORIZED = 'ERRUNAUTHORIZED',
+    ERRUNAUTHORIZED = 'ERRUNAUTHORIZED'
 }
 
 export function CustomErrorCodeToHttpStatus(code: CustomErrorCode) {
@@ -32,7 +32,6 @@ export function CustomErrorCodeToHttpStatus(code: CustomErrorCode) {
         }
     }
 }
-
 
 export class CustomError {
     name = CustomError.name;

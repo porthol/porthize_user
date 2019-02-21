@@ -1,6 +1,10 @@
 import { RequestHandler, Router } from 'express-serve-static-core';
 import { app, communicationHelper } from '../server';
-import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
+import {
+    configureLogger,
+    defaultWinstonLoggerOptions,
+    getLogger
+} from './logger';
 import * as pathToRegexp from 'path-to-regexp';
 
 configureLogger('routerManager', defaultWinstonLoggerOptions);
@@ -16,13 +20,9 @@ export interface IRoute {
 }
 
 export class RouterManager {
-
     private _tmpUrl: string;
 
-    constructor(
-        private _router: Router
-    ) {
-    }
+    constructor(private _router: Router) {}
 
     get router(): Router {
         return this._router;
@@ -38,10 +38,7 @@ export class RouterManager {
             route.url = this._tmpUrl;
         }
         route.method = 'GET';
-        this._router.get(
-            route.url,
-            route.handlers
-        );
+        this._router.get(route.url, route.handlers);
         this.postRoute(route);
         return this;
     }
@@ -51,10 +48,7 @@ export class RouterManager {
             route.url = this._tmpUrl;
         }
         route.method = 'POST';
-        this._router.post(
-            route.url,
-            route.handlers
-        );
+        this._router.post(route.url, route.handlers);
         this.postRoute(route);
         return this;
     }
@@ -64,10 +58,7 @@ export class RouterManager {
             route.url = this._tmpUrl;
         }
         route.method = 'PUT';
-        this._router.put(
-            route.url,
-            route.handlers
-        );
+        this._router.put(route.url, route.handlers);
         this.postRoute(route);
         return this;
     }
@@ -77,10 +68,7 @@ export class RouterManager {
             route.url = this._tmpUrl;
         }
         route.method = 'DELETE';
-        this._router.delete(
-            route.url,
-            route.handlers
-        );
+        this._router.delete(route.url, route.handlers);
         this.postRoute(route);
         return this;
     }
@@ -107,7 +95,10 @@ export interface IConfigAuthorizationService {
 }
 
 export async function exportRoutes(config: IConfigAuthorizationService) {
-    getLogger('routerManager').log('info', 'Exporting routes to the authorization server...');
+    getLogger('routerManager').log(
+        'info',
+        'Exporting routes to the authorization server...'
+    );
     for (const route of routes) {
         try {
             await communicationHelper.post(
@@ -117,20 +108,32 @@ export async function exportRoutes(config: IConfigAuthorizationService) {
                 },
                 {
                     action: route.action,
-                    routes: [{
-                        method: route.method,
-                        url: route.url,
-                        regexp: route.regexp.source
-                    }]
-                }, null, true
+                    routes: [
+                        {
+                            method: route.method,
+                            url: route.url,
+                            regexp: route.regexp.source
+                        }
+                    ]
+                },
+                null,
+                true
             );
         } catch (err) {
             // Silent error we do not stop the service
             if (err.statusCode >= 400) {
-                getLogger('routerManager')
-                    .log('warn', 'Can not add route ' + route.url +
-                        ' on ' + route.method + ' to the authorization service.');
-                getLogger('routerManager').log('error', JSON.stringify(err.error, null, ' '));
+                getLogger('routerManager').log(
+                    'warn',
+                    'Can not add route ' +
+                        route.url +
+                        ' on ' +
+                        route.method +
+                        ' to the authorization service.'
+                );
+                getLogger('routerManager').log(
+                    'error',
+                    JSON.stringify(err.error, null, ' ')
+                );
             }
         }
     }

@@ -16,9 +16,8 @@
         "compose": "npm install && npm run watch",
         "clean": "rimraf dist",
         "tslint": "tslint -c tslint.json '{src/**/*.ts,!src/__front__/**/.ts}'",
-        "prettier:check": "prettier --list-different './src/**/*.ts'",
-        "prettier:write": "prettier --write './src/**/*.ts'",
-        "precommit": "npm run prettier:write && npm run tslint"
+        "prettier": "prettier --write './src/**/*.ts'",
+        "precommit": "npm run prettier && npm run tslint"
     },
     "author": "Thomas BRUNET",
     "license": "ISC",

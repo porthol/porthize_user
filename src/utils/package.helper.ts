@@ -1,7 +1,6 @@
 import { path } from 'app-root-path';
 import { join } from 'path';
 
-
 export function getPackageName(): string {
     try {
         const name = require(join(path, 'package.json')).name;

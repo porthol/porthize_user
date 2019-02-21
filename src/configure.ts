@@ -31,7 +31,7 @@ export function configureRouter(configuration?: object): express.Router[] {
      * End of "after" middlewares declaration
      */
 
-        // Create a private router
+    // Create a private router
     const privateRouter = express.Router();
 
     // Your app-router is now configured, let's export it !
