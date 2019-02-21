@@ -11,6 +11,9 @@ export function handleErrorMiddleware(err: any, req: Request, res: Response, nex
     if (err.name === ValidationError.name) {
         err = new CustomError(CustomErrorCode.ERRBADREQUEST, 'Validation Error : ' + err.message, err);
     }
+    if (err.name === 'JsonSchemaValidationError') {
+        err = new CustomError(CustomErrorCode.ERRBADREQUEST, 'Validation Error : ' + err.message, err);
+    }
     if (err.name === MongoError.name && err.code === 11000) {
         err = new CustomError(CustomErrorCode.ERRBADREQUEST, 'Validation Error : ' + err.message, err);
     }
