@@ -12,5 +12,5 @@ export interface IUser extends Document {
     emailing: boolean;
     loginEnabled: boolean;
     roles: ObjectId[];
-    lastLogIn:Date;
+    lastLogIn: Date;
 }

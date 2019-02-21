@@ -6,52 +6,54 @@ import { RoleService } from '../role/role.service';
 import { isEmail } from 'validator';
 
 export class UserController {
-
     getAll(req: Request, res: Response, next: NextFunction): void {
-        UserService.get().getAll(req.query)
+        UserService.get()
+            .getAll(req.query)
             .then(users => {
-                res.status(httpStatus.OK)
-                    .send(users);
+                res.status(httpStatus.OK).send(users);
             })
             .catch(next);
     }
 
     get(req: Request, res: Response, next: NextFunction): void {
-        UserService.get().get(req.params.id, req.query)
+        UserService.get()
+            .get(req.params.id, req.query)
             .then(user => {
                 if (!user) {
-                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+                    throw new CustomError(
+                        CustomErrorCode.ERRNOTFOUND,
+                        'User not found'
+                    );
                 } else {
-                    res.status(httpStatus.OK)
-                        .send(user);
+                    res.status(httpStatus.OK).send(user);
                 }
             })
             .catch(next);
     }
 
     register(req: Request, res: Response, next: NextFunction): void {
-        UserService.get().create(req.body)
+        UserService.get()
+            .create(req.body)
             .then(user => {
-                res.status(httpStatus.CREATED)
-                    .send(user);
+                res.status(httpStatus.CREATED).send(user);
             })
             .catch(next);
     }
 
     update(req: Request, res: Response, next: NextFunction): void {
-        UserService.get().update(req.params.id, req.body)
+        UserService.get()
+            .update(req.params.id, req.body)
             .then(user => {
-                res.status(httpStatus.OK)
-                    .send(user);
+                res.status(httpStatus.OK).send(user);
             })
             .catch(next);
     }
 
     updateMe(req: Request, res: Response, next: NextFunction): void {
-        RoleService.get().update((req as any).user._id, req.body)
+        RoleService.get()
+            .update((req as any).user._id, req.body)
             .then(role => {
-                res.status(httpStatus.OK)
-                    .send(role);
+                res.status(httpStatus.OK).send(role);
             })
             .catch(next);
     }
@@ -60,106 +62,122 @@ export class UserController {
         Promise.resolve()
             .then(() => {
                 if ((req as any).user.userId === req.params.id) {
-                    throw new CustomError(CustomErrorCode.ERRBADREQUEST,
-                        'Bad request : The user cannot delete himself');
+                    throw new CustomError(
+                        CustomErrorCode.ERRBADREQUEST,
+                        'Bad request : The user cannot delete himself'
+                    );
                 }
                 return UserService.get().remove(req.params.id);
             })
             .then((result: any) => {
                 if (result.n === 0) {
-                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+                    throw new CustomError(
+                        CustomErrorCode.ERRNOTFOUND,
+                        'User not found'
+                    );
                 } else {
-                    res.status(httpStatus.NO_CONTENT)
-                        .send(result);
+                    res.status(httpStatus.NO_CONTENT).send(result);
                 }
             })
             .catch(next);
     }
 
     addRole(req: Request, res: Response, next: NextFunction): void {
-        UserService.get().addRole(req.params.id, req.body.roleId)
+        UserService.get()
+            .addRole(req.params.id, req.body.roleId)
             .then(user => {
-                res.status(httpStatus.OK)
-                    .send(user);
+                res.status(httpStatus.OK).send(user);
             })
             .catch(next);
     }
 
     removeRole(req: Request, res: Response, next: NextFunction): void {
-        UserService.get().removeRole(req.params.id, req.params.roleId)
+        UserService.get()
+            .removeRole(req.params.id, req.params.roleId)
             .then(user => {
-                res.status(httpStatus.OK)
-                    .send(user);
+                res.status(httpStatus.OK).send(user);
             })
             .catch(next);
     }
 
     login(req: Request, res: Response, next: NextFunction): void {
-        UserService.get().login(req.body)
+        UserService.get()
+            .login(req.body)
             .then(token => {
-                res.status(httpStatus.CREATED)
-                    .send(token);
+                res.status(httpStatus.CREATED).send(token);
             })
             .catch(next);
     }
 
     current(req: Request, res: Response, next: NextFunction): void {
-        UserService.get().getCurrentUser(req.headers.authorization)
+        UserService.get()
+            .getCurrentUser(req.headers.authorization)
             .then(user => {
-                res.status(httpStatus.OK)
-                    .send(user);
+                res.status(httpStatus.OK).send(user);
             })
             .catch(next);
     }
 
     isTokenValid(req: Request, res: Response, next: NextFunction): void {
-        UserService.get().isTokenValid(req.headers.authorization)
+        UserService.get()
+            .isTokenValid(req.headers.authorization)
             .then(user => {
-                res.status(httpStatus.NO_CONTENT)
-                    .send();
+                res.status(httpStatus.NO_CONTENT).send();
             })
             .catch(next);
     }
 
     isAuthorized(req: Request, res: Response, next: NextFunction): void {
-        UserService.get().isAuthorized((req as any).user, req.body)
+        UserService.get()
+            .isAuthorized((req as any).user, req.body)
             .then(result => {
                 if (!result) {
-                    throw new CustomError(CustomErrorCode.ERRFORBIDDEN, 'Access forbidden');
+                    throw new CustomError(
+                        CustomErrorCode.ERRFORBIDDEN,
+                        'Access forbidden'
+                    );
                 }
-                res.status(httpStatus.NO_CONTENT)
-                    .send(result);
+                res.status(httpStatus.NO_CONTENT).send(result);
             })
             .catch(next);
     }
 
-    registerMicroService(req: Request, res: Response, next: NextFunction): void {
-        UserService.get().createBotUser(req.body.uuid)
+    registerMicroService(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): void {
+        UserService.get()
+            .createBotUser(req.body.uuid)
             .then(token => {
-                res.status(httpStatus.CREATED)
-                    .send(token);
+                res.status(httpStatus.CREATED).send(token);
             })
             .catch(next);
     }
 
     renewToken(req: Request, res: Response, next: NextFunction): void {
-        UserService.get().getBotToken(req.body.token)
+        UserService.get()
+            .getBotToken(req.body.token)
             .then(token => {
-                res.status(httpStatus.CREATED)
-                    .send(token);
+                res.status(httpStatus.CREATED).send(token);
             })
             .catch(next);
     }
 
     resetPassword(req: Request, res: Response, next: NextFunction): void {
-        if(!isEmail(req.body.email)){
-            next(new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad email format'));
+        if (!isEmail(req.body.email)) {
+            next(
+                new CustomError(
+                    CustomErrorCode.ERRBADREQUEST,
+                    'Bad email format'
+                )
+            );
             return;
         }
-        UserService.get().resetPassword(req.body.email)
+        UserService.get()
+            .resetPassword(req.body.email)
             .then(() => {
-                res.status(httpStatus.NO_CONTENT)
-                    .send();
+                res.status(httpStatus.NO_CONTENT).send();
             })
             .catch(next);
     }

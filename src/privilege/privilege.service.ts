@@ -48,7 +48,10 @@ export class PrivilegeService implements Service {
     async update(id: ObjectId, privilegeData: any) {
         const privilege = await PrivilegeModel.findById(id);
         if (!privilege) {
-            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
+            throw new CustomError(
+                CustomErrorCode.ERRNOTFOUND,
+                'Privilege not found'
+            );
         }
 
         privilege.set(privilegeData);
@@ -60,7 +63,11 @@ export class PrivilegeService implements Service {
         return await PrivilegeModel.deleteOne({ _id: id });
     }
 
-    async addRoutes(resource: string, action: string, routes: IRouteEmbedded[]) {
+    async addRoutes(
+        resource: string,
+        action: string,
+        routes: IRouteEmbedded[]
+    ) {
         let privilege = await PrivilegeModel.findOne({ resource });
         if (!privilege) {
             // if the resource doesn't exist create it
@@ -86,20 +93,28 @@ export class PrivilegeService implements Service {
         return await privilege.save();
     }
 
-
     async isAuthorized(privilege: any, route: IRouteEmbedded) {
-        const privilegeFromDb = await PrivilegeModel.findOne({ resource: privilege.resource });
+        const privilegeFromDb = await PrivilegeModel.findOne({
+            resource: privilege.resource
+        });
         if (!privilegeFromDb) {
-            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
+            throw new CustomError(
+                CustomErrorCode.ERRNOTFOUND,
+                'Privilege not found'
+            );
         }
 
         for (const action in privilegeFromDb.actionsAvailable) {
-            if (privilege.actions.indexOf(action) === -1) { // you do not have this action available
+            if (privilege.actions.indexOf(action) === -1) {
+                // you do not have this action available
                 continue;
             }
             for (const dbRoute of privilegeFromDb.actionsAvailable[action]) {
                 route.url = this.removeQueryParams(route.url);
-                if (dbRoute.regexp.test(route.url) && dbRoute.method.toLowerCase() === route.method.toLowerCase()) {
+                if (
+                    dbRoute.regexp.test(route.url) &&
+                    dbRoute.method.toLowerCase() === route.method.toLowerCase()
+                ) {
                     return true;
                 }
             }
@@ -107,11 +122,10 @@ export class PrivilegeService implements Service {
         return false;
     }
 
-    private removeQueryParams(url: string){
-        if(url.indexOf('?') > 0) {
+    private removeQueryParams(url: string) {
+        if (url.indexOf('?') > 0) {
             url = url.substr(0, url.indexOf('?'));
         }
         return url;
     }
-
 }

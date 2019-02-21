@@ -9,7 +9,7 @@ export interface IRouteEmbedded {
 export interface IPrivilege extends Document {
     resource: string;
     actionsAvailable: {
-        [action: string]: IRouteEmbedded[]
+        [action: string]: IRouteEmbedded[];
     };
 }
 

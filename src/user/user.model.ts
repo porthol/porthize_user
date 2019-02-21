@@ -4,7 +4,6 @@ import { isEmail } from 'validator';
 import { IUser } from './user.document';
 import ObjectId = mongoose.Schema.Types.ObjectId;
 
-
 export const UserSchema = new Schema({
     username: {
         type: String,

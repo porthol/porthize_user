@@ -11,7 +11,6 @@ import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils
 
 configureLogger('mainApp', defaultWinstonLoggerOptions);
 
-
 export class App {
     private readonly _uuid: string;
 
@@ -30,7 +29,10 @@ export class App {
         }
 
         this._app.set('port', params.port || process.env.PORT || 3000);
-        this._app.set('env', params.env || process.env.NODE_ENV || 'development');
+        this._app.set(
+            'env',
+            params.env || process.env.NODE_ENV || 'development'
+        );
         this._uuid = uuid();
     }
 
@@ -83,7 +85,9 @@ export class App {
     }
 
     async registerAppRouters() {
-        const appRouters: express.Router[] = configureRouter(this.configuration);
+        const appRouters: express.Router[] = configureRouter(
+            this.configuration
+        );
         // Mount public router to /
         this.app.use('/', appRouters[0]);
 
@@ -117,12 +121,16 @@ export class App {
             },
             {
                 uuid: this.uuid
-            });
+            }
+        );
 
         this._token = response.body.token;
         this.renewTimeOut = response.body.renewTimeOut;
         setTimeout(this.renewToken.bind(this), this.renewTimeOut);
-        getLogger('mainApp').log('info', 'App registered on authorization service');
+        getLogger('mainApp').log(
+            'info',
+            'App registered on authorization service'
+        );
     }
 
     async renewToken() {
@@ -130,25 +138,38 @@ export class App {
             const response = await communicationHelper.post(
                 this.configuration.authorizationService.renewTokenRoute,
                 {
-                    "internal-request": this.uuid
+                    'internal-request': this.uuid
                 },
                 {
-                    token: "Bearer " + this.token
-                }, null, true);
+                    token: 'Bearer ' + this.token
+                },
+                null,
+                true
+            );
 
             this._token = response.body.token;
             this.renewTimeOut = response.body.renewTimeOut;
             setTimeout(this.renewToken.bind(this), this.renewTimeOut);
         } catch (err) {
-
-            getLogger("mainApp").log("error",
-                "Can not renew the " + this.appName + " token on authorization service");
-            getLogger("mainApp").log("error",
-                "Retry in " + (this._configuration.registerRetryTime / 1000) + " sec(s)");
-            getLogger("mainApp").log("error", err.message);
+            getLogger('mainApp').log(
+                'error',
+                'Can not renew the ' +
+                this.appName +
+                ' token on authorization service'
+            );
+            getLogger('mainApp').log(
+                'error',
+                'Retry in ' +
+                this._configuration.registerRetryTime / 1000 +
+                ' sec(s)'
+            );
+            getLogger('mainApp').log('error', err.message);
 
             // if we can't register the service we retry in X secs
-            setTimeout(this.renewToken.bind(this), this._configuration.registerRetryTime);
+            setTimeout(
+                this.renewToken.bind(this),
+                this._configuration.registerRetryTime
+            );
         }
     }
 }

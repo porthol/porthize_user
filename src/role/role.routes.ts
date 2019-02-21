@@ -259,13 +259,11 @@ routerManager
         action: 'updatePrivilege'
     });
 
-routerManager
-    .route('/roles/importPrivileges')
-    .post({
-        handlers: [
-            internalDenyExternalRequestMiddleware,
-            roleController.importPrivilege
-        ]
-    });
+routerManager.route('/roles/importPrivileges').post({
+    handlers: [
+        internalDenyExternalRequestMiddleware,
+        roleController.importPrivilege
+    ]
+});
 
 export default router;

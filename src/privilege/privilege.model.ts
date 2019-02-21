@@ -3,7 +3,6 @@ import { model, Schema } from 'mongoose';
 import { IPrivilege } from './privilege.document';
 import Mixed = mongoose.Schema.Types.Mixed;
 
-
 export const PrivilegeSchema = new Schema({
     resource: {
         type: String,
@@ -15,4 +14,8 @@ export const PrivilegeSchema = new Schema({
     }
 });
 
-export const PrivilegeModel = model<IPrivilege>('privilege', PrivilegeSchema, 'privileges');
+export const PrivilegeModel = model<IPrivilege>(
+    'privilege',
+    PrivilegeSchema,
+    'privileges'
+);

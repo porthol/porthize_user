@@ -97,9 +97,7 @@ routerManager
      *     HTTP/1.1 204 No Content
      */
     .get({
-        handlers: [
-            userController.isTokenValid
-        ]
+        handlers: [userController.isTokenValid]
     });
 
 routerManager
@@ -168,10 +166,7 @@ routerManager
      *     }
      */
     .get({
-        handlers: [
-            internalAuthenticationMiddleware,
-            userController.current
-        ]
+        handlers: [internalAuthenticationMiddleware, userController.current]
     })
     /**
      * @api {put} /users/:id Update user
@@ -391,41 +386,36 @@ routerManager
         action: 'updateRole'
     });
 
-    // todo add api doc
+// todo add api doc
 
-routerManager
-    .route('/users/registerMicroService')
-    .post({
-        handlers: [ // todo we can not protect him if we use uuid to verify
-            // denyExternalRequestMiddleware,
-            validator.validate({
-                body: UserMicroServiceSchema
-            }),
-            userController.registerMicroService
-        ]
-    });
+routerManager.route('/users/registerMicroService').post({
+    handlers: [
+        // todo we can not protect him if we use uuid to verify
+        // denyExternalRequestMiddleware,
+        validator.validate({
+            body: UserMicroServiceSchema
+        }),
+        userController.registerMicroService
+    ]
+});
 
-routerManager
-    .route('/users/renewBotToken')
-    .post({
-        handlers: [
-            internalDenyExternalRequestMiddleware,
-            validator.validate({
-                body: UserRenewBotTokenSchema
-            }),
-            userController.renewToken
-        ]
-    });
+routerManager.route('/users/renewBotToken').post({
+    handlers: [
+        internalDenyExternalRequestMiddleware,
+        validator.validate({
+            body: UserRenewBotTokenSchema
+        }),
+        userController.renewToken
+    ]
+});
 
-routerManager
-    .route('/users/password/reset')
-    .post({
-        handlers: [
-            validator.validate({
-                body:UserPasswordResetSchema
-            }),
-            userController.resetPassword
-        ]
-    });
+routerManager.route('/users/password/reset').post({
+    handlers: [
+        validator.validate({
+            body: UserPasswordResetSchema
+        }),
+        userController.resetPassword
+    ]
+});
 
 export default router;
