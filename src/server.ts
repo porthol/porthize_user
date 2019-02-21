@@ -10,12 +10,15 @@ import { configureServices } from './configure';
 import { initData, initPrivileges } from './utils/init-data.helper';
 import { CustomError, CustomErrorCode } from './utils/custom-error';
 import { exportRoutes } from './utils/router.manager';
+import { AmqpManager } from "./utils/amqp.manager";
 
 const appName = getPackageName();
 
 const config: any = getConfiguration();
 
 export const communicationHelper = new CommunicationHelper(config[appName].traefik);
+
+export const amqpManager = new AmqpManager(config[appName].rabbitmq);
 
 export const app: App = new App({
     appName,

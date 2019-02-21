@@ -1,15 +1,15 @@
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import * as helmet from 'helmet';
-import * as cors from 'cors';
-import { configureRouter } from './configure';
-import { addStartTime, expressMetricsMiddleware } from './utils/express-metrics.middleware';
-import { handleErrorMiddleware } from './utils/handle-error.middleware';
-import * as uuid from 'uuid/v4';
-import { communicationHelper } from './server';
-import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils/logger';
+import * as express from "express";
+import * as bodyParser from "body-parser";
+import * as helmet from "helmet";
+import * as cors from "cors";
+import { configureRouter } from "./configure";
+import { addStartTime, expressMetricsMiddleware } from "./utils/express-metrics.middleware";
+import { handleErrorMiddleware } from "./utils/handle-error.middleware";
+import * as uuid from "uuid/v4";
+import { communicationHelper } from "./server";
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from "./utils/logger";
 
-configureLogger('mainApp', defaultWinstonLoggerOptions);
+configureLogger("mainApp", defaultWinstonLoggerOptions);
 
 
 export class App {
@@ -29,8 +29,8 @@ export class App {
             }
         }
 
-        this._app.set('port', params.port || process.env.PORT || 3000);
-        this._app.set('env', params.env || process.env.NODE_ENV || 'development');
+        this._app.set("port", params.port || process.env.PORT || 3000);
+        this._app.set("env", params.env || process.env.NODE_ENV || "development");
         this._uuid = uuid();
     }
 
@@ -85,7 +85,7 @@ export class App {
     async registerAppRouters() {
         const appRouters: express.Router[] = configureRouter(this.configuration);
         // Mount public router to /
-        this.app.use('/', appRouters[0]);
+        this.app.use("/", appRouters[0]);
 
         if (appRouters[1]) {
             // Mount private router to /_appName
@@ -111,10 +111,9 @@ export class App {
 
     async registerApp() {
         const response = await communicationHelper.post(
-            this.configuration.authorizationService.name,
             this.configuration.authorizationService.registerAppRoute,
             {
-                'internal-request': this.uuid
+                "internal-request": this.uuid
             },
             {
                 uuid: this.uuid
@@ -123,13 +122,12 @@ export class App {
         this._token = response.body.token;
         this.renewTimeOut = response.body.renewTimeOut;
         setTimeout(this.renewToken.bind(this), this.renewTimeOut);
-        getLogger('mainApp').log('info', 'App registered on authorization service');
+        getLogger("mainApp").log("info", "App registered on authorization service");
     }
 
     async renewToken() {
         try {
             const response = await communicationHelper.post(
-                this.configuration.authorizationService.name,
                 this.configuration.authorizationService.renewTokenRoute,
                 {
                     "internal-request": this.uuid

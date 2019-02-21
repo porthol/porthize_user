@@ -13,7 +13,6 @@ const configAuthService: IConfigAuthorizationService = config[appName].authoriza
 
 export function authenticationMiddleware(req: Request, res: Response, next: NextFunction) {
     communicationHelper.get(
-        configAuthService.name,
         configAuthService.authenticationRoute,
         {
             authorization: req.headers.authorization

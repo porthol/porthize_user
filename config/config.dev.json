@@ -9,8 +9,23 @@
     "databaseName": "examples",
     "traefik": {
       "gatewayAddress": "gateway",
-      "gatewayPort": 80,
-      "nameRules": "{serviceName}.service"
+      "gatewayPort": 80
+    },
+    "rabbitmq": {
+      "url": "amqp",
+      "port": 5672,
+      "user": "guest",
+      "password": "guest",
+      "options": {
+        "queueName": "",
+        "exchangeType": "fanout",
+        "exchangeName": "workspace-init",
+        "enableAMQPLogger": false,
+        "autoDelete": true,
+        "messageTTL": 60000,
+        "noAck": true,
+        "reconnectTime": 10000
+      }
     }
   }
 }

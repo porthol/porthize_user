@@ -20,7 +20,6 @@ export function denyExternalRequestMiddleware(req: Request, res: Response, next:
         const uuid = req.headers['internal-request'].toString();
 
         communicationHelper.get(
-            configAuthService.name,
             configAuthService.internalRequestRoute.replace('{uuid}', uuid),
             {
                 'internal-request': app.uuid

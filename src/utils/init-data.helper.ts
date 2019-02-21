@@ -69,7 +69,6 @@ export async function initPrivileges(config: any) {
         const privilegesRolesData = require(filePath);
 
         await communicationHelper.post(
-            config.name,
             config.rolePrivilegeRoute,
             {
                 'internal-request': app.uuid

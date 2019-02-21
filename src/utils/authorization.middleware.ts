@@ -15,7 +15,6 @@ export function authorizationMiddleware(req: Request, res: Response, next: NextF
         next(); // todo for moment we accept that internal request has all ACL, we should not
     }
     communicationHelper.post(
-        configAuthService.name,
         configAuthService.authorizationRoute,
         {
             authorization: req.headers.authorization
