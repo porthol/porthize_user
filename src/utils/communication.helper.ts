@@ -2,6 +2,9 @@ import * as request from 'request-promise';
 import { RequestPromiseOptions } from 'request-promise';
 import { UriOptions } from 'request';
 import { app } from '../server';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from "./logger";
+
+configureLogger('communicationHelper', defaultWinstonLoggerOptions);
 
 interface Headers {
     [key: string]: string;
@@ -53,6 +56,8 @@ export class CommunicationHelper {
             qs,
             body
         };
+
+        getLogger('communicationHelper').log('info', 'Sending request : ' + JSON.stringify(options));
 
         return options;
     }
