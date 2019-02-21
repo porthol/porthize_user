@@ -132,22 +132,22 @@ export class App {
                 this.configuration.authorizationService.name,
                 this.configuration.authorizationService.renewTokenRoute,
                 {
-                    'internal-request': this.uuid
+                    "internal-request": this.uuid
                 },
                 {
-                    token: 'Bearer ' + this.token
-                });
+                    token: "Bearer " + this.token
+                }, null, true);
 
             this._token = response.body.token;
             this.renewTimeOut = response.body.renewTimeOut;
             setTimeout(this.renewToken.bind(this), this.renewTimeOut);
         } catch (err) {
 
-            getLogger('mainApp').log('error',
-                'Can not renew the ' + this.appName + ' token on authorization service');
-            getLogger('mainApp').log('error',
-                'Retry in ' + (this._configuration.registerRetryTime / 1000) + ' sec(s)');
-            getLogger('mainApp').log('error', err.message);
+            getLogger("mainApp").log("error",
+                "Can not renew the " + this.appName + " token on authorization service");
+            getLogger("mainApp").log("error",
+                "Retry in " + (this._configuration.registerRetryTime / 1000) + " sec(s)");
+            getLogger("mainApp").log("error", err.message);
 
             // if we can't register the service we retry in X secs
             setTimeout(this.renewToken.bind(this), this._configuration.registerRetryTime);

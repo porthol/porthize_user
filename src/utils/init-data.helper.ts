@@ -74,7 +74,9 @@ export async function initPrivileges(config: any) {
             {
                 'internal-request': app.uuid
             },
-            privilegesRolesData
+            privilegesRolesData,
+            null,
+            true
         );
 
         getLogger('initData').log('info', 'info privileges exported');
