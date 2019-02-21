@@ -1,10 +1,10 @@
-import * as request from 'request-promise';
-import { RequestPromiseOptions } from 'request-promise';
-import { UriOptions } from 'request';
-import { app } from '../server';
+import * as request from "request-promise";
+import { RequestPromiseOptions } from "request-promise";
+import { UriOptions } from "request";
+import { app } from "../server";
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from "./logger";
 
-configureLogger('communicationHelper', defaultWinstonLoggerOptions);
+configureLogger("communicationHelper", defaultWinstonLoggerOptions);
 
 interface Headers {
     [key: string]: string;
@@ -23,29 +23,29 @@ export class CommunicationHelper {
     ) {
     }
 
-    async get(serviceName: string, path: string, headers?: Headers, query?: any) {
-        return await request.get(this.generateOptions(serviceName, path, headers, query));
+    async get(serviceName: string, path: string, headers?: Headers, query?: any, addAppToken = false) {
+        return await request.get(this.generateOptions(serviceName, path, headers, query, null, addAppToken));
     }
 
-    async post(serviceName: string, path: string, headers?: Headers, body?: any, query?: any) {
-        return await request.post(this.generateOptions(serviceName, path, headers, query, body));
+    async post(serviceName: string, path: string, headers?: Headers, body?: any, query?: any, addAppToken = false) {
+        return await request.post(this.generateOptions(serviceName, path, headers, query, body, addAppToken));
     }
 
-    async put(serviceName: string, path: string, headers?: Headers, body?: any, query?: any) {
-        return await request.put(this.generateOptions(serviceName, path, headers, query, body));
+    async put(serviceName: string, path: string, headers?: Headers, body?: any, query?: any, addAppToken = false) {
+        return await request.put(this.generateOptions(serviceName, path, headers, query, body, addAppToken));
     }
 
-    async delete(serviceName: string, path: string, headers?: Headers, query?: any) {
-        return await request.delete(this.generateOptions(serviceName, path, headers, query));
+    async delete(serviceName: string, path: string, headers?: Headers, query?: any, addAppToken = false) {
+        return await request.delete(this.generateOptions(serviceName, path, headers, query, null, addAppToken));
     }
 
-    private generateOptions(serviceName: string, path: string, headers?: Headers, qs?: any, body?: any): UriOptions & RequestPromiseOptions {
+    private generateOptions(serviceName: string, path: string, headers?: Headers, qs?: any, body?: any, addAppToken = false): UriOptions & RequestPromiseOptions {
         const uri = this.getBaseUrl() + path;
 
-        (headers || (headers = {})).Host = this.config.nameRules.replace('{serviceName}', serviceName);
+        (headers || (headers = {})).Host = this.config.nameRules.replace("{serviceName}", serviceName);
 
-        if (!headers.authorization && app.token) {
-            headers.authorization = 'Bearer ' + app.token;
+        if (!headers.authorization && app.token && addAppToken) {
+            headers.authorization = "Bearer " + app.token;
         }
 
         const options: UriOptions & RequestPromiseOptions = {
@@ -57,7 +57,7 @@ export class CommunicationHelper {
             body
         };
 
-        getLogger('communicationHelper').log('info', 'Sending request : ' + JSON.stringify(options));
+        getLogger("communicationHelper").log("info", "Sending request : " + JSON.stringify(options));
 
         return options;
     }
@@ -65,9 +65,9 @@ export class CommunicationHelper {
     private getBaseUrl() {
         let uri = `http://${this.config.gatewayAddress}`;
         if (this.config.gatewayPort !== 80) {
-            uri += ':' + this.config.gatewayPort;
+            uri += ":" + this.config.gatewayPort;
         }
-        return uri + '/api/';
+        return uri + "/api/";
     }
 }
 
