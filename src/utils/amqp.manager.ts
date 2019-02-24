@@ -148,8 +148,11 @@ export class AmqpManager {
             const content = JSON.parse(msg.content.toString());
             const ws = new Workspace(content.workspace.key); // check error
 
-            if(Workspace.getWorkspaceLocally(content.workspace.key)){
-                throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Workspace already initialized');
+            if (Workspace.getWorkspaceLocally(content.workspace.key)) {
+                throw new CustomError(
+                    CustomErrorCode.ERRBADREQUEST,
+                    'Workspace already initialized'
+                );
             }
             ws.init()
                 .then(() => {
