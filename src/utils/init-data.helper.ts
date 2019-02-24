@@ -7,8 +7,8 @@ import {
     getLogger
 } from './logger';
 import * as Ajv from 'ajv';
-import { serviceManager } from './service.manager';
 import { app, communicationHelper } from '../server';
+import { serviceManager } from './service.manager';
 
 configureLogger('initData', defaultWinstonLoggerOptions);
 
@@ -30,7 +30,7 @@ const IDataToImport = {
     }
 };
 
-export async function initData() {
+export async function initData(ws: string) {
     try {
         const folderPath = join(path, 'config/data/');
         if (fs.existsSync(folderPath)) {
@@ -53,9 +53,9 @@ export async function initData() {
                     getLogger('initData').log('warn', ajv.errorsText());
                     return;
                 }
-                const service = serviceManager.getService(importFile.model);
+                const service = serviceManager.getService(ws, importFile.model);
 
-                const count = await service.getModel().countDocuments({});
+                const count = await service.model().countDocuments({});
                 if (!count || count <= 0) {
                     for (const data of importFile.data) {
                         await service.create(data);
@@ -79,15 +79,17 @@ export async function initData() {
     }
 }
 
-export async function initPrivileges(config: any) {
+// add ws
+export async function initPrivileges(ws: string, rolePrivilegeRoute: string) {
     try {
         const filePath = join(path, 'config/privileges-roles.json');
         const privilegesRolesData = require(filePath);
 
         await communicationHelper.post(
-            config.rolePrivilegeRoute,
+            rolePrivilegeRoute,
             {
-                'internal-request': app.uuid
+                'internal-request': app.uuid,
+                workspace: ws
             },
             privilegesRolesData,
             null,

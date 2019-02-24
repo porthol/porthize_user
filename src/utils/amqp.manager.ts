@@ -5,6 +5,8 @@ import {
     defaultWinstonLoggerOptions,
     getLogger
 } from './logger';
+import { Workspace } from './workspace';
+import { CustomError, CustomErrorCode } from './custom-error';
 
 export interface IConfigAmqp {
     url: string;
@@ -16,6 +18,7 @@ export interface IConfigAmqp {
 
 configureLogger('amqpManager', defaultWinstonLoggerOptions);
 
+// todo this is not a amqp manager que a connection system to exchange
 export class AmqpManager {
     connection: Connection;
     channel: Channel;
@@ -139,11 +142,26 @@ export class AmqpManager {
         }
     }
 
-    private async consumeMessage(msg: Message) {
+    private consumeMessage(msg: Message) {
         try {
             getLogger('amqpManager').log('info', 'New message');
-            // const notification: any = JSON.parse(msg.content.toString()); // check error
-            // console.log(notification);
+            const content = JSON.parse(msg.content.toString());
+            const ws = new Workspace(content.workspace.key); // check error
+
+            if(Workspace.getWorkspaceLocally(content.workspace.key)){
+                throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Workspace already initialized');
+            }
+            ws.init()
+                .then(() => {
+                    this.channel.ack(msg);
+                })
+                .catch(err => {
+                    getLogger('amqpManager').log(
+                        'info',
+                        'Can not initialize the workspace correctly',
+                        err
+                    );
+                });
         } catch (err) {
             getLogger('amqpManager').log('error', err.message);
         }

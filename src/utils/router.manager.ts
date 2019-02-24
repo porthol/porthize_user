@@ -83,18 +83,7 @@ export class RouterManager {
 
 export const routes: IRoute[] = [];
 
-export interface IConfigAuthorizationService {
-    name: string;
-    addRoute: string;
-    authorizationRoute: string;
-    authenticationRoute: string;
-    registerAppRoute: string;
-    renewTokenRoute: string;
-    rolePrivilegeRoute: string;
-    internalRequestRoute: string;
-}
-
-export async function exportRoutes(config: IConfigAuthorizationService) {
+export async function exportRoutes(ws: string, config: any) {
     getLogger('routerManager').log(
         'info',
         'Exporting routes to the authorization server...'
@@ -102,9 +91,13 @@ export async function exportRoutes(config: IConfigAuthorizationService) {
     for (const route of routes) {
         try {
             await communicationHelper.post(
-                config.addRoute.replace('{resource}', route.resource),
+                config.authorizationService.addRoute.replace(
+                    '{resource}',
+                    route.resource
+                ),
                 {
-                    'internal-request': app.uuid
+                    'internal-request': app.uuid,
+                    workspace: ws
                 },
                 {
                     action: route.action,

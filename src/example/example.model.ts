@@ -1,20 +1,4 @@
-import { model, Schema } from 'mongoose';
-import { IExample } from './example.document';
-
-const PositionSchema = new Schema({
-    latitude: {
-        type: String,
-        required: true
-    },
-    longitude: {
-        type: String,
-        required: true
-    },
-    date: {
-        type: Date,
-        default: Date.now
-    }
-});
+import { Schema } from 'mongoose';
 
 export const ExampleSchema = new Schema({
     name: {
@@ -24,13 +8,5 @@ export const ExampleSchema = new Schema({
     enabled: {
         type: Boolean,
         default: true
-    },
-    positions: [PositionSchema]
-    // potentially need a listener to refer on listener service which receive data from sigfox
+    }
 });
-
-export const ExampleModel = model<IExample>(
-    'example',
-    ExampleSchema,
-    'examples'
-);

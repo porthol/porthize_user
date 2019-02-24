@@ -15,6 +15,8 @@ import {
     defaultWinstonLoggerOptions,
     getLogger
 } from './utils/logger';
+import { workspaceMiddleware } from './utils/workspace.middleware';
+import { Workspace } from './utils/workspace';
 
 configureLogger('mainApp', defaultWinstonLoggerOptions);
 
@@ -111,12 +113,15 @@ export class App {
         this.app.use(helmet());
         this.app.use(cors());
         this.app.use(expressMetricsMiddleware);
+        this.app.use(workspaceMiddleware);
     }
 
     async bootstrap(): Promise<express.Application> {
         this.applyExpressMiddlewaresRouter();
         await this.registerAppRouters();
-        this.app.use(handleErrorMiddleware); // error handler middleware should be put after router
+        this.app.use(handleErrorMiddleware); // error handler middleware have to be in last
+        await this.registerApp();
+        await this.loadWorkspace();
         return this.app;
     }
 
@@ -177,6 +182,16 @@ export class App {
                 this.renewToken.bind(this),
                 this._configuration.registerRetryTime
             );
+        }
+    }
+
+    async loadWorkspace() {
+        const workspaces = await Workspace.getWorkspaces();
+
+        for (const workspace of workspaces) {
+            const ws = new Workspace(workspace.key);
+
+            await ws.init();
         }
     }
 }

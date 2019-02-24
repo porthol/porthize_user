@@ -4,18 +4,11 @@ import {
     getLogger
 } from './utils/logger';
 import { getConfiguration } from './utils/configuration.helper';
-import * as mongoose from 'mongoose';
 import { getPackageName } from './utils/package.helper';
 import { App } from './app';
 import { createServer } from 'http';
-import { getDatabaseConnectionUrl } from './utils/connection.helper';
 import { CommunicationHelper } from './utils/communication.helper';
-import { configureServices } from './configure';
-import { initData, initPrivileges } from './utils/init-data.helper';
-import { CustomError, CustomErrorCode } from './utils/custom-error';
-import { exportRoutes } from './utils/router.manager';
 import { AmqpManager } from './utils/amqp.manager';
-
 const appName = getPackageName();
 
 const config: any = getConfiguration();
@@ -34,38 +27,6 @@ export const app: App = new App({
 const server = async (appName: string) => {
     try {
         configureLogger('default', defaultWinstonLoggerOptions);
-
-        if (config[appName] && config[appName].databases) {
-            const databaseUrl = getDatabaseConnectionUrl();
-            const mongooseOptions: any = { useNewUrlParser: true };
-            if (config[appName].databases.length > 1) {
-                mongooseOptions.replicaSet = 'rs0';
-            }
-            if (databaseUrl) {
-                // todo Check database connection
-                //  https://github.com/Automattic/mongoose/pull/6652 commit 727eda48bcecfb8f4462162863e7beb7bca18fdb
-                const mongooseObj: any = await mongoose.connect(
-                    databaseUrl,
-                    mongooseOptions
-                );
-                const databaseConnection = mongooseObj.connections[0]; // default conn
-                getLogger('default').log(
-                    'info',
-                    'Connection on database ready state is ' +
-                        databaseConnection.states[databaseConnection.readyState]
-                );
-            } else {
-                throw new CustomError(
-                    CustomErrorCode.ERRINTERNALSERVER,
-                    'The database url can not be configured, you should check config.json'
-                );
-            }
-        }
-
-        // I should have a var with the database state available every where
-        // Model initialisation
-        configureServices();
-        await initData();
 
         const expressApp = await app.bootstrap();
 
@@ -114,32 +75,6 @@ const server = async (appName: string) => {
             if (expressApp.get('env') === 'development') {
                 getLogger('default').log('info', '  Press CTRL-C to stop\n');
             }
-
-            // Place here all action to do after starting is complete
-            app.registerApp()
-                .then(() => {
-                    getLogger('default').log(
-                        'info',
-                        'App correctly registered.'
-                    );
-                    return exportRoutes(config[appName].authorizationService);
-                })
-                .then(() => {
-                    getLogger('default').log('info', 'Routes exported');
-                    return initPrivileges(config[appName].authorizationService);
-                })
-                .then(() => {
-                    getLogger('default').log('info', 'Privileges exported');
-                })
-                .catch(err => {
-                    getLogger('default').log(
-                        'error',
-                        'An error has been thrown the micro service can not be start normally'
-                    );
-                    getLogger('default').log('error', err.message || err);
-                    getLogger('default').log('error', 'Exiting with code 1...');
-                    process.exit(1);
-                });
         });
     } catch (err) {
         getLogger('default').log('error', err.message || err);

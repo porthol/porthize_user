@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { CustomError, CustomErrorCode } from './custom-error';
-import { IConfigAuthorizationService } from './router.manager';
 import { getConfiguration } from './configuration.helper';
 import { getPackageName } from './package.helper';
 import { app, communicationHelper } from '../server';
@@ -8,9 +7,6 @@ import { app, communicationHelper } from '../server';
 const appName = getPackageName();
 
 const config: any = getConfiguration();
-
-const configAuthService: IConfigAuthorizationService =
-    config[appName].authorizationService;
 
 export function denyExternalRequestMiddleware(
     req: Request,
@@ -29,9 +25,15 @@ export function denyExternalRequestMiddleware(
 
         communicationHelper
             .get(
-                configAuthService.internalRequestRoute.replace('{uuid}', uuid),
+                config[
+                    appName
+                ].authorizationService.internalRequestRoute.replace(
+                    '{uuid}',
+                    uuid
+                ),
                 {
-                    'internal-request': app.uuid
+                    'internal-request': app.uuid,
+                    workspace: config[appName].mainWorkspace
                 },
                 null,
                 true

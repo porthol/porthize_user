@@ -1,52 +1,43 @@
 import * as mongoose from 'mongoose';
-import { Model } from 'mongoose';
-import { ExampleModel } from './example.model';
-import { Service } from '../utils/service.interface';
+import { Model, Document } from 'mongoose';
+import { ExampleSchema } from './example.model';
 import ObjectId = mongoose.Types.ObjectId;
+import { Service } from '../utils/service.abstract';
 
-export class ExampleService implements Service {
-    private static instance: ExampleService;
-    private readonly name: string;
-    private readonly model = ExampleModel;
-
-    constructor() {
-        this.name = 'example';
+export class ExampleService extends Service {
+    constructor(ws: string, model: Model<Document>) {
+        super(ws, model, 'example');
     }
 
-    getName(): string {
-        return this.name;
-    }
-
-    getModel(): Model<any> {
-        return this.model;
-    }
-
-    public static get(): ExampleService {
-        if (!this.instance) {
-            this.instance = new ExampleService();
-        }
-        return this.instance;
+    public static get(ws: string): ExampleService {
+        return super.getService(
+            ws,
+            ExampleSchema,
+            'example',
+            'examples',
+            ExampleService
+        );
     }
 
     async getAll(criteria: any) {
-        return await ExampleModel.find(criteria || {});
+        return await this._model.find(criteria || {});
     }
 
     async get(id: ObjectId, criteria: any) {
         criteria._id = new ObjectId(id);
-        return await ExampleModel.findOne(criteria || {});
+        return await this._model.findOne(criteria || {});
     }
 
     async create(data: any) {
-        const example = new ExampleModel(data);
+        const example = new this._model(data);
         return await example.save();
     }
 
     async update(id: ObjectId, userData: any) {
-        return await ExampleModel.updateOne({ _id: id }, userData);
+        return await this._model.updateOne({ _id: id }, userData);
     }
 
     async delete(id: ObjectId) {
-        return await ExampleModel.deleteOne({ _id: id });
+        return await this._model.deleteOne({ _id: id });
     }
 }
