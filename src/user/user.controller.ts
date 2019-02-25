@@ -2,12 +2,11 @@ import { UserService } from './user.service';
 import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
-import { RoleService } from '../role/role.service';
 import { isEmail } from 'validator';
 
 export class UserController {
     getAll(req: Request, res: Response, next: NextFunction): void {
-        UserService.get()
+        UserService.get(req.headers.workspace.toString())
             .getAll(req.query)
             .then(users => {
                 res.status(httpStatus.OK).send(users);
@@ -16,14 +15,11 @@ export class UserController {
     }
 
     get(req: Request, res: Response, next: NextFunction): void {
-        UserService.get()
+        UserService.get(req.headers.workspace.toString())
             .get(req.params.id, req.query)
             .then(user => {
                 if (!user) {
-                    throw new CustomError(
-                        CustomErrorCode.ERRNOTFOUND,
-                        'User not found'
-                    );
+                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
                 } else {
                     res.status(httpStatus.OK).send(user);
                 }
@@ -32,7 +28,7 @@ export class UserController {
     }
 
     register(req: Request, res: Response, next: NextFunction): void {
-        UserService.get()
+        UserService.get(req.headers.workspace.toString())
             .create(req.body)
             .then(user => {
                 res.status(httpStatus.CREATED).send(user);
@@ -41,7 +37,7 @@ export class UserController {
     }
 
     update(req: Request, res: Response, next: NextFunction): void {
-        UserService.get()
+        UserService.get(req.headers.workspace.toString())
             .update(req.params.id, req.body)
             .then(user => {
                 res.status(httpStatus.OK).send(user);
@@ -50,7 +46,7 @@ export class UserController {
     }
 
     updateMe(req: Request, res: Response, next: NextFunction): void {
-        RoleService.get()
+        UserService.get(req.headers.workspace.toString())
             .update((req as any).user._id, req.body)
             .then(role => {
                 res.status(httpStatus.OK).send(role);
@@ -67,14 +63,11 @@ export class UserController {
                         'Bad request : The user cannot delete himself'
                     );
                 }
-                return UserService.get().remove(req.params.id);
+                return UserService.get(req.headers.workspace.toString()).remove(req.params.id);
             })
             .then((result: any) => {
                 if (result.n === 0) {
-                    throw new CustomError(
-                        CustomErrorCode.ERRNOTFOUND,
-                        'User not found'
-                    );
+                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
                 } else {
                     res.status(httpStatus.NO_CONTENT).send(result);
                 }
@@ -83,7 +76,7 @@ export class UserController {
     }
 
     addRole(req: Request, res: Response, next: NextFunction): void {
-        UserService.get()
+        UserService.get(req.headers.workspace.toString())
             .addRole(req.params.id, req.body.roleId)
             .then(user => {
                 res.status(httpStatus.OK).send(user);
@@ -92,7 +85,7 @@ export class UserController {
     }
 
     removeRole(req: Request, res: Response, next: NextFunction): void {
-        UserService.get()
+        UserService.get(req.headers.workspace.toString())
             .removeRole(req.params.id, req.params.roleId)
             .then(user => {
                 res.status(httpStatus.OK).send(user);
@@ -101,7 +94,7 @@ export class UserController {
     }
 
     login(req: Request, res: Response, next: NextFunction): void {
-        UserService.get()
+        UserService.get(req.headers.workspace.toString())
             .login(req.body)
             .then(token => {
                 res.status(httpStatus.CREATED).send(token);
@@ -110,7 +103,7 @@ export class UserController {
     }
 
     current(req: Request, res: Response, next: NextFunction): void {
-        UserService.get()
+        UserService.get(req.headers.workspace.toString())
             .getCurrentUser(req.headers.authorization)
             .then(user => {
                 res.status(httpStatus.OK).send(user);
@@ -119,7 +112,7 @@ export class UserController {
     }
 
     isTokenValid(req: Request, res: Response, next: NextFunction): void {
-        UserService.get()
+        UserService.get(req.headers.workspace.toString())
             .isTokenValid(req.headers.authorization)
             .then(user => {
                 res.status(httpStatus.NO_CONTENT).send();
@@ -128,26 +121,19 @@ export class UserController {
     }
 
     isAuthorized(req: Request, res: Response, next: NextFunction): void {
-        UserService.get()
+        UserService.get(req.headers.workspace.toString())
             .isAuthorized((req as any).user, req.body)
             .then(result => {
                 if (!result) {
-                    throw new CustomError(
-                        CustomErrorCode.ERRFORBIDDEN,
-                        'Access forbidden'
-                    );
+                    throw new CustomError(CustomErrorCode.ERRFORBIDDEN, 'Access forbidden');
                 }
                 res.status(httpStatus.NO_CONTENT).send(result);
             })
             .catch(next);
     }
 
-    registerMicroService(
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ): void {
-        UserService.get()
+    registerMicroService(req: Request, res: Response, next: NextFunction): void {
+        UserService.get(req.headers.workspace.toString())
             .createBotUser(req.body.uuid)
             .then(token => {
                 res.status(httpStatus.CREATED).send(token);
@@ -156,7 +142,7 @@ export class UserController {
     }
 
     renewToken(req: Request, res: Response, next: NextFunction): void {
-        UserService.get()
+        UserService.get(req.headers.workspace.toString())
             .getBotToken(req.body.token)
             .then(token => {
                 res.status(httpStatus.CREATED).send(token);
@@ -166,15 +152,10 @@ export class UserController {
 
     resetPassword(req: Request, res: Response, next: NextFunction): void {
         if (!isEmail(req.body.email)) {
-            next(
-                new CustomError(
-                    CustomErrorCode.ERRBADREQUEST,
-                    'Bad email format'
-                )
-            );
+            next(new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad email format'));
             return;
         }
-        UserService.get()
+        UserService.get(req.headers.workspace.toString())
             .resetPassword(req.body.email)
             .then(() => {
                 res.status(httpStatus.NO_CONTENT).send();

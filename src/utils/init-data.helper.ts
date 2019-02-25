@@ -3,9 +3,9 @@ import { path } from 'app-root-path';
 import * as fs from 'fs';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import * as Ajv from 'ajv';
-import { serviceManager } from './service.manager';
 import { app, communicationHelper } from '../server';
 import { RoleService } from '../role/role.service';
+import { serviceManager } from './service.manager';
 
 configureLogger('initData', defaultWinstonLoggerOptions);
 
@@ -27,7 +27,7 @@ const IDataToImport = {
     }
 };
 
-export async function initData() {
+export async function initData(ws: string) {
     try {
         const folderPath = join(path, 'config/data/');
         if (fs.existsSync(folderPath)) {
@@ -37,35 +37,21 @@ export async function initData() {
                 const importFile = require(folderPath + file);
                 const valid = ajv.validate(IDataToImport, importFile);
                 if (!valid) {
-                    getLogger('initData').log(
-                        'warn',
-                        'The imports file ' +
-                        file +
-                        ' is not correctly formatted'
-                    );
-                    getLogger('initData').log(
-                        'warn',
-                        'The file will not me imported'
-                    );
+                    getLogger('initData').log('warn', 'The imports file ' + file + ' is not correctly formatted');
+                    getLogger('initData').log('warn', 'The file will not me imported');
                     getLogger('initData').log('warn', ajv.errorsText());
                     return;
                 }
-                const service = serviceManager.getService(importFile.model);
+                const service = serviceManager.getService(ws, importFile.model);
 
-                const count = await service.getModel().countDocuments({});
+                const count = await service.model().countDocuments({});
                 if (!count || count <= 0) {
                     for (const data of importFile.data) {
                         await service.create(data);
                     }
-                    getLogger('initData').log(
-                        'info',
-                        'Data initialised : ' + file
-                    );
+                    getLogger('initData').log('info', 'Data initialised : ' + file);
                 } else {
-                    getLogger('initData').log(
-                        'info',
-                        'Data already here for ' + file
-                    );
+                    getLogger('initData').log('info', 'Data already here for ' + file);
                 }
             }
         } else {
@@ -76,15 +62,17 @@ export async function initData() {
     }
 }
 
-export async function initPrivileges(config: any) {
+// add ws
+export async function initPrivileges(ws: string, rolePrivilegeRoute: string) {
     try {
         const filePath = join(path, 'config/privileges-roles.json');
         const privilegesRolesData = require(filePath);
 
         await communicationHelper.post(
-            config.rolePrivilegeRoute,
+            rolePrivilegeRoute,
             {
-                'internal-request': app.uuid
+                'internal-request': app.uuid,
+                workspace: ws
             },
             privilegesRolesData,
             null,
@@ -97,13 +85,13 @@ export async function initPrivileges(config: any) {
     }
 }
 
-export async function internalInitPrivileges() {
+export async function internalInitPrivileges(ws: string) {
     getLogger('initData').log('info', 'Importing privileges from internal');
     try {
         const filePath = join(path, 'config/privileges-roles.json');
         const privilegesRolesData = require(filePath);
 
-        await RoleService.get().importPrivilege(privilegesRolesData);
+        await RoleService.get(ws).importPrivilege(privilegesRolesData);
 
         getLogger('initData').log('info', 'Privileges imported');
     } catch (err) {

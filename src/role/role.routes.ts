@@ -43,11 +43,7 @@ routerManager
      *    }]
      */
     .get({
-        handlers: [
-            internalAuthenticationMiddleware,
-            internalAuthorizationMiddleware,
-            roleController.getAll
-        ],
+        handlers: [internalAuthenticationMiddleware, internalAuthorizationMiddleware, roleController.getAll],
         resource,
         action: 'read'
     })
@@ -260,10 +256,7 @@ routerManager
     });
 
 routerManager.route('/roles/importPrivileges').post({
-    handlers: [
-        internalDenyExternalRequestMiddleware,
-        roleController.importPrivilege
-    ]
+    handlers: [internalDenyExternalRequestMiddleware, roleController.importPrivilege]
 });
 
 export default router;

@@ -11,13 +11,11 @@ export const defaultWinstonLoggerOptions: winston.LoggerOptions = {
                 return `${meta.level}: ${meta.message}`;
             }
             if (meta.body && Object.keys(meta.body).length > 0) {
-                return `${meta.level}: ${meta.statusCode} - ${meta.method} - ${
-                    meta.url
-                    } - ${meta.responseTimeInMs}ms - ${JSON.stringify(meta.body)}`;
+                return `${meta.level}: ${meta.statusCode} - ${meta.method} - ${meta.url} - ${
+                    meta.responseTimeInMs
+                    }ms - ${JSON.stringify(meta.body)}`;
             }
-            return `${meta.level}: ${meta.statusCode} - ${meta.method} - ${
-                meta.url
-                } - ${meta.responseTimeInMs}ms`;
+            return `${meta.level}: ${meta.statusCode} - ${meta.method} - ${meta.url} - ${meta.responseTimeInMs}ms`;
         })
     ),
     transports: [
@@ -49,10 +47,7 @@ export function getLogger(name: string): winston.Logger {
  * @param {string} name
  * @param {winston.LoggerOptions} loggerOptions
  */
-export function configureLogger(
-    name: string,
-    loggerOptions: winston.LoggerOptions
-): void {
+export function configureLogger(name: string, loggerOptions: winston.LoggerOptions): void {
     if (!this[$loggerContainer]) {
         this[$loggerContainer] = new winston.Container();
     }

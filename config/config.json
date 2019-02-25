@@ -1,40 +1,41 @@
 {
-    "user": {
-        "jwt": {
-            "secret": "h8IBWbX3nDwN4X3xsaIUlfGvwQet04QA0oOTnwnq",
-            "options": {
-                "expiresIn": "12h",
-                "algorithm": "HS512"
-            },
-            "botOptions": {
-                "expiresIn": "24h",
-                "algorithm": "HS512"
-            }
-        },
-        "roleBotKey": "bot",
-        "botTokenRenew" :"20h",
-        "defaultRoleKey": "user",
-        "registerRetryTime": 30000,
-        "resetTokenLength": 40,
-        "authorizationService": {
-            "name": "user",
-            "addRoute": "privileges/{resource}/routes",
-            "authorizationRoute": "users/isAuthorized",
-            "authenticationRoute": "token",
-            "registerAppRoute": "users/registerMicroService",
-            "renewTokenRoute": "users/renewBotToken",
-            "rolePrivilegeRoute": "roles/importPrivileges",
-            "internalRequestRoute": "users?username={uuid}&enabled=true"
-        },
-        "notificationService": {
-            "name": "notification",
-            "sendNotifRoute": "notifications",
-            "resetLinkTemplate": "http://127.0.0.1:3000/api/toto?token={token}&email={email}"
-        },
-        "workspaceService": {
-            "name": "workspace",
-            "existRoute": "workspaces?key={{key}}&enabled=true",
-            "getAllRoute": "workspaces?enabled=true"
-        }
+  "user": {
+    "jwt": {
+      "secret": "h8IBWbX3nDwN4X3xsaIUlfGvwQet04QA0oOTnwnq",
+      "options": {
+        "expiresIn": "12h",
+        "algorithm": "HS512"
+      },
+      "botOptions": {
+        "expiresIn": "24h",
+        "algorithm": "HS512"
+      }
+    },
+    "roleBotKey": "bot",
+    "botTokenRenew": "20h",
+    "defaultRoleKey": "user",
+    "registerRetryTime": 30000,
+    "resetTokenLength": 40,
+    "mainWorkspace": "main",
+    "authorizationService": {
+      "name": "user",
+      "addRoute": "privileges/{resource}/routes",
+      "authorizationRoute": "users/isAuthorized",
+      "authenticationRoute": "token",
+      "registerAppRoute": "users/registerMicroService",
+      "renewTokenRoute": "users/renewBotToken",
+      "rolePrivilegeRoute": "roles/importPrivileges",
+      "internalRequestRoute": "users?username={uuid}&enabled=true"
+    },
+    "notificationService": {
+      "name": "notification",
+      "sendNotifRoute": "notifications",
+      "resetLinkTemplate": "http://127.0.0.1:3000/api/toto?token={token}&email={email}"
+    },
+    "workspaceService": {
+      "name": "workspace",
+      "existRoute": "workspaces?key={{key}}&enabled=true",
+      "getAllRoute": "workspaces?enabled=true"
     }
+  }
 }

@@ -1,26 +1,39 @@
-import { CustomError, CustomErrorCode } from './custom-error';
-import { Service } from './service.interface';
+import { Service } from './service.abstract';
+import { Document } from 'mongoose';
+import { UserService } from '../user/user.service';
+import { RoleService } from '../role/role.service';
+import { PrivilegeService } from '../privilege/privilege.service';
 
-export class ServiceManager {
-    private serviceByName: { [attr: string]: Service };
+export class ServiceManager<T extends Service<Document>> {
+    private readonly serviceByName: {
+        [workspace: string]: {
+            [name: string]: T;
+        };
+    };
 
     constructor() {
         this.serviceByName = {};
     }
 
-    registerService(service: Service) {
-        this.serviceByName[service.getName()] = service;
+    registerService(workspace: string, service: T) {
+        if (!this.serviceByName[workspace]) {
+            this.initWS(workspace);
+        }
+        this.serviceByName[workspace][service.name()] = service;
     }
 
-    getService(name: string): Service {
-        const service = this.serviceByName[name];
-        if (!service) {
-            throw new CustomError(
-                CustomErrorCode.ERRNOTFOUND,
-                'Service not found'
-            );
+    getService(workspace: string, name: string): T {
+        if (!this.serviceByName[workspace]) {
         }
-        return service;
+        return this.serviceByName[workspace][name];
+    }
+
+    initWS(ws: string) {
+        // register your service here
+        this.serviceByName[ws] = {};
+        UserService.get(ws);
+        RoleService.get(ws);
+        PrivilegeService.get(ws);
     }
 }
 

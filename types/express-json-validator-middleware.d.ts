@@ -16,6 +16,7 @@ declare module 'express-json-validator-middleware' {
 
     export class Validator {
         constructor(ajvOptions: ajv.Options);
+
         validate(validateOptions: ValidationOptions): RequestHandler;
     }
 

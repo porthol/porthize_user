@@ -47,11 +47,7 @@ routerManager
      *  }]
      */
     .get({
-        handlers: [
-            internalAuthenticationMiddleware,
-            internalAuthorizationMiddleware,
-            userController.getAll
-        ],
+        handlers: [internalAuthenticationMiddleware, internalAuthorizationMiddleware, userController.getAll],
         resource,
         action: 'read'
     })
@@ -78,10 +74,7 @@ routerManager
      *     }
      */
     .post({
-        handlers: [
-            validator.validate({ body: UserCreateSchema }),
-            userController.register
-        ]
+        handlers: [validator.validate({ body: UserCreateSchema }), userController.register]
     });
 
 routerManager

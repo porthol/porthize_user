@@ -1,57 +1,39 @@
-import { PrivilegeModel } from './privilege.model';
 import * as mongoose from 'mongoose';
 import { Model } from 'mongoose';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
-import { IRouteEmbedded } from './privilege.document';
+import { IPrivilege, IRouteEmbedded } from './privilege.document';
 import * as _ from 'lodash';
-import { Service } from '../utils/service.interface';
+import { Service } from '../utils/service.abstract';
+import { PrivilegeSchema } from './privilege.model';
 import ObjectId = mongoose.Types.ObjectId;
 
-export class PrivilegeService implements Service {
-    private static instance: PrivilegeService;
-    model = PrivilegeModel;
-    private readonly name: string;
-
-    constructor() {
-        this.name = 'privilege';
+export class PrivilegeService extends Service<IPrivilege> {
+    constructor(ws: string, model: Model<IPrivilege>) {
+        super(ws, model, 'privilege');
     }
 
-    getName(): string {
-        return this.name;
-    }
-
-    getModel(): Model<any> {
-        return this.model;
-    }
-
-    public static get(): PrivilegeService {
-        if (!this.instance) {
-            this.instance = new PrivilegeService();
-        }
-        return this.instance;
+    public static get(ws: string): PrivilegeService {
+        return super.getService(ws, PrivilegeSchema, 'privilege', 'privileges', PrivilegeService);
     }
 
     async getAll(criteria: any) {
-        return await PrivilegeModel.find(criteria || {});
+        return await this._model.find(criteria || {});
     }
 
     async get(id: ObjectId, criteria = {} as any) {
         criteria._id = id;
-        return await PrivilegeModel.findOne(criteria);
+        return await this._model.findOne(criteria);
     }
 
     async create(privilegeData: any) {
-        const privilege = new PrivilegeModel(privilegeData);
+        const privilege = new this._model(privilegeData);
         return await privilege.save();
     }
 
     async update(id: ObjectId, privilegeData: any) {
-        const privilege = await PrivilegeModel.findById(id);
+        const privilege = await this._model.findById(id);
         if (!privilege) {
-            throw new CustomError(
-                CustomErrorCode.ERRNOTFOUND,
-                'Privilege not found'
-            );
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
         }
 
         privilege.set(privilegeData);
@@ -60,15 +42,11 @@ export class PrivilegeService implements Service {
     }
 
     async delete(id: ObjectId) {
-        return await PrivilegeModel.deleteOne({ _id: id });
+        return await this._model.deleteOne({ _id: id });
     }
 
-    async addRoutes(
-        resource: string,
-        action: string,
-        routes: IRouteEmbedded[]
-    ) {
-        let privilege = await PrivilegeModel.findOne({ resource });
+    async addRoutes(resource: string, action: string, routes: IRouteEmbedded[]) {
+        let privilege = await this._model.findOne({ resource });
         if (!privilege) {
             // if the resource doesn't exist create it
             privilege = await this.create({ resource });
@@ -94,14 +72,11 @@ export class PrivilegeService implements Service {
     }
 
     async isAuthorized(privilege: any, route: IRouteEmbedded) {
-        const privilegeFromDb = await PrivilegeModel.findOne({
+        const privilegeFromDb = await this._model.findOne({
             resource: privilege.resource
         });
         if (!privilegeFromDb) {
-            throw new CustomError(
-                CustomErrorCode.ERRNOTFOUND,
-                'Privilege not found'
-            );
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
         }
 
         for (const action in privilegeFromDb.actionsAvailable) {
@@ -111,10 +86,7 @@ export class PrivilegeService implements Service {
             }
             for (const dbRoute of privilegeFromDb.actionsAvailable[action]) {
                 route.url = this.removeQueryParams(route.url);
-                if (
-                    dbRoute.regexp.test(route.url) &&
-                    dbRoute.method.toLowerCase() === route.method.toLowerCase()
-                ) {
+                if (dbRoute.regexp.test(route.url) && dbRoute.method.toLowerCase() === route.method.toLowerCase()) {
                     return true;
                 }
             }

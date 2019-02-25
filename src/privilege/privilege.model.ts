@@ -1,6 +1,5 @@
 import * as mongoose from 'mongoose';
-import { model, Schema } from 'mongoose';
-import { IPrivilege } from './privilege.document';
+import { Schema } from 'mongoose';
 import Mixed = mongoose.Schema.Types.Mixed;
 
 export const PrivilegeSchema = new Schema({
@@ -13,9 +12,3 @@ export const PrivilegeSchema = new Schema({
         type: Mixed
     }
 });
-
-export const PrivilegeModel = model<IPrivilege>(
-    'privilege',
-    PrivilegeSchema,
-    'privileges'
-);

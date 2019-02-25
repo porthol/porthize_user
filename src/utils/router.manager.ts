@@ -81,28 +81,15 @@ export class RouterManager {
 
 export const routes: IRoute[] = [];
 
-export interface IConfigAuthorizationService {
-    name: string;
-    addRoute: string;
-    authorizationRoute: string;
-    authenticationRoute: string;
-    registerAppRoute: string;
-    renewTokenRoute: string;
-    rolePrivilegeRoute: string;
-    internalRequestRoute: string;
-}
-
-export async function exportRoutes(config: IConfigAuthorizationService) {
-    getLogger('routerManager').log(
-        'info',
-        'Exporting routes to the authorization server...'
-    );
+export async function exportRoutes(ws: string, config: any) {
+    getLogger('routerManager').log('info', 'Exporting routes to the authorization server...');
     for (const route of routes) {
         try {
             await communicationHelper.post(
-                config.addRoute.replace('{resource}', route.resource),
+                config.authorizationService.addRoute.replace('{resource}', route.resource),
                 {
-                    'internal-request': app.uuid
+                    'internal-request': app.uuid,
+                    workspace: ws
                 },
                 {
                     action: route.action,
@@ -122,55 +109,27 @@ export async function exportRoutes(config: IConfigAuthorizationService) {
             if (err.statusCode >= 400) {
                 getLogger('routerManager').log(
                     'warn',
-                    'Can not add route ' +
-                    route.url +
-                    ' on ' +
-                    route.method +
-                    ' to the authorization service.'
+                    'Can not add route ' + route.url + ' on ' + route.method + ' to the authorization service.'
                 );
-                getLogger('routerManager').log(
-                    'error',
-                    JSON.stringify(err.error, null, ' ')
-                );
+                getLogger('routerManager').log('error', JSON.stringify(err.error, null, ' '));
             }
         }
     }
 }
 
-export async function internalExportRoutes() {
-    getLogger('routerManager').log(
-        'info',
-        'Exporting routes to the authorization server...'
-    );
+export async function internalExportRoutes(ws: string) {
+    getLogger('routerManager').log('info', 'Internal exporting routes to the authorization server...');
     for (const route of routes) {
         try {
-            await PrivilegeService.get().addRoutes(
-                route.resource,
-                route.action,
-                [
-                    {
-                        method: route.method,
-                        url: route.url,
-                        regexp: new RegExp(route.regexp.source)
-                    }
-                ]
-            );
+            await PrivilegeService.get(ws).addRoutes(route.resource, route.action, [
+                {
+                    method: route.method,
+                    url: route.url,
+                    regexp: new RegExp(route.regexp.source)
+                }
+            ]);
         } catch (err) {
-            // Silent error we do not stop the service
-            if (err.statusCode >= 400) {
-                getLogger('routerManager').log(
-                    'warn',
-                    'Can not add route ' +
-                    route.url +
-                    ' on ' +
-                    route.method +
-                    ' to the authorization service.'
-                );
-                getLogger('routerManager').log(
-                    'error',
-                    JSON.stringify(err.error, null, ' ')
-                );
-            }
+            getLogger('routerManager').log('error', JSON.stringify(err.error, null, ' '));
         }
     }
 }

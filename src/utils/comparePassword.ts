@@ -8,9 +8,6 @@ import * as bcrypt from 'bcrypt';
  * @param {string} hash
  * @returns {Promise<boolean>} Boolean that indicates if match or not
  */
-export function comparePassword(
-    password: string,
-    hash: string
-): Promise<boolean> {
+export function comparePassword(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash);
 }

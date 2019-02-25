@@ -43,11 +43,7 @@ routerManager
      *    }]
      */
     .get({
-        handlers: [
-            internalAuthenticationMiddleware,
-            internalAuthorizationMiddleware,
-            privilegeController.getAll
-        ],
+        handlers: [internalAuthenticationMiddleware, internalAuthorizationMiddleware, privilegeController.getAll],
         resource,
         action: 'read'
     })

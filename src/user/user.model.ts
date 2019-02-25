@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { model, Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 import { isEmail } from 'validator';
 import { IUser } from './user.document';
 import ObjectId = mongoose.Schema.Types.ObjectId;
@@ -44,5 +44,3 @@ UserSchema.pre('save', function(next) {
 
     next();
 });
-
-export const UserModel = model<IUser>('user', UserSchema, 'users');

@@ -1,5 +1,4 @@
-import { model, Schema } from 'mongoose';
-import { IRole } from './role.document';
+import { Schema } from 'mongoose';
 
 export const PrivilegeSchemaEmbedded = new Schema({
     resource: {
@@ -26,5 +25,3 @@ export const RoleSchema = new Schema({
         type: [PrivilegeSchemaEmbedded]
     }
 });
-
-export const RoleModel = model<IRole>('role', RoleSchema, 'roles');

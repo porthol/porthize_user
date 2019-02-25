@@ -20,50 +20,20 @@ export class CommunicationHelper {
     constructor(private config: IConfigCommunicationHelper) {
     }
 
-    async get(
-        path: string,
-        headers?: Headers,
-        query?: any,
-        addAppToken = false
-    ) {
-        return await request.get(
-            this.generateOptions(path, headers, query, null, addAppToken)
-        );
+    async get(path: string, headers?: Headers, query?: any, addAppToken = false) {
+        return await request.get(this.generateOptions(path, headers, query, null, addAppToken));
     }
 
-    async post(
-        path: string,
-        headers?: Headers,
-        body?: any,
-        query?: any,
-        addAppToken = false
-    ) {
-        return await request.post(
-            this.generateOptions(path, headers, query, body, addAppToken)
-        );
+    async post(path: string, headers?: Headers, body?: any, query?: any, addAppToken = false) {
+        return await request.post(this.generateOptions(path, headers, query, body, addAppToken));
     }
 
-    async put(
-        path: string,
-        headers?: Headers,
-        body?: any,
-        query?: any,
-        addAppToken = false
-    ) {
-        return await request.put(
-            this.generateOptions(path, headers, query, body, addAppToken)
-        );
+    async put(path: string, headers?: Headers, body?: any, query?: any, addAppToken = false) {
+        return await request.put(this.generateOptions(path, headers, query, body, addAppToken));
     }
 
-    async delete(
-        path: string,
-        headers?: Headers,
-        query?: any,
-        addAppToken = false
-    ) {
-        return await request.delete(
-            this.generateOptions(path, headers, query, null, addAppToken)
-        );
+    async delete(path: string, headers?: Headers, query?: any, addAppToken = false) {
+        return await request.delete(this.generateOptions(path, headers, query, null, addAppToken));
     }
 
     private generateOptions(
@@ -74,6 +44,10 @@ export class CommunicationHelper {
         addAppToken = false
     ): UriOptions & RequestPromiseOptions {
         const uri = this.getBaseUrl() + path;
+
+        if (!headers) {
+            headers = {};
+        }
 
         if (!headers.authorization && app.token && addAppToken) {
             headers.authorization = 'Bearer ' + app.token;
@@ -91,10 +65,7 @@ export class CommunicationHelper {
             options.body = body;
         }
 
-        getLogger('communicationHelper').log(
-            'info',
-            'Sending request : ' + JSON.stringify(options)
-        );
+        getLogger('communicationHelper').log('info', 'Sending request : ' + JSON.stringify(options));
 
         return options;
     }

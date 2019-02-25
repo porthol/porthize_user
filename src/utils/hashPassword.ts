@@ -8,9 +8,6 @@ import * as bcrypt from 'bcrypt';
  * @param {number} [saltRounds=10]
  * @returns {Promise<string>} Password hashed
  */
-export async function hashPassword(
-    password: string,
-    saltRounds: number = 10
-): Promise<string> {
+export async function hashPassword(password: string, saltRounds: number = 10): Promise<string> {
     return bcrypt.hash(password, saltRounds);
 }
