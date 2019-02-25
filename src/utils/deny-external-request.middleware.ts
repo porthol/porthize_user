@@ -18,7 +18,7 @@ export function denyExternalRequestMiddleware(req: Request, res: Response, next:
 
         communicationHelper
             .get(
-                config.authorizationService.internalRequestRoute.replace('{uuid}', uuid),
+                config[appName].authorizationService.internalRequestRoute.replace('{uuid}', uuid),
                 {
                     'internal-request': app.uuid,
                     workspace: config[appName].mainWorkspace
