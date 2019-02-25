@@ -11,13 +11,7 @@ export class ExampleService extends Service<IExample> {
     }
 
     public static get(ws: string): ExampleService {
-        return super.getService(
-            ws,
-            ExampleSchema,
-            'example',
-            'examples',
-            ExampleService
-        );
+        return super.getService(ws, ExampleSchema, 'example', 'examples', ExampleService);
     }
 
     async getAll(criteria: any) {

@@ -7,11 +7,7 @@ const appName = getPackageName();
 
 const config: any = getConfiguration();
 
-export function authorizationMiddleware(
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
+export function authorizationMiddleware(req: Request, res: Response, next: NextFunction) {
     communicationHelper
         .post(
             config[appName].authorizationService.authorizationRoute,

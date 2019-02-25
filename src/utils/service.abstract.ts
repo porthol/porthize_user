@@ -37,9 +37,7 @@ export abstract class Service<T extends Document> implements IService {
     ): T {
         let service = serviceManager.getService(ws, name) as T;
         if (!service) {
-            const model = MongoConnection.connections[ws]
-                .getConnection()
-                .model(name, schema, collection);
+            const model = MongoConnection.connections[ws].getConnection().model(name, schema, collection);
             service = new c(ws, model, name);
             serviceManager.registerService(ws, service);
         }

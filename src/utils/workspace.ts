@@ -1,8 +1,4 @@
-import {
-    configureLogger,
-    defaultWinstonLoggerOptions,
-    getLogger
-} from './logger';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import { getPackageName } from './package.helper';
 import { getConfiguration } from './configuration.helper';
 import { app, communicationHelper } from '../server';
@@ -24,11 +20,7 @@ export class Workspace {
     constructor(private key: string) {}
 
     async init() {
-        getLogger(loggerName).log(
-            'info',
-            'Initializing %s workspace...',
-            this.key
-        );
+        getLogger(loggerName).log('info', 'Initializing %s workspace...', this.key);
         getLogger(loggerName).log('info', 'Mongodb connection...');
         const connection = new MongoConnection(this.key);
         await connection.init();
@@ -43,10 +35,7 @@ export class Workspace {
         await exportRoutes(this.key, config);
 
         getLogger(loggerName).log('info', 'Exporting default privileges');
-        await initPrivileges(
-            this.key,
-            config.authorizationService.rolePrivilegeRoute
-        );
+        await initPrivileges(this.key, config.authorizationService.rolePrivilegeRoute);
 
         Workspace.instances.push(this);
         getLogger(loggerName).log('info', 'Workspace %s initialized', this.key);

@@ -1,8 +1,4 @@
-import {
-    configureLogger,
-    defaultWinstonLoggerOptions,
-    getLogger
-} from './utils/logger';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils/logger';
 import { getConfiguration } from './utils/configuration.helper';
 import { getPackageName } from './utils/package.helper';
 import { App } from './app';
@@ -13,9 +9,7 @@ const appName = getPackageName();
 
 const config: any = getConfiguration();
 
-export const communicationHelper = new CommunicationHelper(
-    config[appName].traefik
-);
+export const communicationHelper = new CommunicationHelper(config[appName].traefik);
 
 export const amqpManager = new AmqpManager(config[appName].rabbitmq);
 
@@ -40,21 +34,14 @@ const server = async (appName: string) => {
             if (error.syscall !== 'listen') {
                 throw error;
             }
-            const bind =
-                typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+            const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
             switch (error.code) {
                 case 'EACCES':
-                    getLogger('default').log(
-                        'error',
-                        `${bind} requires elevated privileges`
-                    );
+                    getLogger('default').log('error', `${bind} requires elevated privileges`);
                     process.exit(1);
                     break;
                 case 'EADDRINUSE':
-                    getLogger('default').log(
-                        'error',
-                        `${bind} is already in use`
-                    );
+                    getLogger('default').log('error', `${bind} is already in use`);
                     process.exit(1);
                     break;
                 default:
@@ -64,14 +51,8 @@ const server = async (appName: string) => {
 
         server.on('listening', () => {
             const addr = server.address();
-            const bind =
-                typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-            getLogger('default').log(
-                'info',
-                '  Listening on %s in %s mode',
-                bind,
-                expressApp.get('env')
-            );
+            const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
+            getLogger('default').log('info', '  Listening on %s in %s mode', bind, expressApp.get('env'));
             if (expressApp.get('env') === 'development') {
                 getLogger('default').log('info', '  Press CTRL-C to stop\n');
             }

@@ -27,17 +27,12 @@ export class MongoConnection {
                 mongooseOptions.replicaSet = 'rs0';
             }
             if (databaseUrl) {
-                this.connection = await mongoose.createConnection(
-                    databaseUrl,
-                    mongooseOptions
-                );
+                this.connection = await mongoose.createConnection(databaseUrl, mongooseOptions);
                 MongoConnection.connections[this.ws] = this;
                 getLogger('default').log(
                     'info',
                     'Connection on %s database ready state is ' +
-                        (this.connection as any).states[
-                            this.connection.readyState
-                        ],
+                        (this.connection as any).states[this.connection.readyState],
                     this.ws
                 );
             } else {

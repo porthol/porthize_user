@@ -1,10 +1,6 @@
 import { RequestHandler, Router } from 'express-serve-static-core';
 import { app, communicationHelper } from '../server';
-import {
-    configureLogger,
-    defaultWinstonLoggerOptions,
-    getLogger
-} from './logger';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import * as pathToRegexp from 'path-to-regexp';
 
 configureLogger('routerManager', defaultWinstonLoggerOptions);
@@ -84,17 +80,11 @@ export class RouterManager {
 export const routes: IRoute[] = [];
 
 export async function exportRoutes(ws: string, config: any) {
-    getLogger('routerManager').log(
-        'info',
-        'Exporting routes to the authorization server...'
-    );
+    getLogger('routerManager').log('info', 'Exporting routes to the authorization server...');
     for (const route of routes) {
         try {
             await communicationHelper.post(
-                config.authorizationService.addRoute.replace(
-                    '{resource}',
-                    route.resource
-                ),
+                config.authorizationService.addRoute.replace('{resource}', route.resource),
                 {
                     'internal-request': app.uuid,
                     workspace: ws
@@ -117,16 +107,9 @@ export async function exportRoutes(ws: string, config: any) {
             if (err.statusCode >= 400) {
                 getLogger('routerManager').log(
                     'warn',
-                    'Can not add route ' +
-                        route.url +
-                        ' on ' +
-                        route.method +
-                        ' to the authorization service.'
+                    'Can not add route ' + route.url + ' on ' + route.method + ' to the authorization service.'
                 );
-                getLogger('routerManager').log(
-                    'error',
-                    JSON.stringify(err.error, null, ' ')
-                );
+                getLogger('routerManager').log('error', JSON.stringify(err.error, null, ' '));
             }
         }
     }
