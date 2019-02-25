@@ -174,7 +174,7 @@ export class UserService extends Service<IUser> {
             user.lastLogIn = new Date();
             await user.save();
 
-            const token = await jwt.sign(payload, config.jwt.secret, config.jwt.options);
+            const token = await jwt.sign(payload, this.getJwtSecret(), config.jwt.options);
             getLogger('UserService').log('info', 'User %s connected at %d', user._id.toString(), iat);
             return { token, iat };
         }
@@ -218,7 +218,7 @@ export class UserService extends Service<IUser> {
         }
         const token = getCleanToken(tokenFromHeader);
 
-        const result = await jwt.verify(token, config.jwt.secret, config.jwt.options);
+        const result = await jwt.verify(token, this.getJwtSecret(), config.jwt.options);
 
         return result;
     }
@@ -288,16 +288,19 @@ export class UserService extends Service<IUser> {
 
         const notifConfig: INotificationService = config.notificationService;
 
-        await communicationHelper.post(notifConfig.sendNotifRoute, null, {
-            type: 'resetPassword',
-            format: 'email',
-            data: {
-                subject: 'Reset Password',
-                username: user.username || user.email,
-                link: notifConfig.resetLinkTemplate.replace('{token}', token).replace('{email}', user.email)
-            },
-            users: [user._id]
-        });
+        await communicationHelper.post(notifConfig.sendNotifRoute,
+            {
+                workspace: this._ws
+            }, {
+                type: 'resetPassword',
+                format: 'email',
+                data: {
+                    subject: 'Reset Password',
+                    username: user.username || user.email,
+                    link: notifConfig.resetLinkTemplate.replace('{token}', token).replace('{email}', user.email)
+                },
+                users: [user._id]
+            });
     }
 
     private getNewToken() {
@@ -329,7 +332,7 @@ export class UserService extends Service<IUser> {
             user.lastLogIn = new Date();
             await user.save();
 
-            const token = await jwt.sign(payload, config.jwt.secret, config.jwt.botOptions);
+            const token = await jwt.sign(payload, this.getJwtSecret(), config.jwt.botOptions);
             getLogger('UserService').log('info', 'Bot %s get his token %d', user.username, iat);
             return { token, renewTimeOut: ms(config.botTokenRenew) };
         }
@@ -345,6 +348,10 @@ export class UserService extends Service<IUser> {
         delete cleanedUser.__v;
 
         return cleanedUser;
+    }
+
+    private getJwtSecret() {
+        return this._ws + '-' + config.jwt.secret;
     }
 }
 
