@@ -18,7 +18,7 @@ COPY --from=builder /opt/app/dist ./dist
 COPY --from=builder /opt/app/config ./config
 COPY --from=builder /opt/app/package.json ./
 
-RUN npm install --save-prod
+RUN npm install --production
 
 # Execute default startup command
 CMD [ "npm", "run", "start" ]
