@@ -29,8 +29,4 @@ export const ExampleSchema = new Schema({
     // potentially need a listener to refer on listener service which receive data from sigfox
 });
 
-export const ExampleModel = model<IExample>(
-    'example',
-    ExampleSchema,
-    'examples'
-);
+export const ExampleModel = model<IExample>('example', ExampleSchema, 'examples');

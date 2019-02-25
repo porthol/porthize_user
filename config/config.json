@@ -1,6 +1,7 @@
 {
     "templateexpress": {
         "registerRetryTime": 30000,
+        "mainWorkspace": "main",
         "authorizationService": {
             "name": "user",
             "addRoute": "privileges/{resource}/routes",

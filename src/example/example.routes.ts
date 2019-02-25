@@ -64,10 +64,7 @@ routerManager
      *  }
      */
     .post({
-        handlers: [
-            validator.validate({ body: ExampleCreateSchema }),
-            controller.register
-        ],
+        handlers: [validator.validate({ body: ExampleCreateSchema }), controller.register],
         action: 'create',
         resource: 'example'
     });
@@ -128,10 +125,7 @@ routerManager
      *  }
      */
     .put({
-        handlers: [
-            validator.validate({ body: ExampleUpdateSchema }),
-            controller.update
-        ],
+        handlers: [validator.validate({ body: ExampleUpdateSchema }), controller.update],
         action: 'update',
         resource: 'example'
     })

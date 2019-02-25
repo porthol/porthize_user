@@ -2,11 +2,7 @@ import * as request from 'request-promise';
 import { RequestPromiseOptions } from 'request-promise';
 import { UriOptions } from 'request';
 import { app } from '../server';
-import {
-    configureLogger,
-    defaultWinstonLoggerOptions,
-    getLogger
-} from './logger';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 
 configureLogger('communicationHelper', defaultWinstonLoggerOptions);
 
@@ -23,50 +19,20 @@ interface IConfigCommunicationHelper {
 export class CommunicationHelper {
     constructor(private config: IConfigCommunicationHelper) {}
 
-    async get(
-        path: string,
-        headers?: Headers,
-        query?: any,
-        addAppToken = false
-    ) {
-        return await request.get(
-            this.generateOptions(path, headers, query, null, addAppToken)
-        );
+    async get(path: string, headers?: Headers, query?: any, addAppToken = false) {
+        return await request.get(this.generateOptions(path, headers, query, null, addAppToken));
     }
 
-    async post(
-        path: string,
-        headers?: Headers,
-        body?: any,
-        query?: any,
-        addAppToken = false
-    ) {
-        return await request.post(
-            this.generateOptions(path, headers, query, body, addAppToken)
-        );
+    async post(path: string, headers?: Headers, body?: any, query?: any, addAppToken = false) {
+        return await request.post(this.generateOptions(path, headers, query, body, addAppToken));
     }
 
-    async put(
-        path: string,
-        headers?: Headers,
-        body?: any,
-        query?: any,
-        addAppToken = false
-    ) {
-        return await request.put(
-            this.generateOptions(path, headers, query, body, addAppToken)
-        );
+    async put(path: string, headers?: Headers, body?: any, query?: any, addAppToken = false) {
+        return await request.put(this.generateOptions(path, headers, query, body, addAppToken));
     }
 
-    async delete(
-        path: string,
-        headers?: Headers,
-        query?: any,
-        addAppToken = false
-    ) {
-        return await request.delete(
-            this.generateOptions(path, headers, query, null, addAppToken)
-        );
+    async delete(path: string, headers?: Headers, query?: any, addAppToken = false) {
+        return await request.delete(this.generateOptions(path, headers, query, null, addAppToken));
     }
 
     private generateOptions(
@@ -94,10 +60,7 @@ export class CommunicationHelper {
             options.body = body;
         }
 
-        getLogger('communicationHelper').log(
-            'info',
-            'Sending request : ' + JSON.stringify(options)
-        );
+        getLogger('communicationHelper').log('info', 'Sending request : ' + JSON.stringify(options));
 
         return options;
     }

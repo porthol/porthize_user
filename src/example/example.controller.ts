@@ -18,10 +18,7 @@ export class ExampleController {
             .get(req.params.id, req.query)
             .then(example => {
                 if (!example) {
-                    throw new CustomError(
-                        CustomErrorCode.ERRNOTFOUND,
-                        'example not found'
-                    );
+                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'example not found');
                 } else {
                     res.status(httpStatus.OK).send(example);
                 }
@@ -43,10 +40,7 @@ export class ExampleController {
             .update(req.params.id, req.body)
             .then(result => {
                 if (result.nModified === 0) {
-                    throw new CustomError(
-                        CustomErrorCode.ERRNOTFOUND,
-                        'example not found'
-                    );
+                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'example not found');
                 } else {
                     // todo we should send back the example modified
                     res.status(httpStatus.OK).send(req.body);
@@ -60,10 +54,7 @@ export class ExampleController {
             .delete(req.params.id)
             .then(result => {
                 if (result.n === 0) {
-                    throw new CustomError(
-                        CustomErrorCode.ERRNOTFOUND,
-                        'example not found'
-                    );
+                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'example not found');
                 } else {
                     res.status(httpStatus.NO_CONTENT).send(result);
                 }

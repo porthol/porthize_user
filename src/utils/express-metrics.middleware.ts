@@ -1,16 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import {
-    configureLogger,
-    defaultWinstonLoggerOptions,
-    getLogger
-} from './logger';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import * as winston from 'winston';
 
-export function expressMetricsMiddleware(
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
+export function expressMetricsMiddleware(req: Request, res: Response, next: NextFunction) {
     const end: {
         (cb?: () => void): void;
         (chunk: any, cb?: () => void): void;
@@ -28,8 +20,7 @@ export function expressMetricsMiddleware(
             // Calculate response time
             let responseTimeInMs: number;
             if ((req as any).startTime) {
-                responseTimeInMs =
-                    new Date().getTime() - (req as any).startTime;
+                responseTimeInMs = new Date().getTime() - (req as any).startTime;
             }
 
             let body: any = {};

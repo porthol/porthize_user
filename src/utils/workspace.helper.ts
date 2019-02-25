@@ -7,12 +7,7 @@ const appName = getPackageName();
 const config: any = getConfiguration()[appName];
 
 export async function getWorkspaces() {
-    return await communicationHelper.get(
-        config.workspaceService.getAllRoute,
-        null,
-        null,
-        true
-    );
+    return await communicationHelper.get(config.workspaceService.getAllRoute, null, null, true);
 }
 
 export async function workspaceExist(key: string) {

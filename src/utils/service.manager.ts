@@ -15,10 +15,7 @@ export class ServiceManager {
     getService(name: string): Service {
         const service = this.serviceByName[name];
         if (!service) {
-            throw new CustomError(
-                CustomErrorCode.ERRNOTFOUND,
-                'Service not found'
-            );
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Service not found');
         }
         return service;
     }
