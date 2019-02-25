@@ -67,10 +67,8 @@ export class Workspace {
             null,
             true
         );
-        // remove main workspace
-        return response.body.filter((ws: any) => {
-            return ws.key !== config.mainWorkspace;
-        });
+
+        return response.body;
     }
 
     static async workspaceExist(key: string) {
