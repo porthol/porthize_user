@@ -288,10 +288,12 @@ export class UserService extends Service<IUser> {
 
         const notifConfig: INotificationService = config.notificationService;
 
-        await communicationHelper.post(notifConfig.sendNotifRoute,
+        await communicationHelper.post(
+            notifConfig.sendNotifRoute,
             {
                 workspace: this._ws
-            }, {
+            },
+            {
                 type: 'resetPassword',
                 format: 'email',
                 data: {
@@ -300,7 +302,8 @@ export class UserService extends Service<IUser> {
                     link: notifConfig.resetLinkTemplate.replace('{token}', token).replace('{email}', user.email)
                 },
                 users: [user._id]
-            });
+            }
+        );
     }
 
     private getNewToken() {
