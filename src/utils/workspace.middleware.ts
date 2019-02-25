@@ -6,22 +6,29 @@ import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logge
 configureLogger('workspace-middleware', defaultWinstonLoggerOptions);
 
 export function workspaceMiddleware(req: Request, res: Response, next: NextFunction) {
-    if (!req.headers.workspace) {
-        next(new CustomError(CustomErrorCode.ERRBADREQUEST, 'No workspace specified'));
-    }
-    const ws = req.headers.workspace.toString();
+    try {
+        if (!req.headers.workspace) {
+            throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'No workspace specified');
+        }
+        const ws = req.headers.workspace.toString();
 
-    if (!Workspace.getWorkspaceLocally(ws)) {
-        Workspace.workspaceExist(ws)
-            .then(() => {
-                getLogger('workspace-middleware').log('warn', 'New workspace detected in header and not found localy');
-                const workspace = new Workspace(ws);
+        if (!Workspace.getWorkspaceLocally(ws)) {
+            Workspace.workspaceExist(ws)
+                .then(() => {
+                    getLogger('workspace-middleware').log(
+                        'warn',
+                        'New workspace detected in header and not found locally'
+                    );
+                    const workspace = new Workspace(ws);
 
-                return workspace.init();
-            })
-            .then(next)
-            .catch(next);
-    } else {
-        next();
+                    return workspace.init();
+                })
+                .then(next)
+                .catch(next);
+        } else {
+            next();
+        }
+    } catch (err) {
+        next(err);
     }
 }
