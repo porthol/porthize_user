@@ -29,7 +29,7 @@ export class Workspace {
         const response = await communicationHelper.get(
             config.workspaceService.getAllRoute,
             {
-                'internal-request': app.token
+                    'internal-request': app.uuid
             },
             null,
             true
@@ -42,7 +42,7 @@ export class Workspace {
         const response = await communicationHelper.get(
             config.workspaceService.existRoute.replace('{key}', key),
             {
-                'internal-request': app.token
+                'internal-request': app.uuid
             },
             null,
             true
