@@ -96,11 +96,11 @@ const server = async (appName: string) => {
             app.registerApp()
                 .then(() => {
                     getLogger('default').log('info', 'App correctly registered.');
-                    return exportRoutes(config[appName].authorizationService);
+                    return exportRoutes(config[appName]);
                 })
                 .then(() => {
                     getLogger('default').log('info', 'Routes exported');
-                    return initPrivileges(config[appName].authorizationService);
+                    return initPrivileges(config[appName]);
                 })
                 .then(() => {
                     getLogger('default').log('info', 'Privileges exported');
