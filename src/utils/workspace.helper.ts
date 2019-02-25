@@ -1,19 +1,24 @@
 import { getPackageName } from './package.helper';
 import { getConfiguration } from './configuration.helper';
-import { communicationHelper } from '../server';
+import { app, communicationHelper } from '../server';
 
 const appName = getPackageName();
 
 const config: any = getConfiguration()[appName];
 
 export async function getWorkspaces() {
-    return await communicationHelper.get(config.workspaceService.getAllRoute, null, null, true);
+    return (await communicationHelper.get(
+        config.workspaceService.getAllRoute,
+        { 'internal-request': app.uuid },
+        null,
+        true
+    )).body;
 }
 
 export async function workspaceExist(key: string) {
     const workspaces = await communicationHelper.get(
         config.workspaceService.existRoute.replace('{key}', key),
-        null,
+        { 'internal-request': app.uuid },
         null,
         true
     );
