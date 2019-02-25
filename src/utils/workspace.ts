@@ -6,7 +6,6 @@ import {
 import { getPackageName } from './package.helper';
 import { getConfiguration } from './configuration.helper';
 import { app, communicationHelper } from '../server';
-import * as _ from 'lodash';
 import { MongoConnection } from './mongo-connection';
 import { serviceManager } from './service.manager';
 import { exportRoutes } from './router.manager';

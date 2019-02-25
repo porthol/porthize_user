@@ -1,7 +1,8 @@
 import { Service } from './service.abstract';
 import { ExampleService } from '../example/example.service';
+import { Document } from 'mongoose';
 
-export class ServiceManager<T extends Service> {
+export class ServiceManager<T extends Service<Document>> {
     private readonly serviceByName: {
         [workspace: string]: {
             [name: string]: T;

@@ -3,10 +3,10 @@ import { MongoConnection } from './mongo-connection';
 import { Document, Model, Schema } from 'mongoose';
 import { IService } from './service.interface';
 
-export abstract class Service implements IService {
+export abstract class Service<T extends Document> implements IService {
     protected readonly _name: string;
     protected readonly _ws: string;
-    protected readonly _model: Model<Document>;
+    protected readonly _model: Model<T>;
 
     abstract create(data: any): any;
 
@@ -22,13 +22,13 @@ export abstract class Service implements IService {
         return this._ws;
     }
 
-    protected constructor(ws: string, model: Model<Document>, name: string) {
+    protected constructor(ws: string, model: Model<T>, name: string) {
         this._ws = ws;
         this._model = model;
         this._name = name;
     }
 
-    protected static getService<T extends Service>(
+    protected static getService<T extends Service<Document>>(
         ws: string,
         schema: Schema,
         name: string,

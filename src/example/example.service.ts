@@ -1,11 +1,12 @@
 import * as mongoose from 'mongoose';
-import { Model, Document } from 'mongoose';
+import { Model } from 'mongoose';
 import { ExampleSchema } from './example.model';
 import ObjectId = mongoose.Types.ObjectId;
 import { Service } from '../utils/service.abstract';
+import { IExample } from './example.document';
 
-export class ExampleService extends Service {
-    constructor(ws: string, model: Model<Document>) {
+export class ExampleService extends Service<IExample> {
+    constructor(ws: string, model: Model<IExample>) {
         super(ws, model, 'example');
     }
 
