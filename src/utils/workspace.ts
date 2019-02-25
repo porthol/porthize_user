@@ -17,8 +17,7 @@ const config: any = getConfiguration()[appName];
 export class Workspace {
     static readonly instances: Workspace[] = [];
 
-    constructor(private key: string) {
-    }
+    constructor(private key: string) {}
 
     static getWorkspaceLocally(wsKey: string) {
         return this.instances.find(ws => {
@@ -35,10 +34,8 @@ export class Workspace {
             null,
             true
         );
-        // remove main workspace
-        return response.body.filter((ws: any) => {
-            return ws.key !== config.mainWorkspace;
-        });
+
+        return response.body;
     }
 
     static async workspaceExist(key: string) {

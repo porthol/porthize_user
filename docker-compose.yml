@@ -56,21 +56,6 @@ services:
     ports:
       - 3002:3000
 
-  device:
-    hostname: device
-    image: registry.gitlab.com/workkaylleur/deviceservice:develop
-    environment:
-      - NODE_ENV=development
-    depends_on:
-      - mongo
-      - user
-      - workspace
-    restart: always
-    labels:
-      - "traefik.frontend.rule=PathPrefix:/api/devices"
-    ports:
-      - 3003:3000
-
   notification:
     hostname: notification
     image: registry.gitlab.com/workkaylleur/notificationservice:develop

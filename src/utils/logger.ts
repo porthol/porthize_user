@@ -13,7 +13,7 @@ export const defaultWinstonLoggerOptions: winston.LoggerOptions = {
             if (meta.body && Object.keys(meta.body).length > 0) {
                 return `${meta.level}: ${meta.statusCode} - ${meta.method} - ${meta.url} - ${
                     meta.responseTimeInMs
-                    }ms - ${JSON.stringify(meta.body)}`;
+                }ms - ${JSON.stringify(meta.body)}`;
             }
             return `${meta.level}: ${meta.statusCode} - ${meta.method} - ${meta.url} - ${meta.responseTimeInMs}ms`;
         })

@@ -17,8 +17,7 @@ interface IConfigCommunicationHelper {
 }
 
 export class CommunicationHelper {
-    constructor(private config: IConfigCommunicationHelper) {
-    }
+    constructor(private config: IConfigCommunicationHelper) {}
 
     async get(path: string, headers?: Headers, query?: any, addAppToken = false) {
         return await request.get(this.generateOptions(path, headers, query, null, addAppToken));

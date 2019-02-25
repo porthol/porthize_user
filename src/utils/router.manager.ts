@@ -19,8 +19,7 @@ export interface IRoute {
 export class RouterManager {
     private _tmpUrl: string;
 
-    constructor(private _router: Router) {
-    }
+    constructor(private _router: Router) {}
 
     get router(): Router {
         return this._router;

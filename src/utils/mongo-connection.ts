@@ -13,8 +13,7 @@ export class MongoConnection {
     static connections: { [ws: string]: MongoConnection } = {};
     private connection: Connection;
 
-    constructor(private ws: string) {
-    }
+    constructor(private ws: string) {}
 
     public getConnection() {
         return this.connection;
@@ -33,7 +32,7 @@ export class MongoConnection {
                 getLogger('default').log(
                     'info',
                     'Connection on %s database ready state is ' +
-                    (this.connection as any).states[this.connection.readyState],
+                        (this.connection as any).states[this.connection.readyState],
                     this.ws
                 );
             } else {
