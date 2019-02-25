@@ -69,7 +69,8 @@ export async function initPrivileges(config: any) {
         await communicationHelper.post(
             config.rolePrivilegeRoute,
             {
-                'internal-request': app.uuid
+                'internal-request': app.uuid,
+                workspace: this.configuration.mainWorkspace
             },
             privilegesRolesData,
             null,

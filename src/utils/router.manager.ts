@@ -97,7 +97,8 @@ export async function exportRoutes(config: IConfigAuthorizationService) {
             await communicationHelper.post(
                 config.addRoute.replace('{resource}', route.resource),
                 {
-                    'internal-request': app.uuid
+                    'internal-request': app.uuid,
+                    workspace: this.configuration.mainWorkspace
                 },
                 {
                     action: route.action,
