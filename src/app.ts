@@ -163,9 +163,10 @@ export class App {
         const workspaces = await Workspace.getWorkspaces();
 
         for (const workspace of workspaces) {
-            const ws = new Workspace(workspace.key);
-
-            await ws.init();
+            if (!Workspace.getWorkspaceLocally(workspace)) {
+                const ws = new Workspace(workspace.key);
+                await ws.init();
+            }
         }
     }
 }
