@@ -381,7 +381,9 @@ routerManager
 
 // todo add api doc
 
-routerManager.route('/users/registerMicroService').post({
+routerManager
+    .route('/users/registerMicroService')
+    .post({
     handlers: [
         // todo we can not protect him if we use uuid to verify
         // denyExternalRequestMiddleware,
@@ -392,7 +394,9 @@ routerManager.route('/users/registerMicroService').post({
     ]
 });
 
-routerManager.route('/users/renewBotToken').post({
+routerManager
+    .route('/users/renewBotToken')
+    .post({
     handlers: [
         internalDenyExternalRequestMiddleware,
         validator.validate({
@@ -402,7 +406,19 @@ routerManager.route('/users/renewBotToken').post({
     ]
 });
 
-routerManager.route('/users/password/reset').post({
+/**
+ * @api {post} /users/password/reset Request to reset password
+ *
+ * @apiGroup User
+ *
+ * @apiParam {String} email email
+ *
+ * @apiSuccessExample {json} Success response
+ *     HTTP/1.1 202 Accepted
+ */
+routerManager
+    .route('/users/password/reset')
+    .post({
     handlers: [
         validator.validate({
             body: UserPasswordResetSchema

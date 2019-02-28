@@ -2,6 +2,7 @@ import * as express from 'express';
 import UserRoutes from './user/user.routes';
 import PrivilegeRoutes from './privilege/privilege.routes';
 import RoleRoutes from './role/role.routes';
+import HealthRoutes from './utils/health.routes';
 
 /**
  * Function used to configure application
@@ -18,6 +19,9 @@ export function configureRouter(configuration?: object): express.Router[] {
     router.use('/api', UserRoutes);
     router.use('/api', RoleRoutes);
     router.use('/api', PrivilegeRoutes);
+
+    // health route
+    router.use('/api', HealthRoutes);
 
     // Create a private router
     const privateRouter = express.Router();

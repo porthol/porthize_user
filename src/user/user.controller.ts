@@ -57,7 +57,7 @@ export class UserController {
     remove(req: Request, res: Response, next: NextFunction): void {
         Promise.resolve()
             .then(() => {
-                if ((req as any).user.userId === req.params.id) {
+                if ((req as any).user._id === req.params.id) {
                     throw new CustomError(
                         CustomErrorCode.ERRBADREQUEST,
                         'Bad request : The user cannot delete himself'

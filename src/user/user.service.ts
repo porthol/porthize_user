@@ -167,7 +167,7 @@ export class UserService extends Service<IUser> {
         if (comparePassword(loginRequest.password, user.password)) {
             const iat = Math.floor(Date.now() / 1000);
             const payload: any = {
-                userId: user._id,
+                user: this.getCleanUser(user),
                 iat
             };
 
@@ -194,7 +194,7 @@ export class UserService extends Service<IUser> {
         }
 
         const user = await this._model.findOne({
-            _id: decodedPayload.userId,
+            _id: decodedPayload.user._id,
             enabled: true
         });
 
@@ -328,7 +328,7 @@ export class UserService extends Service<IUser> {
         if (roles.map(r => r.key).indexOf(config.roleBotKey) !== -1 && !user.loginEnabled) {
             const iat = Math.floor(Date.now() / 1000);
             const payload: any = {
-                userId: user._id,
+                user:this.getCleanUser(user),
                 iat
             };
 
