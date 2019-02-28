@@ -301,9 +301,13 @@ export class UserService extends Service<IUser> {
                     username: user.username || user.email,
                     link: notifConfig.resetLinkTemplate.replace('{token}', token).replace('{email}', user.email)
                 },
+                workspace: this._ws,
                 users: [user._id]
-            }
+            },
+            null,
+            true
         );
+        // todo save token into db for reset
     }
 
     private getNewToken() {
