@@ -138,11 +138,24 @@ export const UserRenewBotTokenSchema = {
     }
 };
 
-export const UserPasswordResetSchema = {
+export const UserPasswordRequestResetSchema = {
     type: 'object',
     additionalProperties: false,
     properties: {
         email: {
+            type: 'string'
+        }
+    }
+};
+
+export const UserPasswordResetSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        password: {
+            type: 'string'
+        },
+        ['reset-token']: {
             type: 'string'
         }
     }

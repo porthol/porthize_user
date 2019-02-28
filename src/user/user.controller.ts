@@ -48,8 +48,8 @@ export class UserController {
     updateMe(req: Request, res: Response, next: NextFunction): void {
         UserService.get(req.headers.workspace.toString())
             .update((req as any).user._id, req.body)
-            .then(role => {
-                res.status(httpStatus.OK).send(role);
+            .then(user => {
+                res.status(httpStatus.OK).send(user);
             })
             .catch(next);
     }
@@ -150,15 +150,24 @@ export class UserController {
             .catch(next);
     }
 
-    resetPassword(req: Request, res: Response, next: NextFunction): void {
+    requestResetPassword(req: Request, res: Response, next: NextFunction): void {
         if (!isEmail(req.body.email)) {
             next(new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad email format'));
             return;
         }
         UserService.get(req.headers.workspace.toString())
-            .resetPassword(req.body.email)
+            .requestResetPassword(req.body.email)
             .then(() => {
                 res.status(httpStatus.NO_CONTENT).send();
+            })
+            .catch(next);
+    }
+
+    resetPassword(req: Request, res: Response, next: NextFunction): void {
+        UserService.get(req.headers.workspace.toString())
+            .resetPassword(req.body['reset-token'], req.body.password)
+            .then(user => {
+                res.status(httpStatus.OK).send(user);
             })
             .catch(next);
     }

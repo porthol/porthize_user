@@ -9,6 +9,10 @@
       "botOptions": {
         "expiresIn": "24h",
         "algorithm": "HS512"
+      },
+      "resetOptions": {
+        "expiresIn": "24h",
+        "algorithm": "HS512"
       }
     },
     "roleBotKey": "bot",
@@ -30,7 +34,7 @@
     "notificationService": {
       "name": "notification",
       "sendNotifRoute": "notifications",
-      "resetLinkTemplate": "http://127.0.0.1:3000/api/toto?token={token}&email={email}"
+      "resetLinkTemplate": "http://main.app.mydomain:8082/reset-password?reset-token={token}"
     },
     "workspaceService": {
       "name": "workspace",

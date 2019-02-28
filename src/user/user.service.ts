@@ -82,6 +82,9 @@ export class UserService extends Service<IUser> {
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
         }
+        if (userData.password) {
+            userData.password = await hashPassword(userData.password);
+        }
 
         user.set(userData);
 
@@ -149,7 +152,7 @@ export class UserService extends Service<IUser> {
         } else if (loginRequest.username) {
             criteria = { username: loginRequest.username };
         } else {
-            throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad request', null);
+            throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad request : No username or email', null);
         }
 
         criteria.enabled = true;
@@ -164,7 +167,9 @@ export class UserService extends Service<IUser> {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized to log in');
         }
 
-        if (comparePassword(loginRequest.password, user.password)) {
+        const goodPassword = await comparePassword(loginRequest.password, user.password);
+
+        if (goodPassword) {
             const iat = Math.floor(Date.now() / 1000);
             const payload: any = {
                 user: this.getCleanUser(user),
@@ -278,13 +283,17 @@ export class UserService extends Service<IUser> {
         return await this.generateBotToken(payload.userId);
     }
 
-    async resetPassword(email: string) {
+    async requestResetPassword(email: string) {
         const user = await this._model.findOne({ email, enabled: true });
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
         }
+        const payload = {
+            iat: Math.floor(Date.now() / 1000),
+            user: this.getCleanUser(user)
+        };
 
-        const token = this.getNewToken();
+        const token = await jwt.sign(payload, this.getJwtSecret(), config.jwt.resetOptions);
 
         const notifConfig: INotificationService = config.notificationService;
 
@@ -299,7 +308,7 @@ export class UserService extends Service<IUser> {
                 data: {
                     subject: 'Reset Password',
                     username: user.username || user.email,
-                    link: notifConfig.resetLinkTemplate.replace('{token}', token).replace('{email}', user.email)
+                    link: notifConfig.resetLinkTemplate.replace('{token}', token)
                 },
                 workspace: this._ws,
                 users: [user._id]
@@ -308,17 +317,7 @@ export class UserService extends Service<IUser> {
             true
         );
         // todo save token into db for reset
-    }
-
-    private getNewToken() {
-        const possibleLetters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-        let token = '';
-
-        for (let i = 0; i < config.resetTokenLength; i++) {
-            token += possibleLetters[Math.floor(Math.random() * possibleLetters.length)];
-        }
-
-        return token;
+        // and make route to reset the password !
     }
 
     private async generateBotToken(userId: string) {
@@ -359,6 +358,16 @@ export class UserService extends Service<IUser> {
 
     private getJwtSecret() {
         return this._ws + '-' + config.jwt.secret;
+    }
+
+    async resetPassword(token: string, password: string) {
+        const result = (await jwt.verify(token, this.getJwtSecret(), config.jwt.resetOptions)) as any;
+
+        const user = await this._model.findOne({ _id: result.user._id, enabled: true });
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+        return await this.update(user._id, { password });
     }
 }
 

@@ -6,6 +6,7 @@ import {
     UserCreateSchema,
     UserLoginSchema,
     UserMicroServiceSchema,
+    UserPasswordRequestResetSchema,
     UserPasswordResetSchema,
     UserQuerySchema,
     UserRenewBotTokenSchema,
@@ -402,23 +403,43 @@ routerManager.route('/users/renewBotToken').post({
     ]
 });
 
-/**
- * @api {post} /users/password/reset Request to reset password
- *
- * @apiGroup User
- *
- * @apiParam {String} email email
- *
- * @apiSuccessExample {json} Success response
- *     HTTP/1.1 202 Accepted
- */
-routerManager.route('/users/password/reset').post({
-    handlers: [
-        validator.validate({
-            body: UserPasswordResetSchema
-        }),
-        userController.resetPassword
-    ]
-});
+routerManager
+    .route('/users/password/reset')
+    /**
+     * @api {post} /users/password/reset Request to reset password
+     *
+     * @apiGroup User
+     *
+     * @apiParam {String} email email
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 202 Accepted
+     */
+    .post({
+        handlers: [
+            validator.validate({
+                body: UserPasswordRequestResetSchema
+            }),
+            userController.requestResetPassword
+        ]
+    })
+    /**
+     * @api {post} /users/password/reset Request to reset password
+     *
+     * @apiGroup User
+     *
+     * @apiParam {String} email email
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 202 Accepted
+     */
+    .put({
+        handlers: [
+            validator.validate({
+                body: UserPasswordResetSchema
+            }),
+            userController.resetPassword
+        ]
+    });
 
 export default router;
