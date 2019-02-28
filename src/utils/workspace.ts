@@ -51,7 +51,7 @@ export class Workspace {
         const response = await communicationHelper.get(
             config.workspaceService.getAllRoute,
             {
-                    'internal-request': app.uuid
+                'internal-request': app.uuid
             },
             null,
             true
