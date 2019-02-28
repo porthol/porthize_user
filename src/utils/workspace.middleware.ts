@@ -7,6 +7,10 @@ configureLogger('workspace-middleware', defaultWinstonLoggerOptions);
 
 export function workspaceMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
+        if (req.path === '/api/health') {
+            next();
+            return;
+        }
         if (!req.headers.workspace) {
             throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'No workspace specified');
         }
