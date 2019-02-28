@@ -328,7 +328,7 @@ export class UserService extends Service<IUser> {
         if (roles.map(r => r.key).indexOf(config.roleBotKey) !== -1 && !user.loginEnabled) {
             const iat = Math.floor(Date.now() / 1000);
             const payload: any = {
-                user:this.getCleanUser(user),
+                user: this.getCleanUser(user),
                 iat
             };
 
