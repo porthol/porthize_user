@@ -1,5 +1,6 @@
 import * as express from 'express';
 import ExampleRoutes from './example/example.routes';
+import HealthRoutes from './utils/health.routes';
 
 /**
  * Function used to configure application
@@ -14,6 +15,9 @@ export function configureRouter(configuration?: object): express.Router[] {
 
     // Load all child routers that call your API.
     router.use('/api', ExampleRoutes);
+
+    // health route
+    router.use('/api', HealthRoutes);
 
     // Create a private router
     const privateRouter = express.Router();
