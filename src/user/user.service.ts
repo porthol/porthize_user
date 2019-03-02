@@ -14,6 +14,7 @@ import { Service } from '../utils/service.abstract';
 import { UserSchema } from './user.model';
 import ms = require('ms');
 import ObjectId = mongoose.Types.ObjectId;
+import { isValid } from 'mailchecker';
 
 const config: any = getConfiguration().user;
 configureLogger('UserService', defaultWinstonLoggerOptions);
@@ -57,6 +58,9 @@ export class UserService extends Service<IUser> {
     }
 
     async create(userData: any, addDefaultRole = true) {
+        if (!isValid(userData.email)) {
+            throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Email domain not supported');
+        }
         userData.password = await hashPassword(userData.password);
         const user = new this._model(userData);
         await user.save();
