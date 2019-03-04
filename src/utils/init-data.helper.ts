@@ -62,7 +62,7 @@ export async function initData() {
     }
 }
 
-export async function initPrivileges(config: any) {
+export async function exportPrivileges(config: any) {
     const workspaces = await getWorkspaces();
     for (const workspace of workspaces) {
         try {

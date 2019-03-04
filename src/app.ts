@@ -2,12 +2,17 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
-import { configureRouter } from './configure';
+import { configureRouter, configureServices } from './configure';
 import { addStartTime, expressMetricsMiddleware } from './utils/express-metrics.middleware';
 import { handleErrorMiddleware } from './utils/handle-error.middleware';
 import * as uuid from 'uuid/v4';
 import { communicationHelper } from './server';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils/logger';
+import { exportRoutes } from './utils/router.manager';
+import { exportPrivileges, initData } from './utils/init-data.helper';
+import { getDatabaseConnectionUrl } from './utils/connection.helper';
+import * as mongoose from 'mongoose';
+import { CustomError, CustomErrorCode } from './utils/custom-error';
 
 configureLogger('mainApp', defaultWinstonLoggerOptions);
 
@@ -16,9 +21,15 @@ export class App {
 
     private _appName: string;
     private renewTimeOut: number;
+    private registered = false;
+    private routesExport = false;
+    private privilegesExport = false;
+    private dbConnected = false;
+    private _isReady = false;
+    private _listenerOnReady: () => void;
 
     constructor(params: any) {
-        this._app = express();
+        this._expressApp = express();
 
         this.appName = params.appName;
 
@@ -28,8 +39,8 @@ export class App {
             }
         }
 
-        this._app.set('port', params.port || process.env.PORT || 3000);
-        this._app.set('env', params.env || process.env.NODE_ENV || 'development');
+        this._expressApp.set('port', params.port || process.env.PORT || 3000);
+        this._expressApp.set('env', params.env || process.env.NODE_ENV || 'development');
         this._uuid = uuid();
     }
 
@@ -37,6 +48,19 @@ export class App {
 
     get token(): string {
         return this._token;
+    }
+
+    get isReady(): boolean {
+        return this._isReady;
+    }
+
+    private setIsReady(value: boolean) {
+        this._isReady = value;
+        this._listenerOnReady();
+    }
+
+    set listenerOnReady(value: () => void) {
+        this._listenerOnReady = value;
     }
 
     get appName(): string {
@@ -51,14 +75,14 @@ export class App {
         return this._uuid;
     }
 
-    private _app: express.Application;
+    private _expressApp: express.Application;
 
-    get app(): express.Application {
-        return this._app;
+    get expressApp(): express.Application {
+        return this._expressApp;
     }
 
-    set app(value: express.Application) {
-        this._app = value;
+    set expressApp(value: express.Application) {
+        this._expressApp = value;
     }
 
     private _port: number;
@@ -84,28 +108,61 @@ export class App {
     async registerAppRouters() {
         const appRouters: express.Router[] = configureRouter(this.configuration);
         // Mount public router to /
-        this.app.use('/', appRouters[0]);
+        this.expressApp.use('/', appRouters[0]);
 
         if (appRouters[1]) {
             // Mount private router to /_appName
-            this.app.use(`/_${this.appName}`, appRouters[1]);
+            this.expressApp.use(`/_${this.appName}`, appRouters[1]);
         }
     }
 
     applyExpressMiddlewaresRouter(): void {
-        this.app.use(addStartTime);
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({ extended: true }));
-        this.app.use(helmet());
-        this.app.use(cors());
-        this.app.use(expressMetricsMiddleware);
+        this.expressApp.use(addStartTime);
+        this.expressApp.use(bodyParser.json());
+        this.expressApp.use(bodyParser.urlencoded({ extended: true }));
+        this.expressApp.use(helmet());
+        this.expressApp.use(cors());
+        this.expressApp.use(expressMetricsMiddleware);
     }
 
-    async bootstrap(): Promise<express.Application> {
+    async bootstrap() {
+        await this.previousBootstrap();
         this.applyExpressMiddlewaresRouter();
         await this.registerAppRouters();
-        this.app.use(handleErrorMiddleware); // error handler middleware should be put after router
-        return this.app;
+        this.expressApp.use(handleErrorMiddleware); // error handler middleware should be put after router
+        await this.nextBootstrap();
+    }
+
+    private async nextBootstrap() {
+        try {
+            if (!this.registered) {
+                await this.registerApp();
+                this.registered = true;
+                getLogger('mainApp').log('info', 'App correctly registered.');
+            }
+            if (!this.routesExport) {
+                await exportRoutes(this.configuration);
+                this.routesExport = true;
+                getLogger('mainApp').log('info', 'Routes exported');
+            }
+
+            if (!this.privilegesExport) {
+                await exportPrivileges(this.configuration);
+                getLogger('mainApp').log('info', 'Privileges exported');
+                this.privilegesExport = true;
+            }
+
+            this.setIsReady(this.registered && this.routesExport && this.privilegesExport && this.dbConnected);
+        } catch (err) {
+            const retryTime = 30;
+            getLogger('mainApp').log(
+                'error',
+                'Can not initiate authorization correctly, retrying in %d secs',
+                retryTime
+            );
+            getLogger('mainApp').log('error', err);
+            setTimeout(this.nextBootstrap.bind(this), retryTime * 1000);
+        }
     }
 
     async registerApp() {
@@ -151,6 +208,50 @@ export class App {
 
             // if we can't register the service we retry in X secs
             setTimeout(this.renewToken.bind(this), this._configuration.registerRetryTime);
+        }
+    }
+
+    private async previousBootstrap() {
+        try {
+            if (!this.dbConnected) {
+                const databaseUrl = getDatabaseConnectionUrl();
+                const mongooseOptions: any = { useNewUrlParser: true };
+                if (this.configuration.databases.length > 1) {
+                    mongooseOptions.replicaSet = 'rs0';
+                }
+                if (databaseUrl) {
+                    const mongooseObj: any = await mongoose.connect(databaseUrl, mongooseOptions);
+                    const databaseConnection = mongooseObj.connections[0]; // default conn
+
+                    databaseConnection.on('disconnected', () => {
+                        getLogger('default').log('warn', 'Database has been disconnected from the micro-service');
+                    });
+
+                    databaseConnection.on('connected', () => {
+                        getLogger('default').log(
+                            'info',
+                            'Connection on database ready state is ' +
+                                databaseConnection.states[databaseConnection.readyState]
+                        );
+                    });
+                } else {
+                    throw new CustomError(
+                        CustomErrorCode.ERRINTERNALSERVER,
+                        'The database url can not be configured, you should check config.json'
+                    );
+                }
+                this.dbConnected = true;
+            }
+
+            configureServices();
+            await initData();
+
+            this.setIsReady(this.registered && this.routesExport && this.privilegesExport && this.dbConnected);
+        } catch (err) {
+            const retryTime = 10;
+            getLogger('mainApp').log('error', 'Can not initiate db correctly, retrying in %d secs', retryTime);
+            getLogger('mainApp').log('error', err);
+            setTimeout(this.previousBootstrap.bind(this), retryTime * 1000);
         }
     }
 }
