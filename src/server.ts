@@ -25,7 +25,7 @@ const server = async () => {
 
         const server = createServer(app.expressApp);
 
-        app.listenerOnReady = listenIfReady; // todo correct server not defined
+        app.listenerOnReady = listenIfReady;
 
         await app.bootstrap();
 
