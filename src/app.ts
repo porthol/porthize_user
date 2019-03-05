@@ -12,7 +12,6 @@ import { exportRoutes } from './utils/router.manager';
 import { exportPrivileges, initData } from './utils/init-data.helper';
 import { getDatabaseConnectionUrl } from './utils/connection.helper';
 import * as mongoose from 'mongoose';
-import { CustomError, CustomErrorCode } from './utils/custom-error';
 
 configureLogger('mainApp', defaultWinstonLoggerOptions);
 
@@ -224,21 +223,18 @@ export class App {
                     const databaseConnection = mongooseObj.connections[0]; // default conn
 
                     databaseConnection.on('disconnected', () => {
-                        getLogger('default').log('warn', 'Database has been disconnected from the micro-service');
+                        getLogger('mainApp').log('warn', 'Database has been disconnected from the micro-service');
                     });
 
                     databaseConnection.on('connected', () => {
-                        getLogger('default').log(
+                        getLogger('mainApp').log(
                             'info',
                             'Connection on database ready state is ' +
                                 databaseConnection.states[databaseConnection.readyState]
                         );
                     });
                 } else {
-                    throw new CustomError(
-                        CustomErrorCode.ERRINTERNALSERVER,
-                        'The database url can not be configured, you should check config.json'
-                    );
+                    getLogger('mainApp').log('warn', 'The database url can not be configured.');
                 }
                 this.dbConnected = true;
             }
