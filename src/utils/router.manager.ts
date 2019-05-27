@@ -2,7 +2,6 @@ import { RequestHandler, Router } from 'express-serve-static-core';
 import { app, communicationHelper } from '../server';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import * as pathToRegexp from 'path-to-regexp';
-import { getWorkspaces } from './workspace.helper';
 
 configureLogger('routerManager', defaultWinstonLoggerOptions);
 
@@ -19,7 +18,8 @@ export interface IRoute {
 export class RouterManager {
     private _tmpUrl: string;
 
-    constructor(private _router: Router) {}
+    constructor(private _router: Router) {
+    }
 
     get router(): Router {
         return this._router;
@@ -81,40 +81,37 @@ export class RouterManager {
 export const routes: IRoute[] = [];
 
 export async function exportRoutes(config: any) {
-    const workspaces = await getWorkspaces();
-    for (const workspace of workspaces) {
-        getLogger('routerManager').log('info', 'Exporting routes to the authorization server...');
-        for (const route of routes) {
-            try {
-                await communicationHelper.post(
-                    config.authorizationService.addRoute.replace('{resource}', route.resource),
-                    {
-                        'internal-request': app.uuid,
-                        workspace: workspace.key
-                    },
-                    {
-                        action: route.action,
-                        routes: [
-                            {
-                                method: route.method,
-                                url: route.url,
-                                regexp: route.regexp.source
-                            }
-                        ]
-                    },
-                    null,
-                    true
+    getLogger('routerManager').log('info', 'Exporting routes to the authorization server...');
+    for (const route of routes) {
+        try {
+            await communicationHelper.post(
+                config.authorizationService.addRoute.replace('{resource}', route.resource),
+                {
+                    'internal-request': app.uuid
+                },
+                {
+                    action: route.action,
+                    routes: [
+                        {
+                            method: route.method,
+                            url: route.url,
+                            regexp: route.regexp.source
+                        }
+                    ]
+                },
+                null,
+                true
+            );
+        } catch (err) {
+            // Silent error we do not stop the service
+            if (err.statusCode >= 400) {
+                getLogger('routerManager').log(
+                    'warn',
+                    'Can not add route ' + route.url + ' on ' + route.method + ' to the authorization service.'
                 );
-            } catch (err) {
-                // Silent error we do not stop the service
-                if (err.statusCode >= 400) {
-                    getLogger('routerManager').log(
-                        'warn',
-                        'Can not add route ' + route.url + ' on ' + route.method + ' to the authorization service.'
-                    );
-                    getLogger('routerManager').log('error', JSON.stringify(err.error, null, ' '));
-                }
+                getLogger('routerManager').log('error', JSON.stringify(err.error, null, ' '));
             }
         }
     }
+
 }

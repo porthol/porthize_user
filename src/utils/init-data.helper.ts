@@ -5,7 +5,6 @@ import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logge
 import * as Ajv from 'ajv';
 import { serviceManager } from './service.manager';
 import { app, communicationHelper } from '../server';
-import { getWorkspaces } from './workspace.helper';
 
 configureLogger('initData', defaultWinstonLoggerOptions);
 
@@ -63,26 +62,22 @@ export async function initData() {
 }
 
 export async function exportPrivileges(config: any) {
-    const workspaces = await getWorkspaces();
-    for (const workspace of workspaces) {
-        try {
-            const filePath = join(path, 'config/privileges-roles.json');
-            const privilegesRolesData = require(filePath);
+    try {
+        const filePath = join(path, 'config/privileges-roles.json');
+        const privilegesRolesData = require(filePath);
 
-            await communicationHelper.post(
-                config.authorizationService.rolePrivilegeRoute,
-                {
-                    'internal-request': app.uuid,
-                    workspace: workspace.key
-                },
-                privilegesRolesData,
-                null,
-                true
-            );
+        await communicationHelper.post(
+            config.authorizationService.rolePrivilegeRoute,
+            {
+                'internal-request': app.uuid
+            },
+            privilegesRolesData,
+            null,
+            true
+        );
 
-            getLogger('initData').log('info', 'info privileges exported');
-        } catch (err) {
-            getLogger('initData').log('error', err);
-        }
+        getLogger('initData').log('info', 'info privileges exported');
+    } catch (err) {
+        getLogger('initData').log('error', err);
     }
 }
