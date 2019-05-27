@@ -6,34 +6,26 @@ import { PrivilegeService } from '../privilege/privilege.service';
 
 export class ServiceManager<T extends Service<Document>> {
     private readonly serviceByName: {
-        [workspace: string]: {
             [name: string]: T;
         };
-    };
 
     constructor() {
         this.serviceByName = {};
     }
 
-    registerService(workspace: string, service: T) {
-        if (!this.serviceByName[workspace]) {
-            this.initWS(workspace);
-        }
-        this.serviceByName[workspace][service.name()] = service;
+    registerService(service: T) {
+        this.serviceByName[service.name()] = service;
     }
 
-    getService(workspace: string, name: string): T {
-        if (!this.serviceByName[workspace]) {
-        }
-        return this.serviceByName[workspace][name];
+    getService(name: string): T {
+        return this.serviceByName[name];
     }
 
-    initWS(ws: string) {
+    initService() {
         // register your service here
-        this.serviceByName[ws] = {};
-        UserService.get(ws);
-        RoleService.get(ws);
-        PrivilegeService.get(ws);
+        UserService.get();
+        RoleService.get();
+        PrivilegeService.get();
     }
 }
 

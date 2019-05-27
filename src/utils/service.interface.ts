@@ -1,7 +1,6 @@
 import { Model } from 'mongoose';
 
 export interface IService {
-    workspace(): string;
 
     name(): string;
 

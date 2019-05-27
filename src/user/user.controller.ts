@@ -6,7 +6,7 @@ import { isEmail } from 'validator';
 
 export class UserController {
     getAll(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .getAll(req.query)
             .then(users => {
                 res.status(httpStatus.OK).send(users);
@@ -15,7 +15,7 @@ export class UserController {
     }
 
     get(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .get(req.params.id, req.query)
             .then(user => {
                 if (!user) {
@@ -28,7 +28,7 @@ export class UserController {
     }
 
     register(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .create(req.body)
             .then(user => {
                 res.status(httpStatus.CREATED).send(user);
@@ -37,7 +37,7 @@ export class UserController {
     }
 
     update(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .update(req.params.id, req.body)
             .then(user => {
                 res.status(httpStatus.OK).send(user);
@@ -46,7 +46,7 @@ export class UserController {
     }
 
     updateMe(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .update((req as any).user._id, req.body)
             .then(user => {
                 res.status(httpStatus.OK).send(user);
@@ -63,7 +63,7 @@ export class UserController {
                         'Bad request : The user cannot delete himself'
                     );
                 }
-                return UserService.get(req.headers.workspace.toString()).remove(req.params.id);
+                return UserService.get().remove(req.params.id);
             })
             .then((result: any) => {
                 if (result.n === 0) {
@@ -76,7 +76,7 @@ export class UserController {
     }
 
     addRole(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .addRole(req.params.id, req.body.roleId)
             .then(user => {
                 res.status(httpStatus.OK).send(user);
@@ -85,7 +85,7 @@ export class UserController {
     }
 
     removeRole(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .removeRole(req.params.id, req.params.roleId)
             .then(user => {
                 res.status(httpStatus.OK).send(user);
@@ -94,7 +94,7 @@ export class UserController {
     }
 
     login(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .login(req.body)
             .then(token => {
                 res.status(httpStatus.CREATED).send(token);
@@ -103,7 +103,7 @@ export class UserController {
     }
 
     current(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .getCurrentUser(req.headers.authorization)
             .then(user => {
                 res.status(httpStatus.OK).send(user);
@@ -112,7 +112,7 @@ export class UserController {
     }
 
     isTokenValid(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .isTokenValid(req.headers.authorization)
             .then(user => {
                 res.status(httpStatus.NO_CONTENT).send();
@@ -121,7 +121,7 @@ export class UserController {
     }
 
     isAuthorized(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .isAuthorized((req as any).user, req.body)
             .then(result => {
                 if (!result) {
@@ -133,7 +133,7 @@ export class UserController {
     }
 
     registerMicroService(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .createBotUser(req.body.uuid)
             .then(token => {
                 res.status(httpStatus.CREATED).send(token);
@@ -142,7 +142,7 @@ export class UserController {
     }
 
     renewToken(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .getBotToken(req.body.token)
             .then(token => {
                 res.status(httpStatus.CREATED).send(token);
@@ -155,7 +155,7 @@ export class UserController {
             next(new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad email format'));
             return;
         }
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .requestResetPassword(req.body.email)
             .then(() => {
                 res.status(httpStatus.NO_CONTENT).send();
@@ -164,7 +164,7 @@ export class UserController {
     }
 
     resetPassword(req: Request, res: Response, next: NextFunction): void {
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .resetPassword(req.body['reset-token'], req.body.password)
             .then(user => {
                 res.status(httpStatus.OK).send(user);

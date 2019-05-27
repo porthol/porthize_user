@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { UserService } from '../user/user.service';
 
 export function internalAuthenticationMiddleware(req: Request, res: Response, next: NextFunction) {
-    UserService.get(req.headers.workspace.toString())
+    UserService.get()
         .getCurrentUser(req.headers.authorization)
         .then(user => {
             (req as any).user = user;

@@ -5,7 +5,7 @@ import { CustomError, CustomErrorCode } from '../utils/custom-error';
 
 export class PrivilegeController {
     getAll(req: Request, res: Response, next: NextFunction): void {
-        PrivilegeService.get(req.headers.workspace.toString())
+        PrivilegeService.get()
             .getAll(req.query)
             .then(privileges => {
                 res.status(httpStatus.OK).send(privileges);
@@ -14,7 +14,7 @@ export class PrivilegeController {
     }
 
     get(req: Request, res: Response, next: NextFunction): void {
-        PrivilegeService.get(req.headers.workspace.toString())
+        PrivilegeService.get()
             .get(req.params.id, req.query)
             .then(privilege => {
                 if (!privilege) {
@@ -27,7 +27,7 @@ export class PrivilegeController {
     }
 
     create(req: Request, res: Response, next: NextFunction): void {
-        PrivilegeService.get(req.headers.workspace.toString())
+        PrivilegeService.get()
             .create(req.body)
             .then(privilege => {
                 res.status(httpStatus.CREATED).send(privilege);
@@ -36,7 +36,7 @@ export class PrivilegeController {
     }
 
     update(req: Request, res: Response, next: NextFunction): void {
-        PrivilegeService.get(req.headers.workspace.toString())
+        PrivilegeService.get()
             .update(req.params.id, req.body)
             .then(privilege => {
                 res.status(httpStatus.OK).send(privilege);
@@ -45,7 +45,7 @@ export class PrivilegeController {
     }
 
     remove(req: Request, res: Response, next: NextFunction): void {
-        PrivilegeService.get(req.headers.workspace.toString())
+        PrivilegeService.get()
             .delete(req.params.id)
             .then(result => {
                 if (result.n === 0) {
@@ -58,7 +58,7 @@ export class PrivilegeController {
     }
 
     addRoutes(req: Request, res: Response, next: NextFunction): void {
-        PrivilegeService.get(req.headers.workspace.toString())
+        PrivilegeService.get()
             .addRoutes(req.params.resource, req.body.action, req.body.routes)
             .then(privilege => {
                 res.status(httpStatus.OK).send(privilege);

@@ -26,12 +26,12 @@ export interface IPrivilegeToImport {
 }
 
 export class RoleService extends Service<IRole> {
-    constructor(ws: string, model: Model<IRole>) {
-        super(ws, model, 'role');
+    constructor(model: Model<IRole>) {
+        super(model, 'role');
     }
 
-    public static get(ws: string): RoleService {
-        return super.getService(ws, RoleSchema, 'role', 'roles', RoleService);
+    public static get(): RoleService {
+        return super.getService(RoleSchema, 'role', 'roles', RoleService);
     }
 
     async getAll(criteria: any) {
@@ -73,7 +73,7 @@ export class RoleService extends Service<IRole> {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found');
         }
 
-        const privilegeFromDb = await PrivilegeService.get(this._ws)
+        const privilegeFromDb = await PrivilegeService.get()
             .model()
             .findById(privilege.privilegeId);
         if (!privilegeFromDb) {
@@ -124,7 +124,7 @@ export class RoleService extends Service<IRole> {
                 result = true;
                 break;
             }
-            result = await PrivilegeService.get(this._ws).isAuthorized(privilege, route);
+            result = await PrivilegeService.get().isAuthorized(privilege, route);
 
             if (result === true) {
                 break;
@@ -146,7 +146,7 @@ export class RoleService extends Service<IRole> {
                 continue;
             }
             for (const resource of privilegeToImport.resources) {
-                const privilege = await PrivilegeService.get(this._ws)
+                const privilege = await PrivilegeService.get()
                     .model()
                     .findOne({
                         resource: resource.resourceKey

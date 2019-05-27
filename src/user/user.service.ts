@@ -32,12 +32,12 @@ interface INotificationService {
 }
 
 export class UserService extends Service<IUser> {
-    constructor(ws: string, model: Model<IUser>) {
-        super(ws, model, 'user');
+    constructor(model: Model<IUser>) {
+        super(model, 'user');
     }
 
-    public static get(ws: string): UserService {
-        return super.getService(ws, UserSchema, 'user', 'users', UserService);
+    public static get(): UserService {
+        return super.getService(UserSchema, 'user', 'users', UserService);
     }
 
     async getAll(criteria: any) {
@@ -66,7 +66,7 @@ export class UserService extends Service<IUser> {
         await user.save();
 
         if (addDefaultRole) {
-            const defaultRole = await RoleService.get(this._ws).getOne({
+            const defaultRole = await RoleService.get().getOne({
                 key: config.defaultRoleKey
             });
 
@@ -105,7 +105,7 @@ export class UserService extends Service<IUser> {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
         }
 
-        const role = await RoleService.get(this._ws)
+        const role = await RoleService.get()
             .model()
             .findById(roleId);
         if (!role) {
@@ -129,7 +129,7 @@ export class UserService extends Service<IUser> {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
         }
 
-        const role = await RoleService.get(this._ws)
+        const role = await RoleService.get()
             .model()
             .findById(roleId);
         if (!role) {
@@ -248,7 +248,7 @@ export class UserService extends Service<IUser> {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized');
         }
         for (const roleId of user.roles) {
-            result = await RoleService.get(this._ws).isAuthorized(roleId, route);
+            result = await RoleService.get().isAuthorized(roleId, route);
             if (result === true) {
                 break;
             }
@@ -267,7 +267,7 @@ export class UserService extends Service<IUser> {
 
         let user = await this.create(appUser, false);
 
-        const botRole = await RoleService.get(this._ws).getOne({
+        const botRole = await RoleService.get().getOne({
             key: config.roleBotKey
         });
 
@@ -303,9 +303,7 @@ export class UserService extends Service<IUser> {
 
         await communicationHelper.post(
             notifConfig.sendNotifRoute,
-            {
-                workspace: this._ws
-            },
+            {},
             {
                 type: 'resetPassword',
                 format: 'email',
@@ -314,7 +312,6 @@ export class UserService extends Service<IUser> {
                     username: user.username || user.email,
                     link: notifConfig.resetLinkTemplate.replace('{token}', token)
                 },
-                workspace: this._ws,
                 users: [user._id]
             },
             null,
@@ -329,7 +326,7 @@ export class UserService extends Service<IUser> {
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
         }
-        const roles = await RoleService.get(this._ws)
+        const roles = await RoleService.get()
             .model()
             .find({ _id: { $in: user.roles } });
         if (roles.map(r => r.key).indexOf(config.roleBotKey) !== -1 && !user.loginEnabled) {
@@ -361,7 +358,7 @@ export class UserService extends Service<IUser> {
     }
 
     private getJwtSecret() {
-        return this._ws + '-' + config.jwt.secret;
+        return config.jwt.secret;
     }
 
     async resetPassword(token: string, password: string) {

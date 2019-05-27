@@ -8,12 +8,12 @@ import { PrivilegeSchema } from './privilege.model';
 import ObjectId = mongoose.Types.ObjectId;
 
 export class PrivilegeService extends Service<IPrivilege> {
-    constructor(ws: string, model: Model<IPrivilege>) {
-        super(ws, model, 'privilege');
+    constructor(model: Model<IPrivilege>) {
+        super(model, 'privilege');
     }
 
-    public static get(ws: string): PrivilegeService {
-        return super.getService(ws, PrivilegeSchema, 'privilege', 'privileges', PrivilegeService);
+    public static get(): PrivilegeService {
+        return super.getService(PrivilegeSchema, 'privilege', 'privileges', PrivilegeService);
     }
 
     async getAll(criteria: any) {

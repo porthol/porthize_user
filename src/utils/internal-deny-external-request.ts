@@ -10,7 +10,7 @@ export function internalDenyExternalRequestMiddleware(req: Request, res: Respons
         }
         const uuid = req.headers['internal-request'].toString();
 
-        UserService.get(req.headers.workspace.toString())
+        UserService.get()
             .get(null, { username: uuid, enabled: true })
             .then(user => {
                 next();

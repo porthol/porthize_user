@@ -5,7 +5,7 @@ import { CustomError, CustomErrorCode } from '../utils/custom-error';
 
 export class RoleController {
     getAll(req: Request, res: Response, next: NextFunction): void {
-        RoleService.get(req.headers.workspace.toString())
+        RoleService.get()
             .getAll(req.query)
             .then(roles => {
                 res.status(httpStatus.OK).send(roles);
@@ -14,7 +14,7 @@ export class RoleController {
     }
 
     get(req: Request, res: Response, next: NextFunction): void {
-        RoleService.get(req.headers.workspace.toString())
+        RoleService.get()
             .get(req.params.id, req.query)
             .then(role => {
                 if (!role) {
@@ -27,7 +27,7 @@ export class RoleController {
     }
 
     create(req: Request, res: Response, next: NextFunction): void {
-        RoleService.get(req.headers.workspace.toString())
+        RoleService.get()
             .create(req.body)
             .then(role => {
                 res.status(httpStatus.CREATED).send(role);
@@ -36,7 +36,7 @@ export class RoleController {
     }
 
     update(req: Request, res: Response, next: NextFunction): void {
-        RoleService.get(req.headers.workspace.toString())
+        RoleService.get()
             .update(req.params.id, req.body)
             .then(role => {
                 res.status(httpStatus.OK).send(role);
@@ -45,7 +45,7 @@ export class RoleController {
     }
 
     remove(req: Request, res: Response, next: NextFunction): void {
-        RoleService.get(req.headers.workspace.toString())
+        RoleService.get()
             .delete(req.params.id)
             .then(result => {
                 if (result.n === 0) {
@@ -58,7 +58,7 @@ export class RoleController {
     }
 
     addPrivilege(req: Request, res: Response, next: NextFunction): void {
-        RoleService.get(req.headers.workspace.toString())
+        RoleService.get()
             .addPrivilege(req.params.id, req.body)
             .then(role => {
                 res.status(httpStatus.OK).send(role);
@@ -67,7 +67,7 @@ export class RoleController {
     }
 
     removePrivilege(req: Request, res: Response, next: NextFunction): void {
-        RoleService.get(req.headers.workspace.toString())
+        RoleService.get()
             .removePrivilege(req.params.id, req.params.privilegeId)
             .then(role => {
                 res.status(httpStatus.OK).send(role);
@@ -76,7 +76,7 @@ export class RoleController {
     }
 
     importPrivilege(req: Request, res: Response, next: NextFunction): void {
-        RoleService.get(req.headers.workspace.toString())
+        RoleService.get()
             .importPrivilege(req.body)
             .then(() => {
                 res.status(httpStatus.NO_CONTENT).send();

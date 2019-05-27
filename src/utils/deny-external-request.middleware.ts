@@ -20,8 +20,7 @@ export function denyExternalRequestMiddleware(req: Request, res: Response, next:
             .get(
                 config[appName].authorizationService.internalRequestRoute.replace('{uuid}', uuid),
                 {
-                    'internal-request': app.uuid,
-                    workspace: config[appName].mainWorkspace
+                    'internal-request': app.uuid
                 },
                 null,
                 true
