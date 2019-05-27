@@ -4,8 +4,8 @@ import { Document } from 'mongoose';
 
 export class ServiceManager<T extends Service<Document>> {
     private readonly serviceByName: {
-            [name: string]: T;
-        };
+        [name: string]: T;
+    };
 
     constructor() {
         this.serviceByName = {};

@@ -1,7 +1,7 @@
 import { serviceManager } from './service.manager';
-import { MongoConnection } from './mongo-connection';
 import { Document, Model, Schema } from 'mongoose';
 import { IService } from './service.interface';
+import * as mongoose from 'mongoose';
 
 export abstract class Service<T extends Document> implements IService {
     protected readonly _name: string;
@@ -29,7 +29,7 @@ export abstract class Service<T extends Document> implements IService {
     ): T {
         let service = serviceManager.getService(name) as T;
         if (!service) {
-            const model = MongoConnection.connections[0].getConnection().model(name, schema, collection);
+            const model = mongoose.model(name, schema, collection);
             service = new c(model, name);
             serviceManager.registerService(service);
         }

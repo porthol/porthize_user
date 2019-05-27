@@ -231,7 +231,7 @@ export class App {
                         getLogger('mainApp').log(
                             'info',
                             'Connection on database ready state is ' +
-                            databaseConnection.states[databaseConnection.readyState]
+                                databaseConnection.states[databaseConnection.readyState]
                         );
                     });
                 } else {
