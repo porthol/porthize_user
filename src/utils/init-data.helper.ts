@@ -83,7 +83,7 @@ export async function exportPrivileges(config: any) {
     }
 }
 
-export async function internalInitPrivileges() {
+export async function internalExportPrivileges() {
     getLogger('initData').log('info', 'Importing privileges from internal');
     try {
         const filePath = join(path, 'config/privileges-roles.json');

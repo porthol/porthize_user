@@ -8,11 +8,12 @@ import { handleErrorMiddleware } from './utils/handle-error.middleware';
 import * as uuid from 'uuid/v4';
 import { communicationHelper } from './server';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './utils/logger';
-import { exportRoutes } from './utils/router.manager';
-import { exportPrivileges, initData } from './utils/init-data.helper';
+import { internalExportRoutes } from './utils/router.manager';
+import { initData, internalExportPrivileges } from './utils/init-data.helper';
 import { getDatabaseConnectionUrl } from './utils/connection.helper';
 import * as mongoose from 'mongoose';
 import { serviceManager } from './utils/service.manager';
+import { UserService } from './user/user.service';
 
 configureLogger('mainApp', defaultWinstonLoggerOptions);
 
@@ -136,18 +137,18 @@ export class App {
     private async nextBootstrap() {
         try {
             if (!this.registered) {
-                await this.registerApp();
+                await this.internalRegisterApp();
                 this.registered = true;
                 getLogger('mainApp').log('info', 'App correctly registered.');
             }
             if (!this.routesExport) {
-                await exportRoutes(this.configuration);
+                await internalExportRoutes();
                 this.routesExport = true;
                 getLogger('mainApp').log('info', 'Routes exported');
             }
 
             if (!this.privilegesExport) {
-                await exportPrivileges(this.configuration);
+                await internalExportPrivileges();
                 getLogger('mainApp').log('info', 'Privileges exported');
                 this.privilegesExport = true;
             }
@@ -178,6 +179,14 @@ export class App {
 
         this._token = response.body.token;
         this.renewTimeOut = response.body.renewTimeOut;
+        setTimeout(this.renewToken.bind(this), this.renewTimeOut);
+        getLogger('mainApp').log('info', 'App registered on authorization service');
+    }
+
+    async internalRegisterApp() {
+        const tokenObj = await UserService.get().createBotUser(this.uuid);
+        this._token = tokenObj.token;
+        this.renewTimeOut = parseInt(tokenObj.renewTimeOut, 0);
         setTimeout(this.renewToken.bind(this), this.renewTimeOut);
         getLogger('mainApp').log('info', 'App registered on authorization service');
     }
@@ -229,7 +238,7 @@ export class App {
                         getLogger('mainApp').log(
                             'info',
                             'Connection on database ready state is ' +
-                            databaseConnection.states[databaseConnection.readyState]
+                                databaseConnection.states[databaseConnection.readyState]
                         );
                     });
                 } else {
