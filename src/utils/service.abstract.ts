@@ -5,7 +5,6 @@ import { IService } from './service.interface';
 
 export abstract class Service<T extends Document> implements IService {
     protected readonly _name: string;
-    protected readonly _ws: string;
     protected readonly _model: Model<T>;
 
     abstract create(data: any): any;
@@ -17,29 +16,22 @@ export abstract class Service<T extends Document> implements IService {
     model(): Model<any> {
         return this._model;
     }
-
-    workspace(): string {
-        return this._ws;
-    }
-
-    protected constructor(ws: string, model: Model<T>, name: string) {
-        this._ws = ws;
+    protected constructor(model: Model<T>, name: string) {
         this._model = model;
         this._name = name;
     }
 
     protected static getService<T extends Service<Document>>(
-        ws: string,
         schema: Schema,
         name: string,
         collection: string,
-        c: new (ws: string, model: Model<Document>, name: string) => T
+        c: new (model: Model<Document>, name: string) => T
     ): T {
-        let service = serviceManager.getService(ws, name) as T;
+        let service = serviceManager.getService(name) as T;
         if (!service) {
-            const model = MongoConnection.connections[ws].getConnection().model(name, schema, collection);
-            service = new c(ws, model, name);
-            serviceManager.registerService(ws, service);
+            const model = MongoConnection.connections[0].getConnection().model(name, schema, collection);
+            service = new c(model, name);
+            serviceManager.registerService(service);
         }
         return service;
     }

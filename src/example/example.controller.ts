@@ -5,7 +5,7 @@ import { CustomError, CustomErrorCode } from '../utils/custom-error';
 
 export class ExampleController {
     getAll(req: Request, res: Response, next: NextFunction): void {
-        ExampleService.get(req.headers.workspace.toString())
+        ExampleService.get()
             .getAll(req.query)
             .then(examples => {
                 res.status(httpStatus.OK).send(examples);
@@ -14,7 +14,7 @@ export class ExampleController {
     }
 
     get(req: Request, res: Response, next: NextFunction): void {
-        ExampleService.get(req.headers.workspace.toString())
+        ExampleService.get()
             .get(req.params.id, req.query)
             .then(example => {
                 if (!example) {
@@ -27,7 +27,7 @@ export class ExampleController {
     }
 
     register(req: Request, res: Response, next: NextFunction): void {
-        ExampleService.get(req.headers.workspace.toString())
+        ExampleService.get()
             .create(req.body)
             .then(example => {
                 res.status(httpStatus.CREATED).send(example);
@@ -36,7 +36,7 @@ export class ExampleController {
     }
 
     update(req: Request, res: Response, next: NextFunction): void {
-        ExampleService.get(req.headers.workspace.toString())
+        ExampleService.get()
             .update(req.params.id, req.body)
             .then(result => {
                 if (result.nModified === 0) {
@@ -50,7 +50,7 @@ export class ExampleController {
     }
 
     delete(req: Request, res: Response, next: NextFunction): void {
-        ExampleService.get(req.headers.workspace.toString())
+        ExampleService.get()
             .delete(req.params.id)
             .then(result => {
                 if (result.n === 0) {

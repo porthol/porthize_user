@@ -12,8 +12,7 @@ export function authorizationMiddleware(req: Request, res: Response, next: NextF
         .post(
             config[appName].authorizationService.authorizationRoute,
             {
-                authorization: req.headers.authorization,
-                workspace: req.headers.workspace.toString()
+                authorization: req.headers.authorization
             },
             {
                 method: req.method,

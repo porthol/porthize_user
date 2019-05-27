@@ -10,30 +10,29 @@ const appName = getPackageName();
 const config: any = getConfiguration();
 
 export class MongoConnection {
-    static connections: { [ws: string]: MongoConnection } = {};
+    static connections: { [key: string]: MongoConnection } = {};
     private connection: Connection;
 
-    constructor(private ws: string) {}
+    constructor() {}
 
     public getConnection() {
         return this.connection;
     }
 
-    async init() {
+    async init(key: string) {
         if (config[appName] && config[appName].databases) {
-            const databaseUrl = this.getDatabaseConnectionUrl(this.ws);
+            const databaseUrl = this.getDatabaseConnectionUrl();
             const mongooseOptions: any = { useNewUrlParser: true };
             if (config[appName].databases.length > 1) {
                 mongooseOptions.replicaSet = 'rs0';
             }
             if (databaseUrl) {
                 this.connection = await mongoose.createConnection(databaseUrl, mongooseOptions);
-                MongoConnection.connections[this.ws] = this;
+                MongoConnection.connections[key] = this;
                 getLogger('default').log(
                     'info',
-                    'Connection on %s database ready state is ' +
+                    'Connection on database ready state is ' +
                         (this.connection as any).states[this.connection.readyState],
-                    this.ws
                 );
             } else {
                 throw new CustomError(
@@ -44,13 +43,13 @@ export class MongoConnection {
         }
     }
 
-    private getDatabaseConnectionUrl(workspaceKey: string) {
+    private getDatabaseConnectionUrl() {
         const config: any = getConfiguration();
         if (!config[appName].databaseName) {
             return null;
         }
 
-        const dbName = workspaceKey + '-' + config[appName].databaseName;
+        const dbName = config[appName].databaseName;
         let url = 'mongodb://';
 
         if (!(config[appName] && config[appName].databases)) {

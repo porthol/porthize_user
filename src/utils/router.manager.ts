@@ -79,15 +79,14 @@ export class RouterManager {
 
 export const routes: IRoute[] = [];
 
-export async function exportRoutes(ws: string, config: any) {
+export async function exportRoutes(config: any) {
     getLogger('routerManager').log('info', 'Exporting routes to the authorization server...');
     for (const route of routes) {
         try {
             await communicationHelper.post(
                 config.authorizationService.addRoute.replace('{resource}', route.resource),
                 {
-                    'internal-request': app.uuid,
-                    workspace: ws
+                    'internal-request': app.uuid
                 },
                 {
                     action: route.action,

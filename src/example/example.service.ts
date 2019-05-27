@@ -6,12 +6,12 @@ import { Service } from '../utils/service.abstract';
 import { IExample } from './example.document';
 
 export class ExampleService extends Service<IExample> {
-    constructor(ws: string, model: Model<IExample>) {
-        super(ws, model, 'example');
+    constructor(model: Model<IExample>) {
+        super(model, 'example');
     }
 
-    public static get(ws: string): ExampleService {
-        return super.getService(ws, ExampleSchema, 'example', 'examples', ExampleService);
+    public static get(): ExampleService {
+        return super.getService(ExampleSchema, 'example', 'examples', ExampleService);
     }
 
     async getAll(criteria: any) {

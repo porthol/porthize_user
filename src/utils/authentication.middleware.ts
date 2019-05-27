@@ -10,8 +10,7 @@ const config: any = getConfiguration();
 export function authenticationMiddleware(req: Request, res: Response, next: NextFunction) {
     communicationHelper
         .get(config[appName].authorizationService.authenticationRoute, {
-            authorization: req.headers.authorization,
-            workspace: req.headers.workspace.toString()
+            authorization: req.headers.authorization
         })
         .then(() => next())
         .catch(next);

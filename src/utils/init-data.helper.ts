@@ -26,7 +26,7 @@ const IDataToImport = {
     }
 };
 
-export async function initData(ws: string) {
+export async function initData() {
     try {
         const folderPath = join(path, 'config/data/');
         if (fs.existsSync(folderPath)) {
@@ -41,7 +41,7 @@ export async function initData(ws: string) {
                     getLogger('initData').log('warn', ajv.errorsText());
                     return;
                 }
-                const service = serviceManager.getService(ws, importFile.model);
+                const service = serviceManager.getService(importFile.model);
 
                 const count = await service.model().countDocuments({});
                 if (!count || count <= 0) {
@@ -61,17 +61,15 @@ export async function initData(ws: string) {
     }
 }
 
-// add ws
-export async function initPrivileges(ws: string, rolePrivilegeRoute: string) {
+export async function exportPrivileges(config: any) {
     try {
         const filePath = join(path, 'config/privileges-roles.json');
         const privilegesRolesData = require(filePath);
 
         await communicationHelper.post(
-            rolePrivilegeRoute,
+            config.authorizationService.rolePrivilegeRoute,
             {
-                'internal-request': app.uuid,
-                workspace: ws
+                'internal-request': app.uuid
             },
             privilegesRolesData,
             null,
