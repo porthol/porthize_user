@@ -169,8 +169,7 @@ export class App {
         const response = await communicationHelper.post(
             this.configuration.authorizationService.registerAppRoute,
             {
-                'internal-request': this.uuid,
-                workspace: this.configuration.mainWorkspace
+                'internal-request': this.uuid
             },
             {
                 uuid: this.uuid
@@ -188,8 +187,7 @@ export class App {
             const response = await communicationHelper.post(
                 this.configuration.authorizationService.renewTokenRoute,
                 {
-                    'internal-request': this.uuid,
-                    workspace: this.configuration.mainWorkspace
+                    'internal-request': this.uuid
                 },
                 {
                     token: 'Bearer ' + this.token

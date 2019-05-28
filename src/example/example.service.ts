@@ -4,6 +4,7 @@ import { ExampleSchema } from './example.model';
 import ObjectId = mongoose.Types.ObjectId;
 import { Service } from '../utils/service.abstract';
 import { IExample } from './example.document';
+import { CustomError, CustomErrorCode } from '../utils/custom-error';
 
 export class ExampleService extends Service<IExample> {
     constructor(model: Model<IExample>) {
@@ -28,8 +29,14 @@ export class ExampleService extends Service<IExample> {
         return await example.save();
     }
 
-    async update(id: ObjectId, userData: any) {
-        return await this._model.updateOne({ _id: id }, userData);
+    async update(id: ObjectId, data: any) {
+        const example = await this._model.findById(id);
+        if (!example) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Example not found');
+        }
+        example.set(data);
+
+        return await example.save();
     }
 
     async delete(id: ObjectId) {
