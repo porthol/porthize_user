@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { CustomRequest } from './CustomRequest';
+import { CustomRequest } from './custom-request';
 
 // we move out limit and skip from query to keep criteria search
 export function initContextMiddleware(req: Request, res: Response, next: NextFunction) {
