@@ -3,11 +3,11 @@ import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
 import { isEmail } from 'validator';
-import { CustomRequest } from '../utils/CustomRequest';
+import { CustomRequest } from '../utils/custom-request';
 
 export class UserController {
     getAll(req: Request, res: Response, next: NextFunction): void {
-        const customReq = req as any as CustomRequest;
+        const customReq = (req as any) as CustomRequest;
         UserService.get()
             .getAll(req.query, customReq.context.skip, customReq.context.limit)
             .then(users => {
@@ -48,7 +48,7 @@ export class UserController {
     }
 
     updateMe(req: Request, res: Response, next: NextFunction): void {
-        const customReq = req as any as CustomRequest;
+        const customReq = (req as any) as CustomRequest;
         UserService.get()
             .update(customReq.context.user._id, req.body)
             .then(user => {
@@ -58,7 +58,7 @@ export class UserController {
     }
 
     remove(req: Request, res: Response, next: NextFunction): void {
-        const customReq = req as any as CustomRequest;
+        const customReq = (req as any) as CustomRequest;
         Promise.resolve()
             .then(() => {
                 if (customReq.context.user._id === req.params.id) {
