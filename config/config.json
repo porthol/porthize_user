@@ -34,11 +34,6 @@
       "name": "notification",
       "sendNotifRoute": "notifications",
       "resetLinkTemplate": "http://main.app.mydomain:8082/reset-password?reset-token={token}"
-    },
-    "workspaceService": {
-      "name": "workspace",
-      "existRoute": "workspaces?key={{key}}&enabled=true",
-      "getAllRoute": "workspaces?enabled=true"
     }
   }
 }
