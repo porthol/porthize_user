@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import * as winston from 'winston';
-import { CustomRequest } from './CustomRequest';
+import { CustomRequest } from './custom-request';
 
 export function expressMetricsMiddleware(req: Request, res: Response, next: NextFunction) {
     const customReq = (req as any) as CustomRequest;
