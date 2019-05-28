@@ -34,6 +34,10 @@
       "name": "notification",
       "sendNotifRoute": "notifications",
       "resetLinkTemplate": "http://main.app.mydomain:8082/reset-password?reset-token={token}"
+    },
+    "paging": {
+      "limitMax": 200,
+      "defaultValue": 50
     }
   }
 }

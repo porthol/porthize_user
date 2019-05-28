@@ -40,8 +40,10 @@ export class UserService extends Service<IUser> {
         return super.getService(UserSchema, 'user', 'users', UserService);
     }
 
-    async getAll(criteria: any) {
-        const users = await this._model.find(criteria || {});
+    async getAll(criteria: any = {}, skip = 0, limit = config.paging.defaultValue) {
+        const users = await this._model.find(criteria)
+            .skip(skip)
+            .limit(limit);
 
         for (let i = 0; i < users.length; i++) {
             users[i] = this.getCleanUser(users[i]);

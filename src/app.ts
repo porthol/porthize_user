@@ -14,6 +14,8 @@ import { getDatabaseConnectionUrl } from './utils/connection.helper';
 import * as mongoose from 'mongoose';
 import { serviceManager } from './utils/service.manager';
 import { UserService } from './user/user.service';
+import { initContextMiddleware } from './utils/init-context.middleware';
+import { pagingMiddleware } from './utils/paging.middleware';
 
 configureLogger('mainApp', defaultWinstonLoggerOptions);
 
@@ -118,12 +120,14 @@ export class App {
     }
 
     applyExpressMiddlewaresRouter(): void {
+        this.expressApp.use(initContextMiddleware);
         this.expressApp.use(addStartTime);
         this.expressApp.use(bodyParser.json());
         this.expressApp.use(bodyParser.urlencoded({ extended: true }));
         this.expressApp.use(helmet());
         this.expressApp.use(cors());
         this.expressApp.use(expressMetricsMiddleware);
+        this.expressApp.use(pagingMiddleware);
     }
 
     async bootstrap() {

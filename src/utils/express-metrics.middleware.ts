@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import * as winston from 'winston';
+import { CustomRequest } from './CustomRequest';
 
 export function expressMetricsMiddleware(req: Request, res: Response, next: NextFunction) {
+    const customReq = (req as any) as CustomRequest;
     const end: {
         (cb?: () => void): void;
         (chunk: any, cb?: () => void): void;
@@ -19,8 +21,8 @@ export function expressMetricsMiddleware(req: Request, res: Response, next: Next
 
             // Calculate response time
             let responseTimeInMs: number;
-            if ((req as any).startTime) {
-                responseTimeInMs = new Date().getTime() - (req as any).startTime;
+            if (customReq.context.startTime) {
+                responseTimeInMs = new Date().getTime() - customReq.context.startTime;
             }
 
             let body: any = {};
@@ -67,6 +69,7 @@ export function expressMetricsMiddleware(req: Request, res: Response, next: Next
 }
 
 export function addStartTime(req: Request, res: Response, next: NextFunction) {
-    (req as any).startTime = new Date().getTime();
+    const customReq = (req as any) as CustomRequest;
+    customReq.context.startTime = new Date().getTime();
     next();
 }

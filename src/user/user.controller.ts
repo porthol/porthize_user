@@ -3,11 +3,13 @@ import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
 import { isEmail } from 'validator';
+import { CustomRequest } from '../utils/CustomRequest';
 
 export class UserController {
     getAll(req: Request, res: Response, next: NextFunction): void {
+        const customReq = req as any as CustomRequest;
         UserService.get()
-            .getAll(req.query)
+            .getAll(req.query, customReq.context.skip, customReq.context.limit)
             .then(users => {
                 res.status(httpStatus.OK).send(users);
             })
@@ -46,8 +48,9 @@ export class UserController {
     }
 
     updateMe(req: Request, res: Response, next: NextFunction): void {
+        const customReq = req as any as CustomRequest;
         UserService.get()
-            .update((req as any).user._id, req.body)
+            .update(customReq.context.user._id, req.body)
             .then(user => {
                 res.status(httpStatus.OK).send(user);
             })
@@ -55,9 +58,10 @@ export class UserController {
     }
 
     remove(req: Request, res: Response, next: NextFunction): void {
+        const customReq = req as any as CustomRequest;
         Promise.resolve()
             .then(() => {
-                if ((req as any).user._id === req.params.id) {
+                if (customReq.context.user._id === req.params.id) {
                     throw new CustomError(
                         CustomErrorCode.ERRBADREQUEST,
                         'Bad request : The user cannot delete himself'

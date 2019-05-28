@@ -5,8 +5,13 @@ import { ValidationError } from 'ajv';
 import { MongoError } from 'mongodb';
 import { StatusCodeError } from 'request-promise/errors';
 import { JsonWebTokenError } from 'jsonwebtoken';
+import * as winston from 'winston';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 
 export function handleErrorMiddleware(err: any, req: Request, res: Response, next: NextFunction) {
+    configureLogger('apiError', defaultWinstonLoggerOptions);
+    const logger: winston.Logger = getLogger('apiError');
+
     // todo when authorization service is down the error is too verbose
     if (err instanceof JsonWebTokenError) {
         err = new CustomError(CustomErrorCode.ERRBADREQUEST, 'Json Web Token Error', err);
@@ -43,6 +48,8 @@ export function handleErrorMiddleware(err: any, req: Request, res: Response, nex
             }
         }
     }
+    logger.log('error', err);
+
     if (err.name === CustomError.name) {
         res.status(CustomErrorCodeToHttpStatus(err.code)).send(err);
     } else {
