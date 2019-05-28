@@ -4,8 +4,13 @@ import * as httpStatus from 'http-status';
 import { ValidationError } from 'ajv';
 import { MongoError } from 'mongodb';
 import { StatusCodeError } from 'request-promise/errors';
+import * as winston from 'winston';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 
 export function handleErrorMiddleware(err: any, req: Request, res: Response, next: NextFunction) {
+    configureLogger('apiError', defaultWinstonLoggerOptions);
+    const logger: winston.Logger = getLogger('apiError');
+
     // todo when authorization service is down the error is too verbose
     if (err.name === ValidationError.name) {
         err = new CustomError(CustomErrorCode.ERRBADREQUEST, 'Validation Error : ' + err.message, err);
@@ -39,6 +44,8 @@ export function handleErrorMiddleware(err: any, req: Request, res: Response, nex
             }
         }
     }
+    logger.log('error', err);
+
     if (err.name === CustomError.name) {
         res.status(CustomErrorCodeToHttpStatus(err.code)).send(err);
     } else {

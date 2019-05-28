@@ -119,8 +119,8 @@ export class App {
     }
 
     applyExpressMiddlewaresRouter(): void {
-        this.expressApp.use(addStartTime);
         this.expressApp.use(initContextMiddleware);
+        this.expressApp.use(addStartTime);
         this.expressApp.use(bodyParser.json());
         this.expressApp.use(bodyParser.urlencoded({ extended: true }));
         this.expressApp.use(helmet());

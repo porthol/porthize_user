@@ -10,6 +10,10 @@
       "renewTokenRoute": "users/renewBotToken",
       "rolePrivilegeRoute": "roles/importPrivileges",
       "internalRequestRoute": "users?username={uuid}&enabled=true"
+    },
+    "paging": {
+      "limitMax": 200,
+      "defaultValue": 50
     }
   }
 }
