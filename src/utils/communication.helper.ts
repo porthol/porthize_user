@@ -44,6 +44,10 @@ export class CommunicationHelper {
     ): UriOptions & RequestPromiseOptions {
         const uri = this.getBaseUrl() + path;
 
+        if (!headers) {
+            headers = {};
+        }
+
         if (!headers.authorization && app.token && addAppToken) {
             headers.authorization = 'Bearer ' + app.token;
         }

@@ -1,4 +1,4 @@
-FROM node:8 as builder
+FROM node:11 as builder
 
 WORKDIR "/opt/app"
 
@@ -6,7 +6,7 @@ COPY . ./
 RUN npm install
 RUN npm run build
 
-FROM node:8 as runner
+FROM node:11 as runner
 # Expose default port
 EXPOSE 3000
 

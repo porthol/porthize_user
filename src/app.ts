@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
-import { configureRouter, configureServices } from './configure';
+import { configureRouter } from './configure';
 import { addStartTime, expressMetricsMiddleware } from './utils/express-metrics.middleware';
 import { handleErrorMiddleware } from './utils/handle-error.middleware';
 import * as uuid from 'uuid/v4';
@@ -12,6 +12,7 @@ import { exportRoutes } from './utils/router.manager';
 import { exportPrivileges, initData } from './utils/init-data.helper';
 import { getDatabaseConnectionUrl } from './utils/connection.helper';
 import * as mongoose from 'mongoose';
+import { serviceManager } from './utils/service.manager';
 
 configureLogger('mainApp', defaultWinstonLoggerOptions);
 
@@ -237,7 +238,7 @@ export class App {
                 this.dbConnected = true;
             }
 
-            configureServices();
+            serviceManager.initService();
             await initData();
 
             this.setIsReady(this.registered && this.routesExport && this.privilegesExport && this.dbConnected);

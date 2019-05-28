@@ -1,9 +1,9 @@
 import { Model } from 'mongoose';
 
-export interface Service {
-    getName(): string;
+export interface IService {
+    name(): string;
 
-    getModel(): Model<any>;
+    model(): Model<any>;
 
     create(data: any): any;
 }

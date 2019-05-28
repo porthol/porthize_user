@@ -1,6 +1,11 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
+      "paths": {
+        "*": [
+          "types/*"
+        ]
+      },
         "target": "es2017",
         "moduleResolution": "node",
         "module": "commonjs",

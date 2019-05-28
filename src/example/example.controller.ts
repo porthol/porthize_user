@@ -38,13 +38,8 @@ export class ExampleController {
     update(req: Request, res: Response, next: NextFunction): void {
         ExampleService.get()
             .update(req.params.id, req.body)
-            .then(result => {
-                if (result.nModified === 0) {
-                    throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'example not found');
-                } else {
-                    // todo we should send back the example modified
-                    res.status(httpStatus.OK).send(req.body);
-                }
+            .then(example => {
+                res.status(httpStatus.OK).send(example);
             })
             .catch(next);
     }

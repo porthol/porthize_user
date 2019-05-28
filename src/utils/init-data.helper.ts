@@ -3,8 +3,8 @@ import { path } from 'app-root-path';
 import * as fs from 'fs';
 import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
 import * as Ajv from 'ajv';
-import { serviceManager } from './service.manager';
 import { app, communicationHelper } from '../server';
+import { serviceManager } from './service.manager';
 
 configureLogger('initData', defaultWinstonLoggerOptions);
 
@@ -43,7 +43,7 @@ export async function initData() {
                 }
                 const service = serviceManager.getService(importFile.model);
 
-                const count = await service.getModel().countDocuments({});
+                const count = await service.model().countDocuments({});
                 if (!count || count <= 0) {
                     for (const data of importFile.data) {
                         await service.create(data);

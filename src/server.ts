@@ -4,15 +4,12 @@ import { getPackageName } from './utils/package.helper';
 import { App } from './app';
 import { createServer } from 'http';
 import { CommunicationHelper } from './utils/communication.helper';
-import { AmqpManager } from './utils/amqp.manager';
 
 const appName = getPackageName();
 
 const config: any = getConfiguration();
 
 export const communicationHelper = new CommunicationHelper(config[appName].traefik);
-
-export const amqpManager = new AmqpManager(config[appName].rabbitmq);
 
 export const app: App = new App({
     appName,

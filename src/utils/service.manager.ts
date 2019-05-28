@@ -1,23 +1,27 @@
-import { CustomError, CustomErrorCode } from './custom-error';
-import { Service } from './service.interface';
+import { Service } from './service.abstract';
+import { ExampleService } from '../example/example.service';
+import { Document } from 'mongoose';
 
-export class ServiceManager {
-    private serviceByName: { [attr: string]: Service };
+export class ServiceManager<T extends Service<Document>> {
+    private readonly serviceByName: {
+        [name: string]: T;
+    };
 
     constructor() {
         this.serviceByName = {};
     }
 
-    registerService(service: Service) {
-        this.serviceByName[service.getName()] = service;
+    registerService(service: T) {
+        this.serviceByName[service.name()] = service;
     }
 
-    getService(name: string): Service {
-        const service = this.serviceByName[name];
-        if (!service) {
-            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Service not found');
-        }
-        return service;
+    getService(name: string): T {
+        return this.serviceByName[name];
+    }
+
+    initService() {
+        // register your service here
+        ExampleService.get();
     }
 }
 
