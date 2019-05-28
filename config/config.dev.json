@@ -11,12 +11,12 @@
       "gatewayAddress": "gateway",
       "gatewayPort": 80
     }
-    },
-    "jwt": {
-      "options": {
-        "expiresIn": "365d"
-      }
-    },
-    "checkBotAccountTime": "1m"
-  }
+  },
+  "jwt": {
+    "options": {
+      "expiresIn": "365d"
+    }
+  },
+  "checkBotAccountTime": "1m"
 }
+

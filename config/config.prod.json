@@ -1,5 +1,5 @@
 {
-  "templateexpress": {
+  "user": {
     "databases": [
       {
         "host": "mongo1",
@@ -19,16 +19,15 @@
       "gatewayAddress": "gateway",
       "gatewayPort": 80
     }
-    },
-    "authorizationService": {
-      "name": "user",
-      "addRoute": "privileges/{resource}/routes",
-      "authorizationRoute": "users/isAuthorized",
-      "authenticationRoute": "token",
-      "registerAppRoute": "users/registerMicroService",
-      "renewTokenRoute": "users/renewBotToken",
-      "rolePrivilegeRoute": "roles/importPrivileges"
-    },
-    "checkBotAccountTime": "48h"
-  }
+  },
+  "authorizationService": {
+    "name": "user",
+    "addRoute": "privileges/{resource}/routes",
+    "authorizationRoute": "users/isAuthorized",
+    "authenticationRoute": "token",
+    "registerAppRoute": "users/registerMicroService",
+    "renewTokenRoute": "users/renewBotToken",
+    "rolePrivilegeRoute": "roles/importPrivileges"
+  },
+  "checkBotAccountTime": "48h"
 }
