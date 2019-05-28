@@ -225,7 +225,7 @@ export class UserService extends Service<IUser> {
         if (!tokenFromHeader) {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'There is no token present');
         }
-        const token = getCleanToken(tokenFromHeader);
+        const token = tokenFromHeader;
 
         const result = await jwt.verify(token, this.getJwtSecret(), config.jwt.options);
 
@@ -370,8 +370,4 @@ export class UserService extends Service<IUser> {
         }
         return await this.update(user._id, { password });
     }
-}
-
-function getCleanToken(tokenFromHeader: string) {
-    return tokenFromHeader.substr(7);
 }
