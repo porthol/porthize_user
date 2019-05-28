@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import { CustomError, CustomErrorCode } from './custom-error';
 import { UserService } from '../user/user.service';
+import { CustomRequest } from './custom-request';
 
 export function internalAuthorizationMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
-        const user = (req as any).user;
+        const customReq = (req as any) as CustomRequest;
+        const user = customReq.context.user;
 
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'The user has not been authenticated');

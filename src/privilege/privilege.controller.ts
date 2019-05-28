@@ -2,11 +2,13 @@ import { PrivilegeService } from './privilege.service';
 import { NextFunction, Request, Response } from 'express';
 import * as httpStatus from 'http-status';
 import { CustomError, CustomErrorCode } from '../utils/custom-error';
+import { CustomRequest } from '../utils/custom-request';
 
 export class PrivilegeController {
     getAll(req: Request, res: Response, next: NextFunction): void {
+        const customReq = (req as any) as CustomRequest;
         PrivilegeService.get()
-            .getAll(req.query)
+            .getAll(req.query, customReq.context.skip, customReq.context.limit)
             .then(privileges => {
                 res.status(httpStatus.OK).send(privileges);
             })

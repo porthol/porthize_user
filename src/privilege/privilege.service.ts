@@ -6,6 +6,9 @@ import * as _ from 'lodash';
 import { Service } from '../utils/service.abstract';
 import { PrivilegeSchema } from './privilege.model';
 import ObjectId = mongoose.Types.ObjectId;
+import { getConfiguration } from '../utils/configuration.helper';
+
+const config: any = getConfiguration().user;
 
 export class PrivilegeService extends Service<IPrivilege> {
     constructor(model: Model<IPrivilege>) {
@@ -16,8 +19,11 @@ export class PrivilegeService extends Service<IPrivilege> {
         return super.getService(PrivilegeSchema, 'privilege', 'privileges', PrivilegeService);
     }
 
-    async getAll(criteria: any) {
-        return await this._model.find(criteria || {});
+    async getAll(criteria: any = {}, skip = 0, limit = config.paging.defaultValue) {
+        return await this._model
+            .find(criteria)
+            .skip(skip)
+            .limit(limit);
     }
 
     async get(id: ObjectId, criteria = {} as any) {

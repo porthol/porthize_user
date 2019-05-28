@@ -9,7 +9,9 @@ import { Service } from '../utils/service.abstract';
 import { IRole } from './role.document';
 import { RoleSchema } from './role.model';
 import ObjectId = mongoose.Types.ObjectId;
+import { getConfiguration } from '../utils/configuration.helper';
 
+const config: any = getConfiguration().user;
 configureLogger('roleService', defaultWinstonLoggerOptions);
 
 export interface IPrivilegeRoleAdd {
@@ -34,8 +36,11 @@ export class RoleService extends Service<IRole> {
         return super.getService(RoleSchema, 'role', 'roles', RoleService);
     }
 
-    async getAll(criteria: any) {
-        return await this._model.find(criteria || {});
+    async getAll(criteria: any = {}, skip = 0, limit = config.paging.defaultValue) {
+        return await this._model
+            .find(criteria)
+            .skip(skip)
+            .limit(limit);
     }
 
     async getOne(criteria: any) {
