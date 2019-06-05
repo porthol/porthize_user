@@ -4,7 +4,8 @@ export const RoleQuerySchema = {
     additionalProperties: false,
     properties: {
         id: {
-            type: 'string'
+            type: 'string',
+            pattern : '^[0-9a-fA-F]{24}$'
         }
     }
 };

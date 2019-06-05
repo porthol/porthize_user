@@ -47,17 +47,16 @@ export class UserService extends Service<IUser> {
             .limit(limit);
 
         for (let i = 0; i < users.length; i++) {
-            users[i] = this.getCleanUser(users[i]);
+            users[i] = await this.getCleanUser(users[i]);
         }
 
         return users;
     }
 
     async get(id: ObjectId, criteria = {} as any) {
-        // todo we will need to get role one time =/
         criteria._id = id;
         const user = await this._model.findOne(criteria || {});
-        return user ? this.getCleanUser(user) : null; // don't clean null object
+        return user ? await this.getCleanUser(user) : null; // don't clean null object
     }
 
     async create(userData: any, addDefaultRole = true) {
@@ -81,7 +80,7 @@ export class UserService extends Service<IUser> {
             await user.save();
         }
 
-        return this.getCleanUser(user);
+        return await this.getCleanUser(user);
     }
 
     async update(id: ObjectId, userData: any) {
@@ -95,7 +94,7 @@ export class UserService extends Service<IUser> {
 
         user.set(userData);
 
-        return this.getCleanUser(await user.save());
+        return await this.getCleanUser(await user.save());
     }
 
     async remove(id: ObjectId) {
@@ -179,7 +178,7 @@ export class UserService extends Service<IUser> {
         if (goodPassword) {
             const iat = Math.floor(Date.now() / 1000);
             const payload: any = {
-                user: this.getCleanUser(user),
+                user: await this.getCleanUser(user),
                 iat
             };
 
@@ -218,7 +217,7 @@ export class UserService extends Service<IUser> {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized');
         }
 
-        return this.getCleanUser(user);
+        return await this.getCleanUser(user);
     }
 
     async isTokenValid(tokenFromHeader: string) {
@@ -297,7 +296,7 @@ export class UserService extends Service<IUser> {
         }
         const payload = {
             iat: Math.floor(Date.now() / 1000),
-            user: this.getCleanUser(user)
+            user: await this.getCleanUser(user)
         };
 
         const token = await jwt.sign(payload, this.getJwtSecret(), config.jwt.resetOptions);
@@ -335,7 +334,7 @@ export class UserService extends Service<IUser> {
         if (roles.map(r => r.key).indexOf(config.roleBotKey) !== -1 && !user.loginEnabled) {
             const iat = Math.floor(Date.now() / 1000);
             const payload: any = {
-                user: this.getCleanUser(user),
+                user: await this.getCleanUser(user),
                 iat
             };
 
@@ -349,11 +348,12 @@ export class UserService extends Service<IUser> {
         return null;
     }
 
-    private getCleanUser(user: IUser): IUser {
-        const cleanedUser = JSON.parse(JSON.stringify(user));
+    private async getCleanUser(user: IUser) {
+        const cleanedUser = {...user.toObject()} as any;
 
         delete cleanedUser.password;
-        delete cleanedUser.roles;
+        // delete cleanedUser.roles;
+        cleanedUser.roles = (await RoleService.get().getAll({_id:cleanedUser.roles})).map(r => r.key);
         delete cleanedUser.emailing;
         delete cleanedUser.__v;
 

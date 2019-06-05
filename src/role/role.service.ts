@@ -36,6 +36,13 @@ export class RoleService extends Service<IRole> {
         return super.getService(RoleSchema, 'role', 'roles', RoleService);
     }
 
+    /**
+     * Get Role
+     * @return Promise<IRole[]>
+     * @param criteria
+     * @param skip
+     * @param limit
+     */
     async getAll(criteria: any = {}, skip = 0, limit = config.paging.defaultValue) {
         return await this._model
             .find(criteria)

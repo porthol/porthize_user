@@ -27,7 +27,8 @@ export const UserQuerySchema = {
     additionalProperties: false,
     properties: {
         id: {
-            type: 'string'
+            type: 'string',
+            pattern : '^[0-9a-fA-F]{24}$'
         }
     }
 };
