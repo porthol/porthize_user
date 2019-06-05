@@ -19,6 +19,7 @@
     "botTokenRenew": "20h",
     "defaultRoleKey": "user",
     "registerRetryTime": 30000,
+    "controlFormatMongoId": true,
     "resetTokenLength": 40,
     "authorizationService": {
       "name": "user",
