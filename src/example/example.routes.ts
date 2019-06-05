@@ -3,6 +3,7 @@ import { Validator } from 'express-json-validator-middleware';
 import { ExampleController } from './example.controller';
 import { ExampleCreateSchema, ExampleUpdateSchema } from './example.schema';
 import { RouterManager } from '../utils/router.manager';
+import { controlFormatIdMiddleware } from '../utils/format-id.middleware';
 
 const router: express.Router = express.Router();
 const controller = new ExampleController();
@@ -92,7 +93,7 @@ routerManager
      *  }
      */
     .get({
-        handlers: [controller.get],
+        handlers: [controlFormatIdMiddleware,controller.get],
         action: 'read',
         resource: 'example'
     })
