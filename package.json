@@ -25,10 +25,10 @@
         "node": ">=8.9.0"
     },
     "apidoc": {
-        "name": "example",
+        "name": "User",
         "version": "0.1.0",
-        "description": "apiDoc basic example",
-        "title": "Custom apiDoc browser title",
+        "description": "User API",
+        "title": "User service",
         "url": "https://localhost:3000/api"
     },
     "dependencies": {

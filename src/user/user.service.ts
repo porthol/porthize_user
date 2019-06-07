@@ -204,7 +204,7 @@ export class UserService extends Service<IUser> {
         }
         const now = Math.floor(Date.now() / 1000);
 
-        const decodedPayload: any = await this.isTokenValid(this.getCleanToken(tokenFromHeader));
+        const decodedPayload: any = await this.isTokenValid(tokenFromHeader);
 
         if (now >= decodedPayload.exp) {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Token expired');
