@@ -47,6 +47,15 @@ export class UserController {
             .catch(next);
     }
 
+    updateSecurity(req: Request, res: Response, next: NextFunction): void {
+        UserService.get()
+            .updateSecurity(req.params.id, req.body)
+            .then(user => {
+                res.status(httpStatus.OK).send(user);
+            })
+            .catch(next);
+    }
+
     updateMe(req: Request, res: Response, next: NextFunction): void {
         const customReq = (req as any) as CustomRequest;
         UserService.get()

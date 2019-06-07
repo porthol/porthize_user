@@ -12,9 +12,9 @@ import { communicationHelper } from '../server';
 import { IRouteEmbedded } from '../privilege/privilege.document';
 import { Service } from '../utils/service.abstract';
 import { UserSchema } from './user.model';
+import { isValid } from 'mailchecker';
 import ms = require('ms');
 import ObjectId = mongoose.Types.ObjectId;
-import { isValid } from 'mailchecker';
 
 const config: any = getConfiguration().user;
 configureLogger('UserService', defaultWinstonLoggerOptions);
@@ -83,15 +83,21 @@ export class UserService extends Service<IUser> {
         return await this.getCleanUser(user);
     }
 
+    async updateSecurity(id: ObjectId, userData: any) {
+        const user = await this._model.findById(id);
+        if (!user) {
+            throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
+        }
+        user.set(userData);
+
+        return await this.getCleanUser(await user.save());
+    }
+
     async update(id: ObjectId, userData: any) {
         const user = await this._model.findById(id);
         if (!user) {
             throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
         }
-        if (userData.password) {
-            userData.password = await hashPassword(userData.password);
-        }
-
         user.set(userData);
 
         return await this.getCleanUser(await user.save());
@@ -198,7 +204,7 @@ export class UserService extends Service<IUser> {
         }
         const now = Math.floor(Date.now() / 1000);
 
-        const decodedPayload: any = await this.isTokenValid(tokenFromHeader);
+        const decodedPayload: any = await this.isTokenValid(this.getCleanToken(tokenFromHeader));
 
         if (now >= decodedPayload.exp) {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Token expired');
@@ -227,11 +233,15 @@ export class UserService extends Service<IUser> {
         if (!tokenFromHeader) {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'There is no token present');
         }
-        const token = tokenFromHeader;
+        const token = this.getCleanToken(tokenFromHeader);
 
         const result = await jwt.verify(token, this.getJwtSecret(), config.jwt.options);
 
         return result;
+    }
+
+    private getCleanToken(tokenFromHeader: string) {
+        return tokenFromHeader.substr(7);
     }
 
     async isAuthorized(partialUser: IUser, route: IRouteEmbedded) {
@@ -319,8 +329,7 @@ export class UserService extends Service<IUser> {
             null,
             true
         );
-        // todo save token into db for reset
-        // and make route to reset the password !
+        // todo check if working
     }
 
     private async generateBotToken(userId: string) {
@@ -349,12 +358,10 @@ export class UserService extends Service<IUser> {
     }
 
     private async getCleanUser(user: IUser) {
-        const cleanedUser = {...user.toObject()} as any;
+        const cleanedUser = { ...user.toObject() } as any;
 
         delete cleanedUser.password;
-        // delete cleanedUser.roles;
-        cleanedUser.roles = (await RoleService.get().getAll({_id:cleanedUser.roles})).map(r => r.key);
-        delete cleanedUser.emailing;
+        cleanedUser.roles = (await RoleService.get().getAll({ _id: cleanedUser.roles })).map(r => r.key);
         delete cleanedUser.__v;
 
         return cleanedUser;

@@ -12,7 +12,8 @@ import {
     UserRenewBotTokenSchema,
     UserRoleQuerySchema,
     UserRoleSchema,
-    UserUpdateSchema
+    UserUpdateSchema,
+    UserUpdateSecuritySchema
 } from './user.schema';
 import { internalAuthenticationMiddleware } from '../utils/internal-authentication.middleware';
 import { RouterManager } from '../utils/router.manager';
@@ -136,7 +137,7 @@ routerManager
 routerManager
     .route('/users/current')
     /**
-     * @api {get} /users/me Retrieve current user
+     * @api {get} /users/current Retrieve current user
      *
      * @apiGroup User
      *
@@ -163,7 +164,7 @@ routerManager
         handlers: [internalAuthenticationMiddleware, userController.current]
     })
     /**
-     * @api {put} /users/:id Update user
+     * @api {put} /users/current Update current user
      *
      * @apiGroup User
      *
@@ -440,6 +441,48 @@ routerManager
             }),
             userController.resetPassword
         ]
+    });
+
+routerManager
+    .route('/users/security/:id')
+    /**
+     * @api {put} /users/security/:id Update user
+     *
+     * @apiGroup User
+     *
+     * @apiParam {String} id ObjectId
+     *
+     * @apiParam {String} [username] Must be unique
+     * @apiParam {String} [email] Must be unique
+     *
+     * @apiSuccess {String} username
+     * @apiSuccess {String} email
+     * @apiSuccess {String} password Hashed password
+     * @apiSuccess {String} id ObjectId
+     *
+     * @apiSuccessExample {json} Success response
+     *     HTTP/1.1 200 OK
+     *     {
+     *        "id": "5b179f629fea4000ffcf2fbc",
+     *        "username": "foo",
+     *        "email": "foo@bar.baz",
+     *        "password": "xqPGyK3yWtIsCupTiyajMZJMKs9Oeby3",
+     *        "roles": []
+     *    }
+     *
+     */
+    .put({
+        handlers: [
+            internalAuthenticationMiddleware,
+            internalAuthorizationMiddleware,
+            validator.validate({
+                params: UserQuerySchema,
+                body: UserUpdateSecuritySchema
+            }),
+            userController.updateSecurity
+        ],
+        resource,
+        action: 'update-security'
     });
 
 export default router;

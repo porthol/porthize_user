@@ -15,6 +15,15 @@ export const UserSchema = new Schema({
         required: true,
         unique: true
     },
+    firstName: {
+        type: String
+    },
+    lastName: {
+        type: String
+    },
+    birthDate: {
+        type: Date
+    },
     password: {
         type: String,
         required: true

@@ -6,6 +6,9 @@ export interface IUser extends Document {
     username: string;
     email: string;
     password: string;
+    firstName: string;
+    lastName: string;
+    birthDate: Date;
     createdAt: Date;
     updatedAt: Date;
     enabled: boolean;

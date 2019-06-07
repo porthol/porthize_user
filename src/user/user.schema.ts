@@ -9,6 +9,12 @@ export const UserCreateSchema = {
         email: {
             type: 'string'
         },
+        firstName: {
+            type: 'string'
+        },
+        lastName: {
+            type: 'string'
+        },
         password: {
             type: 'string'
         },
@@ -43,13 +49,29 @@ export const UserUpdateSchema = {
         email: {
             type: 'string'
         },
+        firstName: {
+            type: 'string'
+        },
+        lastName: {
+            type: 'string'
+        },
+        birthDate: {
+            type: 'string'
+        },
+        emailing: {
+            type: 'boolean'
+        }
+    }
+};
+
+export const UserUpdateSecuritySchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
         enabled: {
             type: 'boolean'
         },
         loginEnabled: {
-            type: 'boolean'
-        },
-        emailing: {
             type: 'boolean'
         }
     }
