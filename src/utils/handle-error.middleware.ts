@@ -11,6 +11,7 @@ import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logge
 export function handleErrorMiddleware(err: any, req: Request, res: Response, next: NextFunction) {
     configureLogger('apiError', defaultWinstonLoggerOptions);
     const logger: winston.Logger = getLogger('apiError');
+    logger.log('error', err.message);
 
     // todo when authorization service is down the error is too verbose
     if (err instanceof JsonWebTokenError) {
@@ -48,7 +49,6 @@ export function handleErrorMiddleware(err: any, req: Request, res: Response, nex
             }
         }
     }
-    logger.log('error', err);
 
     if (err.name === CustomError.name) {
         res.status(CustomErrorCodeToHttpStatus(err.code)).send(err);

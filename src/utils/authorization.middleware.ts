@@ -2,6 +2,11 @@ import { NextFunction, Request, Response } from 'express';
 import { getPackageName } from './package.helper';
 import { getConfiguration } from './configuration.helper';
 import { communicationHelper } from '../server';
+import { CustomError, CustomErrorCode } from './custom-error';
+import { configureLogger, defaultWinstonLoggerOptions, getLogger } from './logger';
+
+configureLogger('authorization-middleware', defaultWinstonLoggerOptions);
+const logger = getLogger('authorization-middleware');
 
 const appName = getPackageName();
 
@@ -20,5 +25,8 @@ export function authorizationMiddleware(req: Request, res: Response, next: NextF
             }
         )
         .then(() => next())
-        .catch(next);
+        .catch(err => {
+            logger.log('error', err.message);
+            next(new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized'));
+        });
 }
