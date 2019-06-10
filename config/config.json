@@ -2,6 +2,7 @@
   "templateexpress": {
     "registerRetryTime": 30000,
     "controlFormatMongoId": true,
+    "logLevel": "debug",
     "authorizationService": {
       "name": "user",
       "addRoute": "privileges/{resource}/routes",

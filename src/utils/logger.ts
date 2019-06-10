@@ -1,6 +1,12 @@
 import * as winston from 'winston';
+import { getPackageName } from './package.helper';
+import { getConfiguration } from './configuration.helper';
 
 const $loggerContainer = Symbol('loggerContainer');
+
+const appName = getPackageName();
+
+const config: any = getConfiguration()[appName];
 
 export const defaultWinstonLoggerOptions: winston.LoggerOptions = {
     format: winston.format.combine(
@@ -48,6 +54,12 @@ export function getLogger(name: string): winston.Logger {
  * @param {winston.LoggerOptions} loggerOptions
  */
 export function configureLogger(name: string, loggerOptions: winston.LoggerOptions): void {
+    if (config.logLevel) {
+        loggerOptions.level = config.logLevel;
+    } else {
+        loggerOptions.level = 'debug';
+    }
+
     if (!this[$loggerContainer]) {
         this[$loggerContainer] = new winston.Container();
     }
