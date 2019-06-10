@@ -142,17 +142,14 @@ export class App {
             if (!this.registered) {
                 await this.registerApp();
                 this.registered = true;
-                getLogger('mainApp').log('info', 'App correctly registered.');
             }
             if (!this.routesExport) {
                 await exportRoutes(this.configuration);
                 this.routesExport = true;
-                getLogger('mainApp').log('info', 'Routes exported');
             }
 
             if (!this.privilegesExport) {
                 await exportPrivileges(this.configuration);
-                getLogger('mainApp').log('info', 'Privileges exported');
                 this.privilegesExport = true;
             }
 

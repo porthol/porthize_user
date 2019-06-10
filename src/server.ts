@@ -56,7 +56,7 @@ const server = async () => {
                     const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
                     getLogger('default').log('info', 'Listening on %s in %s mode', bind, app.expressApp.get('env'));
                     if (app.expressApp.get('env') === 'development') {
-                        getLogger('default').log('info', 'Press CTRL-C to stop\n');
+                        getLogger('default').log('debug', 'Press CTRL-C to stop\n');
                     }
                 });
             } else {

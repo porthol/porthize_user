@@ -50,11 +50,11 @@ export async function initData() {
                     }
                     getLogger('initData').log('info', 'Data initialised : ' + file);
                 } else {
-                    getLogger('initData').log('info', 'Data already here for ' + file);
+                    getLogger('initData').log('debug', 'Data already here for ' + file);
                 }
             }
         } else {
-            getLogger('initData').log('info', 'No data to initialise');
+            getLogger('initData').log('debug', 'No data to initialise');
         }
     } catch (err) {
         getLogger('initData').log('error', err);
@@ -76,7 +76,7 @@ export async function exportPrivileges(config: any) {
             true
         );
 
-        getLogger('initData').log('info', 'info privileges exported');
+        getLogger('initData').log('info', 'Privileges exported');
     } catch (err) {
         getLogger('initData').log('error', err);
     }

@@ -80,7 +80,7 @@ export class RouterManager {
 export const routes: IRoute[] = [];
 
 export async function exportRoutes(config: any) {
-    getLogger('routerManager').log('info', 'Exporting routes to the authorization server...');
+    getLogger('routerManager').log('debug', 'Exporting routes to the authorization server...');
     for (const route of routes) {
         try {
             await communicationHelper.post(
@@ -112,4 +112,6 @@ export async function exportRoutes(config: any) {
             }
         }
     }
+
+    getLogger('routerManager').log('info', 'Routes exported');
 }
