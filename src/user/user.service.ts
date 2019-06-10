@@ -15,8 +15,11 @@ import { UserSchema } from './user.model';
 import { isValid } from 'mailchecker';
 import ms = require('ms');
 import ObjectId = mongoose.Types.ObjectId;
+import { getPackageName } from '../utils/package.helper';
 
-const config: any = getConfiguration().user;
+const appName = getPackageName();
+const config: any = getConfiguration()[appName];
+
 configureLogger('UserService', defaultWinstonLoggerOptions);
 
 interface ILoginRequest {
