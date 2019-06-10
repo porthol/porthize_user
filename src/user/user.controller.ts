@@ -128,14 +128,15 @@ export class UserController {
         UserService.get()
             .isTokenValid(req.headers.authorization)
             .then(user => {
-                res.status(httpStatus.NO_CONTENT).send();
+                res.status(httpStatus.OK).send(user);
             })
             .catch(next);
     }
 
     isAuthorized(req: Request, res: Response, next: NextFunction): void {
+        const customReq = (req as any) as CustomRequest;
         UserService.get()
-            .isAuthorized((req as any).user, req.body)
+            .isAuthorized(customReq.context.user, req.body)
             .then(result => {
                 if (!result) {
                     throw new CustomError(CustomErrorCode.ERRFORBIDDEN, 'Access forbidden');
