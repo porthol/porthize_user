@@ -64,7 +64,7 @@ export class CommunicationHelper {
             options.body = body;
         }
 
-        getLogger('communicationHelper').log('info', 'Sending request : ' + JSON.stringify(options));
+        getLogger('communicationHelper').log('debug', 'Sending request : ' + JSON.stringify(options));
 
         return options;
     }
