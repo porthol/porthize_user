@@ -4,12 +4,16 @@ import { ExampleController } from './example.controller';
 import { ExampleCreateSchema, ExampleUpdateSchema } from './example.schema';
 import { RouterManager } from '../utils/router.manager';
 import { controlFormatIdMiddleware } from '../utils/format-id.middleware';
+import { authenticationMiddleware } from '../utils/authentication.middleware';
+import { authorizationMiddleware } from '../utils/authorization.middleware';
 
 const router: express.Router = express.Router();
 const controller = new ExampleController();
 const validator = new Validator({ allErrors: true, removeAdditional: true });
 
 const routerManager = new RouterManager(router);
+
+const resource = 'examples';
 
 routerManager
     .route('/examples')
@@ -34,9 +38,9 @@ routerManager
      *  }]
      */
     .get({
-        handlers: [controller.getAll],
+        handlers: [authenticationMiddleware, controller.getAll],
         action: 'read',
-        resource: 'example'
+        resource
     })
     /**
      * @api {post} /examples Create example
@@ -65,9 +69,14 @@ routerManager
      *  }
      */
     .post({
-        handlers: [validator.validate({ body: ExampleCreateSchema }), controller.register],
+        handlers: [
+            authenticationMiddleware,
+            authorizationMiddleware,
+            validator.validate({ body: ExampleCreateSchema }),
+            controller.register
+        ],
         action: 'create',
-        resource: 'example'
+        resource
     });
 
 routerManager
@@ -93,9 +102,9 @@ routerManager
      *  }
      */
     .get({
-        handlers: [controlFormatIdMiddleware,controller.get],
+        handlers: [controlFormatIdMiddleware, controller.get],
         action: 'read',
-        resource: 'example'
+        resource
     })
     /**
      * @api {put} /example/:id Update example
@@ -128,7 +137,7 @@ routerManager
     .put({
         handlers: [validator.validate({ body: ExampleUpdateSchema }), controller.update],
         action: 'update',
-        resource: 'example'
+        resource
     })
     /**
      * @api {delete} /example/:id Delete example
@@ -150,7 +159,7 @@ routerManager
     .delete({
         handlers: [controller.delete],
         action: 'delete',
-        resource: 'example'
+        resource
     });
 
 export default router;

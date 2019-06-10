@@ -3,7 +3,7 @@
     "roleKey": "user",
     "resources": [
       {
-        "resourceKey": "example",
+        "resourceKey": "examples",
         "actions": [
           "read",
           "create",
@@ -16,7 +16,7 @@
     "roleKey": "bot",
     "resources": [
       {
-        "resourceKey": "example",
+        "resourceKey": "examples",
         "actions": [
           "read",
           "create",
