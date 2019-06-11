@@ -366,7 +366,6 @@ export class UserService extends Service<IUser> {
         const cleanedUser = { ...user.toObject() } as any;
 
         delete cleanedUser.password;
-        delete cleanedUser.emailing;
         delete cleanedUser.loginEnabled;
         cleanedUser.roles = (await RoleService.get().getAll({ _id: cleanedUser.roles })).map(r => r.key);
         delete cleanedUser.__v;
