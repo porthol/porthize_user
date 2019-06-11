@@ -6,7 +6,7 @@ import { app, communicationHelper } from '../server';
 
 const appName = getPackageName();
 
-const config: any = getConfiguration();
+const config: any = getConfiguration()[appName];
 
 export function denyExternalRequestMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
@@ -14,11 +14,18 @@ export function denyExternalRequestMiddleware(req: Request, res: Response, next:
         if (!req.headers['internal-request']) {
             throw new CustomError(CustomErrorCode.ERRUNAUTHORIZED, 'Unauthorized route from external');
         }
+
+        // remove /api/
+        // specific for user micro service !
+        if(req.originalUrl.substr(5) === config.authorizationService.registerAppRoute){
+            next();
+        }
+
         const uuid = req.headers['internal-request'].toString();
 
         communicationHelper
             .get(
-                config[appName].authorizationService.internalRequestRoute.replace('{uuid}', uuid),
+                config.authorizationService.internalRequestRoute.replace('{uuid}', uuid),
                 {
                     'internal-request': app.uuid
                 },
