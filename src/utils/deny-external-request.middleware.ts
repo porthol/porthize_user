@@ -17,8 +17,9 @@ export function denyExternalRequestMiddleware(req: Request, res: Response, next:
 
         // remove /api/
         // specific for user micro service !
-        if(req.originalUrl.substr(5) === config.authorizationService.registerAppRoute){
+        if (req.originalUrl.substr(5) === config.authorizationService.registerAppRoute) {
             next();
+            return;
         }
 
         const uuid = req.headers['internal-request'].toString();

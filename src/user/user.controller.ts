@@ -22,9 +22,8 @@ export class UserController {
             .then(user => {
                 if (!user) {
                     throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
-                } else {
-                    res.status(httpStatus.OK).send(user);
                 }
+                res.status(httpStatus.OK).send(user);
             })
             .catch(next);
     }
@@ -81,9 +80,8 @@ export class UserController {
             .then((result: any) => {
                 if (result.n === 0) {
                     throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'User not found');
-                } else {
-                    res.status(httpStatus.NO_CONTENT).send(result);
                 }
+                res.status(httpStatus.NO_CONTENT).send(result);
             })
             .catch(next);
     }
@@ -166,8 +164,7 @@ export class UserController {
 
     requestResetPassword(req: Request, res: Response, next: NextFunction): void {
         if (!isEmail(req.body.email)) {
-            next(new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad email format'));
-            return;
+            throw new CustomError(CustomErrorCode.ERRBADREQUEST, 'Bad email format');
         }
         UserService.get()
             .requestResetPassword(req.body.email)

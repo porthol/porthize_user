@@ -21,9 +21,8 @@ export class PrivilegeController {
             .then(privilege => {
                 if (!privilege) {
                     throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
-                } else {
-                    res.status(httpStatus.OK).send(privilege);
                 }
+                res.status(httpStatus.OK).send(privilege);
             })
             .catch(next);
     }
@@ -52,9 +51,8 @@ export class PrivilegeController {
             .then(result => {
                 if (result.n === 0) {
                     throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Privilege not found');
-                } else {
-                    res.status(httpStatus.NO_CONTENT).send(result);
                 }
+                res.status(httpStatus.NO_CONTENT).send(result);
             })
             .catch(next);
     }

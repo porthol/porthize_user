@@ -19,6 +19,7 @@ import { internalAuthenticationMiddleware } from '../utils/internal-authenticati
 import { RouterManager } from '../utils/router.manager';
 import { internalAuthorizationMiddleware } from '../utils/internal-authorization.middleware';
 import { internalDenyExternalRequestMiddleware } from '../utils/internal-deny-external-request';
+import { denyExternalRequestMiddleware } from '../utils/deny-external-request.middleware';
 
 const router: express.Router = express.Router();
 const userController = new UserController();
@@ -385,8 +386,7 @@ routerManager
 
 routerManager.route('/users/registerMicroService').post({
     handlers: [
-        // todo we can not protect him if we use uuid to verify
-        // denyExternalRequestMiddleware,
+        denyExternalRequestMiddleware,
         validator.validate({
             body: UserMicroServiceSchema
         }),

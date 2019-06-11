@@ -13,7 +13,7 @@ configureLogger('botCheck', defaultWinstonLoggerOptions);
 export function botCheck(roleBotKey: string, checkTime: number) {
     const checker = async () => {
         getLogger('botCheck').log('info', 'Checking bot account');
-        const role = await RoleService.get().getOne({
+        const role = await RoleService.get().get(null, {
             key: roleBotKey
         });
         if (!role) {

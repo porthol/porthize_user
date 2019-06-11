@@ -21,9 +21,8 @@ export class RoleController {
             .then(role => {
                 if (!role) {
                     throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found');
-                } else {
-                    res.status(httpStatus.OK).send(role);
                 }
+                res.status(httpStatus.OK).send(role);
             })
             .catch(next);
     }
@@ -52,9 +51,8 @@ export class RoleController {
             .then(result => {
                 if (result.n === 0) {
                     throw new CustomError(CustomErrorCode.ERRNOTFOUND, 'Role not found');
-                } else {
-                    res.status(httpStatus.NO_CONTENT).send(result);
                 }
+                res.status(httpStatus.NO_CONTENT).send(result);
             })
             .catch(next);
     }

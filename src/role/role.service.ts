@@ -50,12 +50,10 @@ export class RoleService extends Service<IRole> {
             .limit(limit);
     }
 
-    async getOne(criteria: any) {
-        return await this._model.findOne(criteria || {});
-    }
-
-    async get(id: ObjectId, criteria = {} as any) {
-        criteria._id = id;
+    async get(id?: ObjectId, criteria: any = {}) {
+        if (id) {
+            criteria._id = id;
+        }
         return await this._model.findOne(criteria);
     }
 

@@ -13,9 +13,9 @@ import { IRouteEmbedded } from '../privilege/privilege.document';
 import { Service } from '../utils/service.abstract';
 import { UserSchema } from './user.model';
 import { isValid } from 'mailchecker';
+import { getPackageName } from '../utils/package.helper';
 import ms = require('ms');
 import ObjectId = mongoose.Types.ObjectId;
-import { getPackageName } from '../utils/package.helper';
 
 const appName = getPackageName();
 const config: any = getConfiguration()[appName];
@@ -56,9 +56,11 @@ export class UserService extends Service<IUser> {
         return users;
     }
 
-    async get(id: ObjectId, criteria = {} as any) {
-        criteria._id = id;
-        const user = await this._model.findOne(criteria || {});
+    async get(id?: ObjectId, criteria: any = {}) {
+        if (id) {
+            criteria._id = id;
+        }
+        const user = await this._model.findOne(criteria);
         return user ? await this.getCleanUser(user) : null; // don't clean null object
     }
 
@@ -71,7 +73,7 @@ export class UserService extends Service<IUser> {
         await user.save();
 
         if (addDefaultRole) {
-            const defaultRole = await RoleService.get().getOne({
+            const defaultRole = await RoleService.get().get(null, {
                 key: config.defaultRoleKey
             });
 
@@ -282,7 +284,7 @@ export class UserService extends Service<IUser> {
 
         let user = await this.create(appUser, false);
 
-        const botRole = await RoleService.get().getOne({
+        const botRole = await RoleService.get().get(null, {
             key: config.roleBotKey
         });
 

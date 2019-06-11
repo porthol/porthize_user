@@ -25,7 +25,8 @@
         "actions": [
           "read",
           "update",
-          "updateRole"
+          "updateRole",
+          "update-security"
         ]
       },
       {

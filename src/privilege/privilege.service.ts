@@ -26,8 +26,10 @@ export class PrivilegeService extends Service<IPrivilege> {
             .limit(limit);
     }
 
-    async get(id: ObjectId, criteria = {} as any) {
-        criteria._id = id;
+    async get(id?: ObjectId, criteria: any = {}) {
+        if (id) {
+            criteria._id = id;
+        }
         return await this._model.findOne(criteria);
     }
 
