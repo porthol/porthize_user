@@ -45,8 +45,7 @@ export const UserSchema = new Schema({
     roles: [ObjectId],
     lastLogIn: {
         type: Date
-    },
-    companyId: ObjectId
+    }
 });
 
 UserSchema.pre('save', function(next) {

@@ -73,9 +73,6 @@ export const UserUpdateSecuritySchema = {
         },
         loginEnabled: {
             type: 'boolean'
-        },
-        companyId: {
-            type: 'string'
         }
     }
 };
